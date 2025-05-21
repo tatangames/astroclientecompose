@@ -35,7 +35,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.tatanstudios.astropollocliente.R
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -43,8 +42,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -191,14 +188,15 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
                         maxLength = 16
                     )
 
-
                     Text(
                         text = stringResource(R.string.contrasena_olvidada),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(end = 24.dp, top = 4.dp)
                             .clickable {
-                                // Acción al hacer clic, como navegar a pantalla de recuperación
+                                navController.navigate(Routes.VistaRecuperarCorreo.route) {
+                                    popUpTo(Routes.VistaRecuperarCorreo.route) { inclusive = true }
+                                }
                             },
                         textAlign = TextAlign.End,
                         color = Color.Gray,

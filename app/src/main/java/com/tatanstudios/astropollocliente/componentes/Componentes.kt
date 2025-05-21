@@ -134,7 +134,7 @@ fun BloqueTextFieldLogin(text: String, onTextChanged: (String) -> Unit, maxLengt
 
 
 @Composable
-fun BloqueTextFieldCorreo(text: String, onTextChanged: (String) -> Unit, maxLength: Int) {
+fun BloqueTextFieldCorreo(text: String, textoPlaceholder: String, onTextChanged: (String) -> Unit, maxLength: Int) {
     // Color común para el texto del placeholder y la línea
     val commonColor = Color.Gray
 
@@ -174,7 +174,7 @@ fun BloqueTextFieldCorreo(text: String, onTextChanged: (String) -> Unit, maxLeng
         ) {
             TextField(
                 value = text,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 onValueChange = { newText ->
                     if (newText.length <= maxLength) {
                         onTextChanged(newText)
@@ -184,7 +184,7 @@ fun BloqueTextFieldCorreo(text: String, onTextChanged: (String) -> Unit, maxLeng
                     fontSize = 17.sp, // Tamaño del texto
                     fontWeight = FontWeight.Normal // Negrita
                 ),
-                placeholder = { Text(text = stringResource(id = R.string.correo_opcional), color = commonColor) }, // Color del placeholder
+                placeholder = { Text(text = textoPlaceholder, color = commonColor) }, // Color del placeholder
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.White, // Fondo blanco cuando está enfocado

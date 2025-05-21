@@ -1,10 +1,6 @@
 package com.tatanstudios.astropollocliente.vistas.login
 
-import android.content.Context
-import android.content.pm.PackageManager
-import android.util.Patterns
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -27,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -40,7 +34,6 @@ import androidx.navigation.NavHostController
 import com.tatanstudios.astropollocliente.R
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.imePadding
@@ -60,28 +53,23 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.tatanstudios.astropollocliente.componentes.BloqueTextFieldCorreo
-import com.tatanstudios.astropollocliente.componentes.BloqueTextFieldLogin
 import com.tatanstudios.astropollocliente.componentes.BloqueTextFieldPassword
 import com.tatanstudios.astropollocliente.componentes.CustomModal1Boton
-import com.tatanstudios.astropollocliente.componentes.CustomModal1BotonTitulo
-import com.tatanstudios.astropollocliente.componentes.CustomModal2Botones
 import com.tatanstudios.astropollocliente.componentes.CustomToasty
 import com.tatanstudios.astropollocliente.componentes.LoadingModal
 import com.tatanstudios.astropollocliente.componentes.ToastType
-import com.tatanstudios.astropollocliente.extras.TokenManager
 import com.tatanstudios.astropollocliente.model.rutas.Routes
-import com.tatanstudios.astropollocliente.viewmodel.RegistroViewModel
+import com.tatanstudios.astropollocliente.viewmodel.CambiarPasswordEmailViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewModel = viewModel()) {
+fun CambiarPasswordEmailScreen(navController: NavHostController,
+                               idusuario: String,
+                               viewModel: CambiarPasswordEmailViewModel = viewModel()) {
 
     val ctx = LocalContext.current
-    val usuario by viewModel.usuario.observeAsState("")
-    val password by viewModel.password.observeAsState("")
-    val correo by viewModel.correo.observeAsState("")
 
+    val password by viewModel.passowrd.observeAsState("")
 
     val resultado by viewModel.resultado.observeAsState()
     val isLoading by viewModel.isLoading.observeAsState(false)
@@ -89,9 +77,8 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
-
-    val tokenManager = remember { TokenManager(ctx) }
     var isPasswordVisible by remember { mutableStateOf(false) } // Control de visibilidad de la contraseña
+
 
     // Definir el color del fondo al presionar
     val loginButtonColor = if (isPressed) {
@@ -107,13 +94,8 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
     var showModal1Boton by remember { mutableStateOf(false) }
     var modalMensajeString by remember { mutableStateOf("") }
 
-    // titulo y mensaje de respuestas
-    var textoTituloApi by remember { mutableStateOf("") }
-    var textoMensajeApi by remember { mutableStateOf("") }
-    var showDialogApi by remember { mutableStateOf(false) }
-
-    var showModal2Boton by remember { mutableStateOf(false) }
     var idonesignal by remember { mutableStateOf("") }
+    val texto4CaracteresMinimo = stringResource(R.string.minimo_4_caracteres)
 
     LaunchedEffect(Unit) {
         scope.launch {
@@ -121,10 +103,8 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
         }
     }
 
-    val texto4CaracteresMinimo = stringResource(R.string.minimo_4_caracteres)
-
     // Animación y diseño
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.jsonhotdog))
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.jsonpassword))
     val progress by animateLottieCompositionAsState(
         composition = composition,
         iterations = LottieConstants.IterateForever
@@ -142,7 +122,6 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
                 .fillMaxHeight()
         ) {
 
-
             LottieAnimation(
                 composition = composition,
                 progress = { progress },
@@ -155,10 +134,10 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
 
             // Título
             Text(
-                text = stringResource(id = R.string.crear_una_cuenta),
+                text = stringResource(id = R.string.cambiar_contrasena),
                 fontFamily = FontFamily(Font(R.font.arthura_medium)),
                 color = Color.White,
-                fontSize = 30.sp,
+                fontSize = 24.sp,
                 modifier = Modifier
                     .offset(y = (-20).dp)
                     .fillMaxWidth(),
@@ -180,10 +159,19 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
                         .padding(10.dp)
                 ) {
 
-                    BloqueTextFieldLogin(text = usuario,
-                        onTextChanged = { newText -> viewModel.setUsuario(newText) },
-                        maxLength = 20
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(
+                        text = stringResource(id = R.string.actualizar),
+                        fontFamily = FontFamily(Font(R.font.arthura_regular)),
+                        color = Color.Black,
+                        fontSize = 18.sp,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Center
                     )
+
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     // Bloque para la contraseña
                     BloqueTextFieldPassword(
@@ -192,12 +180,6 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
                         isPasswordVisible = isPasswordVisible,
                         onPasswordVisibilityChanged = { isPasswordVisible = it },
                         maxLength = 16
-                    )
-
-                    // bloque para correo opciones
-                    BloqueTextFieldCorreo(text = correo?: "", textoPlaceholder = stringResource(R.string.correo_opcional),
-                        onTextChanged = { newText -> viewModel.setCorreo(newText) },
-                        maxLength = 100
                     )
 
 
@@ -210,10 +192,6 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
                             keyboardController?.hide()
 
                             when {
-                                usuario.isBlank() -> {
-                                    modalMensajeString = ctx.getString(R.string.usuario_es_requerido)
-                                    showModal1Boton = true
-                                }
 
                                 password.isBlank() -> {
                                     modalMensajeString = ctx.getString(R.string.password_es_requerido)
@@ -224,15 +202,8 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
                                     modalMensajeString = texto4CaracteresMinimo
                                     showModal1Boton = true
                                 }
-
-
-                                !correo.isNullOrBlank() && !esCorreoValido(correo!!) -> {
-                                    modalMensajeString = ctx.getString(R.string.correo_ingresado_no_es_valido)
-                                    showModal1Boton = true
-                                }
-
                                 else -> {
-                                    showModal2Boton = true
+                                    viewModel.resetearContrasenaEmailRetrofit(idusuario)
                                 }
                             }
 
@@ -251,7 +222,7 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
                         interactionSource = interactionSource // Para detectar la interacción
                     ) {
                         Text(
-                            text = stringResource(id = R.string.registrarse),
+                            text = stringResource(id = R.string.actualizar),
                             fontSize = 18.sp,
                             style = TextStyle(
                                 fontSize = 20.sp,
@@ -262,19 +233,6 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
 
                     Spacer(modifier = Modifier.height(10.dp))
                 }
-
-                if(showDialogApi){
-                    CustomModal1BotonTitulo(
-                        showDialog = showDialogApi,
-                        title = textoTituloApi,
-                        message = textoMensajeApi,
-                        onDismiss = {
-                            showDialogApi = false
-
-                        }
-                    )
-                }
-
 
 
                 if(showModal1Boton){
@@ -289,27 +247,15 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
                     when (result.success) {
 
                         1 -> {
-                            // USUARIO YA REGISTRADO
-                            textoTituloApi = result.titulo?: ""
-                            textoMensajeApi = result.mensaje?: ""
-                            showDialogApi = true
-                        }
-                        2 -> {
-
-                            // CORREO YA REGISTRADO
-                            textoTituloApi = result.titulo?: ""
-                            textoMensajeApi = result.mensaje?: ""
-                            showDialogApi = true
-                        }
-                        3 -> {
-                            // REGISTRADO CORRECTAMENTE
-
-                            val _id = (result.id).toString()
+                            // CONTRASENA ACTUALIZADA
+                            CustomToasty(
+                                ctx,
+                                stringResource(id = R.string.actualizado),
+                                ToastType.SUCCESS
+                            )
 
                             scope.launch {
-                                tokenManager.saveID(_id)
-
-                                navController.navigate(Routes.VistaPrincipal.route) {
+                                navController.navigate(Routes.VistaLogin.route) {
                                     popUpTo(0) { // Esto elimina todas las vistas de la pila de navegación
                                         inclusive = true // Asegura que ninguna pantalla anterior quede en la pila
                                     }
@@ -328,59 +274,7 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
                     }
                 }
             } // end-card
-
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Spacer(modifier = Modifier.weight(1f)) // Empuja la imagen hacia la derecha
-
-                Image(
-                    painter = painterResource(id = R.drawable.cubetapollo2),
-                    contentDescription = stringResource(id = R.string.logotipo),
-                    modifier = Modifier
-                        .size(width = 120.dp, height = 100.dp)
-                )
-            }
-
-            // CONFIRMAR PARA REGISTRARSE
-            if(showModal2Boton){
-                CustomModal2Botones(
-                    showDialog = true,
-                    message = stringResource(R.string.registrarse),
-                    onDismiss = { showModal2Boton = false },
-                    onAccept = {
-                        showModal2Boton = false
-
-                        scope.launch {
-                            viewModel.registroRetrofit(
-                                idonesignal,
-                                version = getVersionName(ctx)
-                            )
-                        }
-
-                    },
-                    stringResource(R.string.si),
-                    stringResource(R.string.no),
-                )
-            }
-
         }
     }
 }
 
-fun esCorreoValido(correo: String): Boolean {
-    return Patterns.EMAIL_ADDRESS.matcher(correo).matches()
-}
-
-
-
-fun getVersionName(context: Context): String {
-    return try {
-        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        packageInfo.versionName ?: "N/A"
-    } catch (e: PackageManager.NameNotFoundException) {
-        "N/A"
-    }
-}

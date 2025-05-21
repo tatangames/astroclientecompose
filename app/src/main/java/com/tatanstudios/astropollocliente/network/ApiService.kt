@@ -30,6 +30,33 @@ interface ApiService {
 
 
 
+    // ENVIAR CORREO PARA QUE LARAVEL ENVIE CORREO CODIGO
+    @POST("cliente/enviar/codigo-correo")
+    @FormUrlEncoded
+    fun enviarCorreoApi(@Field("correo") correo: String,
+    ): Single<ModeloDatosBasicos>
+
+
+
+    // ACTUALIZAR PASSWORD EMAIL
+    @POST("cliente/actualizar/password")
+    @FormUrlEncoded
+    fun resetearPasswordEmailApi(@Field("id") id: String,
+                                 @Field("password") password: String,
+    ): Single<ModeloDatosBasicos>
+
+
+    // VERIFICAR CODIGO QUE SE ENVIO AL CORREO
+    @POST("cliente/verificar/codigo-correo-password")
+    @FormUrlEncoded
+    fun verificarCodigoEmailApi(@Field("codigo") codigo: String,
+                                 @Field("correo") correo: String,
+    ): Single<ModeloDatosBasicos>
+
+
+
+
+
 
 }
 

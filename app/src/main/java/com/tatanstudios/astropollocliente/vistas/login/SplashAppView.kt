@@ -72,11 +72,20 @@ fun AppNavigation() {
         composable(Routes.VistaSplash.route) { SplashScreen(navController) }
         composable(Routes.VistaLogin.route) { LoginScreen(navController) }
         composable(Routes.VistaRegistro.route) { RegistroScreen(navController) }
+        composable(Routes.VistaRecuperarCorreo.route) { RecuperarPasswordScreen(navController) }
+
+        composable(Routes.VistaCambiarPasswordCorreo.route) { backStackEntry ->
+            val idusuario = backStackEntry.arguments?.getString("idusuario") ?: ""
+
+            CambiarPasswordEmailScreen(navController = navController, idusuario = idusuario)
+        }
 
 
 
 
         composable(Routes.VistaPrincipal.route) { PrincipalScreen(navController) }
+
+
 
 
 

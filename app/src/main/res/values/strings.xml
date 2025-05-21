@@ -95,6 +95,22 @@
     <string name="crear_una_cuenta">Crear una Cuenta</string>
     <string name="minimo_4_caracteres">La contraseña debe tener al menos 4 caracteres</string>
     <string name="correo_opcional">Correo (opcional)</string>
+    <string name="correo_electronico">Correo electrónico</string>
+    <string name="correo_es_requerido">Correo es requerido</string>
+    <string name="correo_ingresado_no_es_valido">El correo ingresado no es válido</string>
+    <string name="recuperacion_de_contrasena">Recuperación de contraseña</string>
+    <string name="enviar_codigo">Enviar código</string>
+    <string name="ingrese_su_correo_registrado">Ingrese su Correo Electrónico Registrado</string>
+    <string name="cambio_de_contrasena">Cambio de contraseña</string>
+    <string name="nueva_contrasena">Nueva Contraseña</string>
+    <string name="codigo_enviado">Código enviado</string>
+    <string name="correo_no_encontrado">Correo no encontrado</string>
+    <string name="ingresar_codigo">Ingresar código</string>
+    <string name="codigo_es_requerido">Código es requerido</string>
+    <string name="codigo_incorrecto">Código incorrecto</string>
+    <string name="cambiar_contrasena">Cambiar Contraseña</string>
+    <string name="actualizar">Actualizar</string>
+
 
 
 
