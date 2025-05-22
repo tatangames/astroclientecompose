@@ -1,6 +1,7 @@
 package com.tatanstudios.astropollocliente.network
 
 import com.tatanstudios.astropollocliente.model.modelos.ModeloDatosBasicos
+import com.tatanstudios.astropollocliente.model.modelos.ModeloMenuPrincipal
 import io.reactivex.rxjava3.core.Single
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -52,6 +53,18 @@ interface ApiService {
     fun verificarCodigoEmailApi(@Field("codigo") codigo: String,
                                  @Field("correo") correo: String,
     ): Single<ModeloDatosBasicos>
+
+
+
+
+    //*****************************************************************************
+    @POST("cliente/lista/servicios-bloque")
+    @FormUrlEncoded
+    fun listadoMenuPrincipal(@Field("id") id: String,
+    ): Single<ModeloMenuPrincipal>
+
+
+
 
 
 

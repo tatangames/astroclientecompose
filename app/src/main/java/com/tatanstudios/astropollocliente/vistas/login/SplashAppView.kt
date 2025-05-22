@@ -42,6 +42,8 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.LottieConstants
 import com.tatanstudios.astropollocliente.extras.TokenManager
 import com.tatanstudios.astropollocliente.model.rutas.Routes
+import com.tatanstudios.astropollocliente.vistas.opciones.carrito.CarritoScreen
+import com.tatanstudios.astropollocliente.vistas.opciones.perfil.PerfilScreen
 import com.tatanstudios.astropollocliente.vistas.principal.PrincipalScreen
 
 
@@ -81,12 +83,9 @@ fun AppNavigation() {
         }
 
 
-
-
         composable(Routes.VistaPrincipal.route) { PrincipalScreen(navController) }
-
-
-
+        composable(Routes.VistaCarrito.route) { CarritoScreen(navController) }
+        composable(Routes.VistaPerfil.route) { PerfilScreen(navController) }
 
 
     }

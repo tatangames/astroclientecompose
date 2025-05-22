@@ -21,6 +21,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -55,6 +56,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.tatanstudios.astropollocliente.R
+import com.tatanstudios.astropollocliente.model.rutas.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -233,3 +235,58 @@ fun OtpTextField(codigo: String, onTextChanged: (String) -> Unit) {
         }
     }
 }
+
+
+
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BarraToolbarColorMenuPrincipal(navController: NavController, titulo: String, backgroundColor: Color) {
+
+    var isNavigating by remember { mutableStateOf(false) }
+
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                text = titulo,
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                color = Color.White,
+                fontWeight = FontWeight.Medium,
+            )
+        },
+
+        actions = {
+            IconButton(
+                onClick = {
+                    // Acción que quieres realizar al presionar el ícono
+                    if (!isNavigating) {
+                        isNavigating = true
+
+                        navController.navigate(Routes.VistaPerfil.route) {
+                            launchSingleTop = true
+                        }
+
+                    }
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Person, // Cambia esto por tu ícono deseado
+                    contentDescription = "Opciones",
+                    tint = Color.White
+                )
+            }
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = backgroundColor, // Color de fondo de la barra
+            navigationIconContentColor = Color.White, // Color del ícono de navegación
+            titleContentColor = Color.White, // Color del título
+            actionIconContentColor = Color.White // Color de las acciones
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .requiredHeightIn(min = 56.dp) // Define una altura mínima
+    )
+}
+

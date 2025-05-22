@@ -15,6 +15,10 @@ sealed class Routes(val route: String) {
     object VistaPrincipal: Routes("principal")
 
 
+    object VistaCarrito: Routes("carrito")
+    object VistaPerfil: Routes("perfil")
+
+
 
 
 

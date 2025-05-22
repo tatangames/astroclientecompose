@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.tatanstudios.astropollocliente.extras.Event
 import com.tatanstudios.astropollocliente.model.modelos.ModeloDatosBasicos
+import com.tatanstudios.astropollocliente.model.modelos.ModeloMenuPrincipal
 import com.tatanstudios.astropollocliente.network.RetrofitBuilder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.Disposable
@@ -279,4 +280,44 @@ class VerificarCodigoCorreoViewModel() : ViewModel() {
 
 
 
+// PANTALLA PRINCIPAL -> OPCION MENU
+class ListadoMenuPrincipal() : ViewModel() {
+
+    private val _resultado = MutableLiveData<Event<ModeloMenuPrincipal>>()
+    val resultado: LiveData<Event<ModeloMenuPrincipal>> get() = _resultado
+
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    private var disposable: Disposable? = null
+    private var isRequestInProgress = false
+
+    fun listadoMenuPrincipalRetrofit(id: String) {
+        if (isRequestInProgress) return
+
+        isRequestInProgress = true
+
+        _isLoading.value = true
+        disposable = RetrofitBuilder.getApiService().listadoMenuPrincipal(id)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .retry()
+            .subscribe(
+                { response ->
+                    _isLoading.value = false
+                    _resultado.value = Event(response)
+                    isRequestInProgress = false
+                },
+                { error ->
+                    _isLoading.value = false
+                    isRequestInProgress = false
+                }
+            )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposable?.dispose() // Limpiar la suscripción
+    }
+}
 
