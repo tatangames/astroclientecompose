@@ -18,7 +18,20 @@ sealed class Routes(val route: String) {
     object VistaCarrito: Routes("carrito")
     object VistaPerfil: Routes("perfil")
 
-
+    // HISTORIAL DONDE SE COLOCA LA FECHA
+    object VistaHistorialFecha: Routes("historialFecha")
+    // LISTA DE ORDENES DEL HISTORIAL
+    object VistaHistorialListadoOrden: Routes("historialListadoOrdenes/{fecha1}/{fecha2}") {
+        fun createRoute(fecha1: String, fecha2: String) = "historialListadoOrdenes/$fecha1/$fecha2"
+    }
+    // LISTADO DE PRODUCTOS HISTORIAL DE UNA ORDEN
+    object VistaListadoProductosHistorialOrden: Routes("listadoProductosHistorialOrden/{idorden}") {
+        fun createRoute(idorden: String) = "listadoProductosHistorialOrden/$idorden"
+    }
+    // VISTA INFO PRODUCTO PARA HISTORIAL ORDENES
+    object VistaInfoProductoHistorialOrden: Routes("infoProductoHistorialOrden/{idproducto}") {
+        fun createRoute(idproducto: String) = "infoProductoHistorialOrden/$idproducto"
+    }
 
 
 

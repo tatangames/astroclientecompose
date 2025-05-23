@@ -1,7 +1,10 @@
 package com.tatanstudios.astropollocliente.network
 
 import com.tatanstudios.astropollocliente.model.modelos.ModeloDatosBasicos
+import com.tatanstudios.astropollocliente.model.modelos.ModeloHistorialOrdenes
+import com.tatanstudios.astropollocliente.model.modelos.ModeloInfoProducto
 import com.tatanstudios.astropollocliente.model.modelos.ModeloMenuPrincipal
+import com.tatanstudios.astropollocliente.model.modelos.ModeloProductoHistorialOrdenes
 import io.reactivex.rxjava3.core.Single
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -64,8 +67,25 @@ interface ApiService {
     ): Single<ModeloMenuPrincipal>
 
 
+    @POST("cliente/historial/listado/ordenes")
+    @FormUrlEncoded
+    fun listadoHistorialOrdenes(@Field("id") id: String,
+                                @Field("fecha1") fecha1: String,
+                                @Field("fecha2") fecha2: String,
+    ): Single<ModeloHistorialOrdenes>
 
 
+    @POST("cliente/listado/productos/ordenes")
+    @FormUrlEncoded
+    fun listadoProductosHistorialOrden(@Field("ordenid") ordenid: Int,
+    ): Single<ModeloProductoHistorialOrdenes>
+
+
+
+    @POST("cliente/listado/productos/ordenes-individual")
+    @FormUrlEncoded
+    fun infoProductosHistorialOrden(@Field("idordendescrip") idordendescrip: Int,
+    ): Single<ModeloInfoProducto>
 
 
 

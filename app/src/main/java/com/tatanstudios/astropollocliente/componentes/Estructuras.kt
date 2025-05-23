@@ -1,7 +1,9 @@
 package com.tatanstudios.astropollocliente.componentes
 
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +27,8 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,18 +47,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.tatanstudios.astropollocliente.R
 import com.tatanstudios.astropollocliente.model.rutas.Routes
 
@@ -290,3 +301,240 @@ fun BarraToolbarColorMenuPrincipal(navController: NavController, titulo: String,
     )
 }
 
+
+
+
+
+
+@Composable
+fun CustomModalCerrarSesion(
+    showDialog: Boolean,
+    message: String,
+    onDismiss: () -> Unit,
+    onAccept: () -> Unit
+) {
+    if (showDialog) {
+        Dialog(onDismissRequest = { }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Color.White,
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .padding(16.dp)
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = message,
+                        fontSize = 18.sp,
+                        color = colorResource(R.color.colorNegro),
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Button(
+                            onClick = onDismiss,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colorResource(R.color.colorGrisv1),
+                                contentColor = colorResource(R.color.colorBlanco),
+                            ),
+                        ) {
+                            Text(stringResource(id = R.string.no), color = Color.White)
+                        }
+
+                        Button(
+                            onClick = onAccept,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colorResource(R.color.colorAzul),
+                                contentColor = colorResource(R.color.colorBlanco)
+                            ),
+                        ) {
+                            Text(stringResource(id = R.string.si), color = Color.White)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+
+@Composable
+fun CardHistorialOrden(
+    orden: String,
+    fecha: String,
+    venta: String,
+    estado: String?,
+    haycupon: Int,
+    cupon: String?,
+    haypremio: Int,
+    premio: String?, // textopremio
+    direccion: String,
+    notaOrden: String?,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .clickable { onClick() },
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            CampoTexto(stringResource(R.string.orden_numeral), orden)
+            Spacer(modifier = Modifier.height(6.dp))
+            CampoTexto(stringResource(R.string.direccion), direccion)
+            Spacer(modifier = Modifier.height(6.dp))
+            CampoTexto(stringResource(R.string.estado), estado)
+            Spacer(modifier = Modifier.height(6.dp))
+            CampoTexto(stringResource(R.string.total_a_pagar), venta)
+            Spacer(modifier = Modifier.height(6.dp))
+            CampoTexto(stringResource(R.string.fecha), fecha)
+            Spacer(modifier = Modifier.height(6.dp))
+            CampoTexto(stringResource(R.string.nota_orden), notaOrden)
+            if (haycupon == 1){
+                Spacer(modifier = Modifier.height(6.dp))
+                CampoTexto(stringResource(R.string.cupon), cupon, colorResource(R.color.colorRojo)) }
+            if (haypremio == 1){
+                Spacer(modifier = Modifier.height(6.dp))
+                CampoTexto(stringResource(R.string.premio), premio, colorResource(R.color.colorRojo))
+            }
+        }
+    }
+}
+
+
+
+@Composable
+fun CampoTexto(etiqueta: String, valor: String?,
+               colorEtiqueta: Color = Color.Black
+) {
+    Row(modifier = Modifier.padding(vertical = 2.dp)) {
+        Text(
+            text = "$etiqueta: ",
+            fontWeight = FontWeight.Bold,
+            color = colorEtiqueta,
+            fontSize = 18.sp,
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Text(
+            text = valor ?: "",
+            color = colorEtiqueta,
+            fontSize = 17.sp,
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+}
+
+
+
+
+@Composable
+fun ProductoListadoHistorialItemCard(
+    cantidad: String,
+    hayImagen: Int,
+    imagenUrl: String,
+    titulo: String?,
+    descripcion: String?, // lo que el cliente escribe ejemplo (pollo, res)
+    precio: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(12.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Cantidad
+            Box(
+                modifier = Modifier
+                    .background(color = colorResource(R.color.colorAzul), shape = RoundedCornerShape(6.dp))
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+                Text(
+                    text = "${cantidad}x",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            Spacer(modifier = Modifier.width(5.dp))
+
+            // Imagen del producto desde URL
+            if(hayImagen == 1){
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(imagenUrl)
+                        .crossfade(true)
+                        .placeholder(R.drawable.spinloading)
+                        .error(R.drawable.camaradefecto)
+                        .build(),
+                    contentDescription = stringResource(R.string.imagen_por_defecto),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                )
+            }else{
+                Image(
+                    painter = painterResource(id = R.drawable.camaradefecto),
+                    contentDescription = stringResource(R.string.imagen_por_defecto),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                )
+            }
+
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            // Título y descripción
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = titulo?: "",
+                    style = MaterialTheme.typography.titleMedium,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if(!descripcion.isNullOrBlank()){
+                    Text(
+                        text = descripcion,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Red,
+                        fontSize = 16.sp,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+
+            // Precio
+            Text(
+                text = "$$precio",
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
+    }
+}

@@ -44,6 +44,10 @@ import com.tatanstudios.astropollocliente.extras.TokenManager
 import com.tatanstudios.astropollocliente.model.rutas.Routes
 import com.tatanstudios.astropollocliente.vistas.opciones.carrito.CarritoScreen
 import com.tatanstudios.astropollocliente.vistas.opciones.perfil.PerfilScreen
+import com.tatanstudios.astropollocliente.vistas.opciones.perfil.opciones.historial.HistorialFechaScreen
+import com.tatanstudios.astropollocliente.vistas.opciones.perfil.opciones.historial.HistorialOrdenScreen
+import com.tatanstudios.astropollocliente.vistas.opciones.perfil.opciones.historial.InfoProductoHistorialScreen
+import com.tatanstudios.astropollocliente.vistas.opciones.perfil.opciones.historial.ListadoProductosHistorialScreen
 import com.tatanstudios.astropollocliente.vistas.principal.PrincipalScreen
 
 
@@ -86,6 +90,31 @@ fun AppNavigation() {
         composable(Routes.VistaPrincipal.route) { PrincipalScreen(navController) }
         composable(Routes.VistaCarrito.route) { CarritoScreen(navController) }
         composable(Routes.VistaPerfil.route) { PerfilScreen(navController) }
+        composable(Routes.VistaHistorialFecha.route) { HistorialFechaScreen(navController) }
+
+        // HISTORIAL LISTADO ORDENES
+        composable(Routes.VistaHistorialListadoOrden.route) { backStackEntry ->
+            val fecha1 = backStackEntry.arguments?.getString("fecha1") ?: ""
+            val fecha2 = backStackEntry.arguments?.getString("fecha2") ?: ""
+
+            HistorialOrdenScreen(navController = navController, _fecha1 = fecha1, _fecha2 = fecha2)
+        }
+
+        // LISTADO DE PRODUCTOS HISTORIAL ORDEN
+        composable(Routes.VistaListadoProductosHistorialOrden.route) { backStackEntry ->
+            val idordenStr = backStackEntry.arguments?.getString("idorden") ?: "0"
+            val idorden = idordenStr.toIntOrNull() ?: 0
+
+            ListadoProductosHistorialScreen(navController = navController, _idorden = idorden)
+        }
+
+        // VISTA INFO PRODUCTO DE HISTORIAL
+        composable(Routes.VistaInfoProductoHistorialOrden.route) { backStackEntry ->
+            val idproductoStr = backStackEntry.arguments?.getString("idproducto") ?: "0"
+            val idproducto = idproductoStr.toIntOrNull() ?: 0
+
+            InfoProductoHistorialScreen(navController = navController, _idproducto = idproducto)
+        }
 
 
     }
