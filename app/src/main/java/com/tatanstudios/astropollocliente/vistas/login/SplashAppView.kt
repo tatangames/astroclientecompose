@@ -43,12 +43,15 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.tatanstudios.astropollocliente.extras.TokenManager
 import com.tatanstudios.astropollocliente.model.rutas.Routes
 import com.tatanstudios.astropollocliente.vistas.opciones.carrito.CarritoScreen
-import com.tatanstudios.astropollocliente.vistas.opciones.perfil.PerfilScreen
-import com.tatanstudios.astropollocliente.vistas.opciones.perfil.opciones.historial.HistorialFechaScreen
-import com.tatanstudios.astropollocliente.vistas.opciones.perfil.opciones.historial.HistorialOrdenScreen
-import com.tatanstudios.astropollocliente.vistas.opciones.perfil.opciones.historial.InfoProductoHistorialScreen
-import com.tatanstudios.astropollocliente.vistas.opciones.perfil.opciones.historial.ListadoProductosHistorialScreen
+import com.tatanstudios.astropollocliente.vistas.principal.opciones.perfil.PerfilScreen
+import com.tatanstudios.astropollocliente.vistas.principal.opciones.historial.HistorialFechaScreen
+import com.tatanstudios.astropollocliente.vistas.principal.opciones.historial.HistorialOrdenScreen
+import com.tatanstudios.astropollocliente.vistas.principal.opciones.historial.InfoProductoHistorialScreen
+import com.tatanstudios.astropollocliente.vistas.principal.opciones.historial.ListadoProductosHistorialScreen
 import com.tatanstudios.astropollocliente.vistas.principal.PrincipalScreen
+import com.tatanstudios.astropollocliente.vistas.principal.opciones.horarios.HorariosScreen
+import com.tatanstudios.astropollocliente.vistas.principal.opciones.password.ActualizarPasswordScreen
+import com.tatanstudios.astropollocliente.vistas.principal.opciones.premios.PremiosScreen
 
 
 class SplashApp : ComponentActivity() {
@@ -115,6 +118,15 @@ fun AppNavigation() {
 
             InfoProductoHistorialScreen(navController = navController, _idproducto = idproducto)
         }
+
+        // VISTA ACTUALIZAR CONTRASENA
+        composable(Routes.VistaActualizarContrasena.route) { ActualizarPasswordScreen(navController) }
+        // VISTA HORARIOS
+        composable(Routes.VistaHorarios.route) { HorariosScreen(navController) }
+        // VISTA PREMIOS
+        composable(Routes.VistaPremios.route) { PremiosScreen(navController) }
+
+
 
 
     }

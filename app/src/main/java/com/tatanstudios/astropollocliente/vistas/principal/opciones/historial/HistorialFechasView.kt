@@ -1,4 +1,4 @@
-package com.tatanstudios.astropollocliente.vistas.opciones.perfil.opciones.historial
+package com.tatanstudios.astropollocliente.vistas.principal.opciones.historial
 
 import android.app.DatePickerDialog
 import android.widget.Toast
@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
@@ -45,7 +47,7 @@ fun HistorialFechaScreen(navController: NavHostController) {
     var fechaDesde by remember { mutableStateOf<LocalDate?>(null) }
     var fechaHasta by remember { mutableStateOf<LocalDate?>(null) }
 
-
+    val scrollState = rememberScrollState()
     val hoy = LocalDate.now()
     val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
@@ -89,10 +91,11 @@ fun HistorialFechaScreen(navController: NavHostController) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .verticalScroll(scrollState)
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+            )  {
 
 
                 Spacer(modifier = Modifier.height(12.dp))

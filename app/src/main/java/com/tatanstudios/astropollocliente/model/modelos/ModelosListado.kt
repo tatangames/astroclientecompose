@@ -139,3 +139,41 @@ data class ModeloInfoProductoArray(
     @SerializedName("multiplicado") val multiplicado: String?,
 )
 
+data class ModeloHorario(
+    @SerializedName("success") val success: Int,
+    @SerializedName("restaurante") val restaurante: String,
+    @SerializedName("horario") val lista: List<ModeloHorarioArray>
+)
+
+
+data class ModeloHorarioArray(
+    @SerializedName("id") val id: Int,
+    @SerializedName("id_servicios") val idServicio: Int,
+    @SerializedName("hora1") val hora1: String?,
+    @SerializedName("hora2") val hora2: String?,
+    @SerializedName("dia") val dia: Int,
+    @SerializedName("cerrado") val cerrado: Int,
+    @SerializedName("horario") val horario: String?,
+    @SerializedName("fechaformat") val fechaformat: String?,
+)
+
+
+
+
+data class ModeloPremios(
+    @SerializedName("success") val success: Int,
+    @SerializedName("conteo") val conteo: Int,
+    @SerializedName("nota") val nota: String?,
+    @SerializedName("puntos") val puntos: String?,
+    @SerializedName("listado") val lista: List<ModeloPremiosArray>
+)
+
+
+data class ModeloPremiosArray(
+    @SerializedName("id") val id: Int,
+    @SerializedName("id_servicio") val idServicio: Int,
+    @SerializedName("nombre") val nombre: String?,
+    @SerializedName("puntos") val puntos: Int,
+    @SerializedName("activo") val activo: Int,
+    @SerializedName("seleccionado") var seleccionado: Int,
+)

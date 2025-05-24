@@ -2,8 +2,10 @@ package com.tatanstudios.astropollocliente.network
 
 import com.tatanstudios.astropollocliente.model.modelos.ModeloDatosBasicos
 import com.tatanstudios.astropollocliente.model.modelos.ModeloHistorialOrdenes
+import com.tatanstudios.astropollocliente.model.modelos.ModeloHorario
 import com.tatanstudios.astropollocliente.model.modelos.ModeloInfoProducto
 import com.tatanstudios.astropollocliente.model.modelos.ModeloMenuPrincipal
+import com.tatanstudios.astropollocliente.model.modelos.ModeloPremios
 import com.tatanstudios.astropollocliente.model.modelos.ModeloProductoHistorialOrdenes
 import io.reactivex.rxjava3.core.Single
 import retrofit2.http.Field
@@ -67,6 +69,7 @@ interface ApiService {
     ): Single<ModeloMenuPrincipal>
 
 
+    // LISTADO DE ORDENES DE HISTORIAL SEGUN FECHA
     @POST("cliente/historial/listado/ordenes")
     @FormUrlEncoded
     fun listadoHistorialOrdenes(@Field("id") id: String,
@@ -75,17 +78,41 @@ interface ApiService {
     ): Single<ModeloHistorialOrdenes>
 
 
+    // LISTADO DE PRODUCTOS DE UNA ORDEN
     @POST("cliente/listado/productos/ordenes")
     @FormUrlEncoded
     fun listadoProductosHistorialOrden(@Field("ordenid") ordenid: Int,
     ): Single<ModeloProductoHistorialOrdenes>
 
 
-
+    // INFO DE UN PRODUCTO DE UNA ORDEN
     @POST("cliente/listado/productos/ordenes-individual")
     @FormUrlEncoded
     fun infoProductosHistorialOrden(@Field("idordendescrip") idordendescrip: Int,
     ): Single<ModeloInfoProducto>
+
+
+    // ACTUALIZAR CONTRASENA
+    @POST("cliente/perfil/actualizar/contrasena")
+    @FormUrlEncoded
+    fun actualizarPassword(@Field("id") id: String,
+                           @Field("password") password: String,
+    ): Single<ModeloDatosBasicos>
+
+
+
+    // LISTADO DE HORARIOS
+    @POST("cliente/informacion/restaurante/horario")
+    @FormUrlEncoded
+    fun listadoHorario(@Field("id") id: String,
+    ): Single<ModeloHorario>
+
+
+    // LISTADO DE PREMIOS
+    @POST("cliente/premios/listado")
+    @FormUrlEncoded
+    fun listadoPremios(@Field("clienteid") clienteid: String,
+    ): Single<ModeloPremios>
 
 
 

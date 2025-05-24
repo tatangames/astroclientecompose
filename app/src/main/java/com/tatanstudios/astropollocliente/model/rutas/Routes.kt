@@ -33,6 +33,14 @@ sealed class Routes(val route: String) {
         fun createRoute(idproducto: String) = "infoProductoHistorialOrden/$idproducto"
     }
 
+    // VISTA ACTUALIZAR CONTRASENA
+    object VistaActualizarContrasena: Routes("actualizarContrasena")
+    // VISTA HORARIOS
+    object VistaHorarios: Routes("vistaHorarios")
+    // VISTA PREMIOS
+    object VistaPremios: Routes("vistaPremios")
+
+
 
 
 }

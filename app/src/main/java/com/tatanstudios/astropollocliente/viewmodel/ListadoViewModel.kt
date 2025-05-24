@@ -6,8 +6,10 @@ import androidx.lifecycle.ViewModel
 import com.tatanstudios.astropollocliente.extras.Event
 import com.tatanstudios.astropollocliente.model.modelos.ModeloDatosBasicos
 import com.tatanstudios.astropollocliente.model.modelos.ModeloHistorialOrdenes
+import com.tatanstudios.astropollocliente.model.modelos.ModeloHorario
 import com.tatanstudios.astropollocliente.model.modelos.ModeloInfoProducto
 import com.tatanstudios.astropollocliente.model.modelos.ModeloMenuPrincipal
+import com.tatanstudios.astropollocliente.model.modelos.ModeloPremios
 import com.tatanstudios.astropollocliente.model.modelos.ModeloProductoHistorialOrdenes
 import com.tatanstudios.astropollocliente.network.RetrofitBuilder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -452,3 +454,141 @@ class InfoProductoViewModel() : ViewModel() {
     }
 }
 
+
+
+
+
+
+class ActualizarPasswordViewModel() : ViewModel() {
+
+    private val _resultado = MutableLiveData<Event<ModeloDatosBasicos>>()
+    val resultado: LiveData<Event<ModeloDatosBasicos>> get() = _resultado
+
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    private val _password = MutableLiveData<String>()
+    val passowrd: LiveData<String> get() = _password
+
+    private var disposable: Disposable? = null
+    private var isRequestInProgress = false
+
+    fun setPassword(password: String) {
+        _password.value = password
+    }
+
+    fun actualizarContrasenaRetrofit(idusuario: String) {
+        if (isRequestInProgress) return
+
+        isRequestInProgress = true
+
+        _isLoading.value = true
+        disposable = RetrofitBuilder.getApiService().actualizarPassword(idusuario, _password.value!!)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .retry()
+            .subscribe(
+                { response ->
+                    _isLoading.value = false
+                    _resultado.value = Event(response)
+                    isRequestInProgress = false
+                },
+                { error ->
+                    _isLoading.value = false
+                    isRequestInProgress = false
+                }
+            )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposable?.dispose() // Limpiar la suscripción
+    }
+}
+
+
+
+
+class ListadoHorariosViewModel() : ViewModel() {
+
+    private val _resultado = MutableLiveData<Event<ModeloHorario>>()
+    val resultado: LiveData<Event<ModeloHorario>> get() = _resultado
+
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    private var disposable: Disposable? = null
+    private var isRequestInProgress = false
+
+    fun listadoHorarioRetrofit(idusuario: String) {
+        if (isRequestInProgress) return
+
+        isRequestInProgress = true
+
+        _isLoading.value = true
+        disposable = RetrofitBuilder.getApiService().listadoHorario(idusuario)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .retry()
+            .subscribe(
+                { response ->
+                    _isLoading.value = false
+                    _resultado.value = Event(response)
+                    isRequestInProgress = false
+                },
+                { error ->
+                    _isLoading.value = false
+                    isRequestInProgress = false
+                }
+            )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposable?.dispose() // Limpiar la suscripción
+    }
+}
+
+
+
+
+
+class ListadoPremiosViewModel() : ViewModel() {
+
+    private val _resultado = MutableLiveData<Event<ModeloPremios>>()
+    val resultado: LiveData<Event<ModeloPremios>> get() = _resultado
+
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    private var disposable: Disposable? = null
+    private var isRequestInProgress = false
+
+    fun listadoPremiosRetrofit(idusuario: String) {
+        if (isRequestInProgress) return
+
+        isRequestInProgress = true
+
+        _isLoading.value = true
+        disposable = RetrofitBuilder.getApiService().listadoPremios(idusuario)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .retry()
+            .subscribe(
+                { response ->
+                    _isLoading.value = false
+                    _resultado.value = Event(response)
+                    isRequestInProgress = false
+                },
+                { error ->
+                    _isLoading.value = false
+                    isRequestInProgress = false
+                }
+            )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposable?.dispose() // Limpiar la suscripción
+    }
+}

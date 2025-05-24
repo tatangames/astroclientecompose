@@ -1,4 +1,4 @@
-package com.tatanstudios.astropollocliente.vistas.opciones.perfil.opciones.historial
+package com.tatanstudios.astropollocliente.vistas.principal.opciones.historial
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

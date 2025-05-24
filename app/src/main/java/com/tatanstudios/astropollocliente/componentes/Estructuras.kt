@@ -23,6 +23,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -49,12 +50,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -535,6 +538,209 @@ fun ProductoListadoHistorialItemCard(
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(start = 8.dp)
             )
+        }
+    }
+}
+
+
+
+@Composable
+fun CardHorarioV1(nombre: String) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(12.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Imagen a la izquierda
+            Image(
+                painter = painterResource(id = R.drawable.logonegrocirculo), // Reemplaza con tu imagen
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(54.dp)
+                    .clip(RoundedCornerShape(12.dp))
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Texto a la derecha
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = nombre,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+}
+
+
+
+@Composable
+fun CardHorarioV2(titulo: String?, descripcion: String?) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(12.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Imagen a la izquierda
+            Image(
+                imageVector = Icons.Default.DateRange,
+                contentDescription = "Icono de fecha",
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(RoundedCornerShape(12.dp)),
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Texto a la derecha
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = titulo?: "",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = descripcion?: "",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Normal
+                )
+            }
+        }
+    }
+}
+
+
+
+@Composable
+fun CardMisPuntos(nombre: String, puntos: Int) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally // Centra horizontalmente
+        ) {
+            Text(
+                text = nombre,
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+            )
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            Text(
+                text = "Mis puntos: $puntos",
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black
+                )
+            )
+        }
+    }
+}
+
+
+
+
+
+@Composable
+fun CardSeleccionItem(
+    texto: String,
+    seleccionado: Int,
+    puntos: Int,
+    onClick: () -> Unit
+) {
+    val backgroundColor = if (seleccionado == 1) Color(0xFFF2FFDB) else Color.White
+    val botonColor = if (seleccionado == 1) colorResource(R.color.colorRojo) else colorResource(R.color.colorVerde)
+    val textoBoton = if (seleccionado == 1) "BORRAR SELECCIÓN" else "SELECCIONAR"
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(6.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.icono_comida),
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp)
+                )
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Text(
+                    text = texto,
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                )
+            }
+
+            // Texto centrado debajo del principal
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Puntos: $puntos", // Puedes hacerlo dinámico si quieres
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(
+                onClick = onClick,
+                colors = ButtonDefaults.buttonColors(containerColor = botonColor),
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = textoBoton,
+                    color = Color.White
+                )
+            }
         }
     }
 }

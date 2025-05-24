@@ -94,14 +94,9 @@ fun CambiarPasswordEmailScreen(navController: NavHostController,
     var showModal1Boton by remember { mutableStateOf(false) }
     var modalMensajeString by remember { mutableStateOf("") }
 
-    var idonesignal by remember { mutableStateOf("") }
     val texto4CaracteresMinimo = stringResource(R.string.minimo_4_caracteres)
 
-    LaunchedEffect(Unit) {
-        scope.launch {
-            idonesignal = getOneSignalUserId()
-        }
-    }
+
 
     // Animación y diseño
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.jsonpassword))
