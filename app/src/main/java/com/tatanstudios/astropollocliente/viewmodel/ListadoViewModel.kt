@@ -1,14 +1,18 @@
 package com.tatanstudios.astropollocliente.viewmodel
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.maps.model.LatLng
 import com.tatanstudios.astropollocliente.extras.Event
 import com.tatanstudios.astropollocliente.model.modelos.ModeloDatosBasicos
+import com.tatanstudios.astropollocliente.model.modelos.ModeloDirecciones
 import com.tatanstudios.astropollocliente.model.modelos.ModeloHistorialOrdenes
 import com.tatanstudios.astropollocliente.model.modelos.ModeloHorario
 import com.tatanstudios.astropollocliente.model.modelos.ModeloInfoProducto
 import com.tatanstudios.astropollocliente.model.modelos.ModeloMenuPrincipal
+import com.tatanstudios.astropollocliente.model.modelos.ModeloPoligonos
 import com.tatanstudios.astropollocliente.model.modelos.ModeloPremios
 import com.tatanstudios.astropollocliente.model.modelos.ModeloProductoHistorialOrdenes
 import com.tatanstudios.astropollocliente.network.RetrofitBuilder
@@ -674,4 +678,119 @@ class DeseleccionarPremioViewModel() : ViewModel() {
         disposable?.dispose() // Limpiar la suscripción
     }
 }
+
+
+
+
+class ListadoDireccionesViewModel() : ViewModel() {
+
+    private val _resultado = MutableLiveData<Event<ModeloDirecciones>>()
+    val resultado: LiveData<Event<ModeloDirecciones>> get() = _resultado
+
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    private var disposable: Disposable? = null
+    private var isRequestInProgress = false
+
+    fun listadoDireccionesRetrofit(idusuario: String) {
+        if (isRequestInProgress) return
+
+        isRequestInProgress = true
+
+        _isLoading.value = true
+        disposable = RetrofitBuilder.getApiService().listadoDirecciones(idusuario)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .retry()
+            .subscribe(
+                { response ->
+                    _isLoading.value = false
+                    _resultado.value = Event(response)
+                    isRequestInProgress = false
+                },
+                { error ->
+                    _isLoading.value = false
+                    isRequestInProgress = false
+                }
+            )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposable?.dispose() // Limpiar la suscripción
+    }
+}
+
+data class PoligonoUI(
+    val id: Int,
+    val nombre: String?,
+    val puntos: List<LatLng>
+)
+
+class ListadoPoligonosViewModel() : ViewModel() {
+
+    private val _resultado = MutableLiveData<Event<ModeloPoligonos>>()
+    val resultado: LiveData<Event<ModeloPoligonos>> get() = _resultado
+
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    private var disposable: Disposable? = null
+    private var isRequestInProgress = false
+
+    private val _poligonosUI = mutableStateListOf<PoligonoUI>()
+    val poligonosUI: List<PoligonoUI> get() = _poligonosUI
+
+
+    fun listadoPoligonosRetrofit() {
+        if (isRequestInProgress) return
+
+        isRequestInProgress = true
+
+        _isLoading.value = true
+        disposable = RetrofitBuilder.getApiService().listadoPoligonos()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .retry()
+            .subscribe(
+                { response ->
+                    _isLoading.value = false
+                    _resultado.value = Event(response)
+                    isRequestInProgress = false
+
+                    if (response.success == 1) {
+                        _poligonosUI.clear()
+                        response.lista.forEach { poligono ->
+                            val puntos = poligono.listado.mapNotNull { coord ->
+                                try {
+                                    LatLng(coord.latitud.toDouble(), coord.longitud.toDouble())
+                                } catch (e: NumberFormatException) {
+                                    null
+                                }
+                            }
+
+                            _poligonosUI.add(
+                                PoligonoUI(
+                                    id = poligono.id,
+                                    nombre = poligono.nombre,
+                                    puntos = puntos
+                                )
+                            )
+                        }
+                    }
+                },
+                { error ->
+                    _isLoading.value = false
+                    isRequestInProgress = false
+                }
+            )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposable?.dispose() // Limpiar la suscripción
+    }
+}
+
 

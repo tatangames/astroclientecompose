@@ -120,6 +120,15 @@
     <string name="este_premio_se_eliminara">Este premio se eliminará de tu selección.</string>
     <string name="seleccionado">Seleccionado</string>
     <string name="borrar">Borrar</string>
+    <string name="mis_direcciones">Mis direcciones</string>
+    <string name="no_hay_direccion_registrada">No hay direcciones registradas</string>
+    <string name="mapa">Mapa</string>
+    <string name="permiso_gps_requerido">Permiso GPS requerido</string>
+    <string name="para_usar_esta_funcion_gps">Para usar esta función, necesitas conceder permiso GPS en los ajustes de la aplicación.</string>
+    <string name="ir_a_ajustes">Ir a Ajustes</string>
+
+
+
 
 
 

@@ -1,15 +1,18 @@
 package com.tatanstudios.astropollocliente.network
 
 import com.tatanstudios.astropollocliente.model.modelos.ModeloDatosBasicos
+import com.tatanstudios.astropollocliente.model.modelos.ModeloDirecciones
 import com.tatanstudios.astropollocliente.model.modelos.ModeloHistorialOrdenes
 import com.tatanstudios.astropollocliente.model.modelos.ModeloHorario
 import com.tatanstudios.astropollocliente.model.modelos.ModeloInfoProducto
 import com.tatanstudios.astropollocliente.model.modelos.ModeloMenuPrincipal
+import com.tatanstudios.astropollocliente.model.modelos.ModeloPoligonos
 import com.tatanstudios.astropollocliente.model.modelos.ModeloPremios
 import com.tatanstudios.astropollocliente.model.modelos.ModeloProductoHistorialOrdenes
 import io.reactivex.rxjava3.core.Single
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface ApiService {
@@ -129,6 +132,18 @@ interface ApiService {
     @FormUrlEncoded
     fun quitarSeleccionarPremios(@Field("clienteid") clienteid: String,
     ): Single<ModeloDatosBasicos>
+
+    // LISTADO DE DIRECCIONES
+    @POST("cliente/listado/direcciones")
+    @FormUrlEncoded
+    fun listadoDirecciones(@Field("id") id: String,
+    ): Single<ModeloDirecciones>
+
+
+    @GET("cliente/listado/zonas/poligonos")
+    fun listadoPoligonos(
+    ): Single<ModeloPoligonos>
+
 
 
 

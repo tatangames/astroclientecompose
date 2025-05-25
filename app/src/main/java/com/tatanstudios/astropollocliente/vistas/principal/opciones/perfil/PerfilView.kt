@@ -103,7 +103,13 @@ fun PerfilScreen(navController: NavHostController) {
                         .let {
                              it.clickable {
                                  when (opcion) {
-                                     is Opcion.Direcciones -> {}
+                                     is Opcion.Direcciones -> {
+                                         navController.navigate(Routes.VistaMisDirecciones.route) {
+                                             navOptions {
+                                                 launchSingleTop = true
+                                             }
+                                         }
+                                     }
                                      is Opcion.CambioPassword -> {
                                          navController.navigate(Routes.VistaActualizarContrasena.route) {
                                              navOptions {

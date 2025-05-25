@@ -177,3 +177,42 @@ data class ModeloPremiosArray(
     @SerializedName("activo") val activo: Int,
     @SerializedName("seleccionado") var seleccionado: Int,
 )
+
+
+
+
+data class ModeloDirecciones(
+    @SerializedName("success") val success: Int,
+    @SerializedName("titulo") val titulo: String?,
+    @SerializedName("mensaje") val mensaje: String?,
+    @SerializedName("direcciones") val lista: List<ModeloDireccionesArray>
+)
+
+data class ModeloDireccionesArray(
+    @SerializedName("id") val id: Int,
+    @SerializedName("nombre") val nombre: String?,
+    @SerializedName("direccion") val direccion: String?,
+    @SerializedName("numero_casa") val numero_casa: String?,
+    @SerializedName("punto_referencia") val punto_referencia: String?,
+    @SerializedName("telefono") val telefono: String?,
+    @SerializedName("seleccionado") var seleccionado: Int,
+    @SerializedName("minimocompra") val minimocompra: String?,
+)
+
+
+
+data class ModeloPoligonos(
+    @SerializedName("success") val success: Int,
+    @SerializedName("poligono") val lista: List<ModeloPoligonosArray>
+)
+
+data class ModeloPoligonosArray(
+    @SerializedName("id") val id: Int,
+    @SerializedName("nombreZona") val nombre: String?,
+    @SerializedName("poligonos") val listado: List<ModeloPoligonosLatitudLongitudArray>
+)
+
+data class ModeloPoligonosLatitudLongitudArray(
+    @SerializedName("latitudPoligono") val latitud: String,
+    @SerializedName("longitudPoligono") val longitud: String,
+)

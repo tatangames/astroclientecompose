@@ -39,6 +39,11 @@ sealed class Routes(val route: String) {
     object VistaHorarios: Routes("vistaHorarios")
     // VISTA PREMIOS
     object VistaPremios: Routes("vistaPremios")
+    // VISTA MIS DIRECCIONES
+    object VistaMisDirecciones: Routes("vistaMisDirecciones")
+    // VISTA MAPA
+    object VistaMapa: Routes("vistaMapa")
+
 
 
 

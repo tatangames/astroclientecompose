@@ -1,5 +1,9 @@
 package com.tatanstudios.astropollocliente.vistas.principal
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,13 +26,19 @@ import androidx.compose.material.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import com.tatanstudios.astropollocliente.componentes.SolicitarPermisosUbicacion
 import com.tatanstudios.astropollocliente.model.rutas.Routes
+import com.tatanstudios.astropollocliente.ui.theme.ColorBlanco
+import com.tatanstudios.astropollocliente.ui.theme.ColorGris
 import com.tatanstudios.astropollocliente.vistas.opciones.menu.MenuPrincipalScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -53,6 +63,9 @@ fun PrincipalScreen(navController: NavHostController) {
             }
         }
     }
+
+
+
 
     Scaffold(
         bottomBar = {
@@ -91,9 +104,10 @@ fun PrincipalScreen(navController: NavHostController) {
             }
         }
     }
+
+
+
 }
-
-
 
 
 @Composable

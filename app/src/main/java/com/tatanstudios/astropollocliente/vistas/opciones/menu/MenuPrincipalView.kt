@@ -1,11 +1,16 @@
 package com.tatanstudios.astropollocliente.vistas.opciones.menu
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,8 +33,11 @@ import com.tatanstudios.astropollocliente.componentes.BarraToolbarColor
 import com.tatanstudios.astropollocliente.componentes.BarraToolbarColorMenuPrincipal
 import com.tatanstudios.astropollocliente.componentes.CustomToasty
 import com.tatanstudios.astropollocliente.componentes.LoadingModal
+import com.tatanstudios.astropollocliente.componentes.SolicitarPermisosUbicacion
 import com.tatanstudios.astropollocliente.componentes.ToastType
 import com.tatanstudios.astropollocliente.extras.TokenManager
+import com.tatanstudios.astropollocliente.ui.theme.ColorBlanco
+import com.tatanstudios.astropollocliente.ui.theme.ColorGris
 import com.tatanstudios.astropollocliente.viewmodel.ListadoMenuPrincipal
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -52,12 +60,24 @@ fun MenuPrincipalScreen(navController: NavHostController,
     //val keyboardController = LocalSoftwareKeyboardController.current
 
 
+    var boolDatosCargados by remember { mutableStateOf(false) }
+    var popPermisoGPS by remember { mutableStateOf(false) }
+
+
     // Lanzar la solicitud cuando se carga la pantalla
     LaunchedEffect(Unit) {
         scope.launch {
             idusuario = tokenManager.idUsuario.first()
             viewModel.listadoMenuPrincipalRetrofit(idusuario)
         }
+    }
+
+    // CUANDO HAYA CARGADO LA VISTA, VERIFICAR SI HAY PERMISOS UBICACION
+    if(boolDatosCargados){
+        SolicitarPermisosUbicacion (
+            onPermisosConcedidos = { },
+            onPermisosDenegados = { }
+        )
     }
 
     Scaffold(
@@ -142,6 +162,8 @@ fun MenuPrincipalScreen(navController: NavHostController,
                         "opcion 3",
                         ToastType.SUCCESS
                     )
+
+                    boolDatosCargados = true
                 }
                 4 -> {
                     // NO HAY UN SERVICIO ASOCIADO A LA ZONA
@@ -173,7 +195,49 @@ fun MenuPrincipalScreen(navController: NavHostController,
         }
 
 
+        if(popPermisoGPS){
+            androidx.compose.material3.AlertDialog(
+                onDismissRequest = { popPermisoGPS = false },
+                title = { androidx.compose.material3.Text(stringResource(R.string.permiso_gps_requerido)) },
+                text = { androidx.compose.material3.Text(stringResource(R.string.para_usar_esta_funcion_gps)) },
+                confirmButton = {
+                    androidx.compose.material3.Button(
+                        onClick = {
+                            popPermisoGPS = false
+                            redireccionarAjustes(ctx)
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colorResource(R.color.colorAzul),
+                            contentColor = colorResource(R.color.colorBlanco)
+                        )
+                    ) {
+                        androidx.compose.material3.Text(stringResource(R.string.ir_a_ajustes))
+                    }
+                },
+                dismissButton = {
+                    androidx.compose.material3.Button(
+                        onClick = {
+                            popPermisoGPS = false
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = ColorGris,
+                            contentColor = ColorBlanco
+                        )
+                    ) {
+                        androidx.compose.material3.Text(stringResource(R.string.cancelar))
+                    }
+                }
+            )
+        }
+
     } // end-scalfold
+}
 
 
+// REDIRECCIONAR
+fun redireccionarAjustes(context: Context){
+    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+        data = Uri.fromParts("package", context.packageName, null)
+    }
+    context.startActivity(intent)
 }
