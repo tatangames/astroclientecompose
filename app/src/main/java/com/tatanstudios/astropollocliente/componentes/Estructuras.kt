@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
@@ -23,6 +24,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
@@ -635,7 +637,7 @@ fun CardHorarioV2(titulo: String?, descripcion: String?) {
 
 
 @Composable
-fun CardMisPuntos(nombre: String, puntos: Int) {
+fun CardMisPuntos(nombre: String, txtPuntos: String?) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -661,7 +663,7 @@ fun CardMisPuntos(nombre: String, puntos: Int) {
             Spacer(modifier = Modifier.height(14.dp))
 
             Text(
-                text = "Mis puntos: $puntos",
+                text = txtPuntos?: "",
                 style = TextStyle(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
@@ -675,9 +677,8 @@ fun CardMisPuntos(nombre: String, puntos: Int) {
 
 
 
-
 @Composable
-fun CardSeleccionItem(
+fun CardSeleccionPremioItem(
     texto: String,
     seleccionado: Int,
     puntos: Int,
@@ -687,60 +688,75 @@ fun CardSeleccionItem(
     val botonColor = if (seleccionado == 1) colorResource(R.color.colorRojo) else colorResource(R.color.colorVerde)
     val textoBoton = if (seleccionado == 1) "BORRAR SELECCIÓN" else "SELECCIONAR"
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        colors = CardDefaults.cardColors(containerColor = backgroundColor),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(6.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.icono_comida),
-                    contentDescription = null,
-                    modifier = Modifier.size(32.dp)
-                )
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .padding(8.dp)) {
 
-                Spacer(modifier = Modifier.width(12.dp))
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = backgroundColor),
+            shape = RoundedCornerShape(12.dp),
+            elevation = CardDefaults.cardElevation(6.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.icono_comida),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Text(
+                        text = texto,
+                        style = TextStyle(
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = texto,
+                    text = "Puntos: $puntos",
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
                     style = TextStyle(
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium
+                        fontSize = 14.sp,
+                        color = Color.Gray
                     )
                 )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = onClick,
+                    colors = ButtonDefaults.buttonColors(containerColor = botonColor),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = textoBoton,
+                        color = Color.White
+                    )
+                }
             }
+        }
 
-            // Texto centrado debajo del principal
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Puntos: $puntos", // Puedes hacerlo dinámico si quieres
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    color = Color.Gray
-                )
+        // Ícono de check arriba a la derecha
+        if (seleccionado == 1) {
+            Icon(
+                imageVector = Icons.Default.CheckCircle,
+                contentDescription = "Seleccionado",
+                tint = Color(0xFF4CAF50), // Verde
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .offset(x = (-4).dp, y = 4.dp) // Ajuste de posición
+                    .size(24.dp)
             )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Button(
-                onClick = onClick,
-                colors = ButtonDefaults.buttonColors(containerColor = botonColor),
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = textoBoton,
-                    color = Color.White
-                )
-            }
         }
     }
 }

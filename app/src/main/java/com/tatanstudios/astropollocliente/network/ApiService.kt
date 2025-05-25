@@ -115,6 +115,22 @@ interface ApiService {
     ): Single<ModeloPremios>
 
 
+    // SELECCIONAR PREMIO
+    @POST("cliente/premios/seleccionar")
+    @FormUrlEncoded
+    fun seleccionarPremios(@Field("clienteid") clienteid: String,
+                           @Field("idpremio") idpremio: Int,
+    ): Single<ModeloDatosBasicos>
+
+
+
+    // QUITAR SELECCION PREMIO
+    @POST("cliente/premios/deseleccionar")
+    @FormUrlEncoded
+    fun quitarSeleccionarPremios(@Field("clienteid") clienteid: String,
+    ): Single<ModeloDatosBasicos>
+
+
 
 
 

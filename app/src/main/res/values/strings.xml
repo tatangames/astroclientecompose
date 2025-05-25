@@ -114,6 +114,13 @@
     <string name="nota_orden">Nota Orden</string>
     <string name="total_a_pagar">Total a Pagar</string>
     <string name="actualizar_contrasena">Actualizar Contraseña</string>
+    <string name="decea_seleccionar_este_premio">¿Deseas seleccionar este premio?</string>
+    <string name="decea_borrar_esta_seleccion">¿Deseas borrar esta selección?</string>
+    <string name="este_premio_se_agregara_a_tu_seleccion">"Este premio se agregará a tu selección.</string>
+    <string name="este_premio_se_eliminara">Este premio se eliminará de tu selección.</string>
+    <string name="seleccionado">Seleccionado</string>
+    <string name="borrar">Borrar</string>
+
 
 
 
