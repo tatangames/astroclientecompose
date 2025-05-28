@@ -41,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -430,6 +431,80 @@ val MontserratFont = FontFamily(
 
 
 
+@Composable
+fun BloqueEntradaGeneral(
+    text: String,
+    onTextChanged: (String) -> Unit,
+    maxLength: Int,
+    placeholderResId: Int,
+    icon: ImageVector,
+    keyboardType: KeyboardType = KeyboardType.Text // ← aquí
+) {
+    val commonColor = Color.Gray
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.White)
+            .padding(6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier
+                .padding(end = 8.dp)
+                .size(24.dp),
+            tint = commonColor
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .drawBehind {
+                    val strokeWidth = 2.dp.toPx()
+                    val y = size.height - strokeWidth / 2
+                    drawLine(
+                        color = commonColor,
+                        start = Offset(0f, y),
+                        end = Offset(size.width, y),
+                        strokeWidth = strokeWidth
+                    )
+                }
+        ) {
+            TextField(
+                value = text,
+                keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+                onValueChange = { newText ->
+                    if (newText.length <= maxLength) {
+                        onTextChanged(newText)
+                    }
+                },
+                textStyle = TextStyle(
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.Normal
+                ),
+                placeholder = {
+                    Text(
+                        text = stringResource(id = placeholderResId),
+                        color = commonColor
+                    )
+                },
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    disabledContainerColor = Color.White,
+                    errorContainerColor = Color.White,
+                    focusedIndicatorColor = commonColor,
+                    unfocusedIndicatorColor = commonColor
+                )
+            )
+        }
+    }
+}
 
 
 

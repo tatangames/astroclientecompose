@@ -146,6 +146,42 @@ interface ApiService {
 
 
 
+    // REGISTRAR NUEVA DIRECCION
+    @POST("cliente/nueva/direccion")
+    @FormUrlEncoded
+    fun registrarNuevaDireccion(@Field("id") idusuario: String,
+                                @Field("nombre") nombre: String,
+                                @Field("direccion") direccion: String,
+                                @Field("punto_referencia") puntoReferencia: String?,
+                                @Field("id_zona") idzona: String,
+                                @Field("latitud") latitud: String,
+                                @Field("longitud") longitud: String,
+                                @Field("latitudreal") latitudreal: String?,
+                                @Field("longitudreal") longitudreal: String?,
+                                @Field("telefono") telefono: String,
+
+    ): Single<ModeloDatosBasicos>
+
+
+
+    // SELECCIONAR DIRECCION
+    @POST("cliente/direcciones/elegir/direccion")
+    @FormUrlEncoded
+    fun seleccionarDireccion(@Field("id") id: String,
+                             @Field("dirid") dirid: Int,
+    ): Single<ModeloDatosBasicos>
+
+
+    // BORRAR DIRECCION
+    @POST("cliente/eliminar/direccion/seleccionada")
+    @FormUrlEncoded
+    fun borrarDireccion(@Field("id") id: String,
+                             @Field("dirid") dirid: Int,
+    ): Single<ModeloDatosBasicos>
+
+
+
+
 
 
 

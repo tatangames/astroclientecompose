@@ -3,6 +3,7 @@ package com.tatanstudios.astropollocliente.vistas.principal.opciones.direcciones
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -37,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.navOptions
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.tatanstudios.astropollocliente.R
@@ -54,11 +57,14 @@ import com.google.maps.android.compose.Polygon
 import com.tatanstudios.astropollocliente.componentes.CustomToasty
 import com.tatanstudios.astropollocliente.componentes.LoadingModal
 import com.tatanstudios.astropollocliente.componentes.ToastType
+import com.tatanstudios.astropollocliente.model.rutas.Routes
 import com.tatanstudios.astropollocliente.ui.theme.ColorBlanco
 import com.tatanstudios.astropollocliente.ui.theme.ColorGris
 import com.tatanstudios.astropollocliente.viewmodel.ListadoDireccionesViewModel
 import com.tatanstudios.astropollocliente.viewmodel.ListadoPoligonosViewModel
 import com.tatanstudios.astropollocliente.vistas.opciones.menu.redireccionarAjustes
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -68,7 +74,6 @@ fun MapaScreen(
     viewModel: ListadoPoligonosViewModel = viewModel()
 ) {
     val ctx = LocalContext.current
-    val scope = rememberCoroutineScope()
 
     val resultado by viewModel.resultado.observeAsState()
     val poligonos = viewModel.poligonosUI // ✅ Correcto
@@ -147,7 +152,7 @@ fun MapaScreen(
             Card (
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(16.dp),
+                    .padding(10.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = colorResource(R.color.colorRojo)
@@ -162,16 +167,49 @@ fun MapaScreen(
                         }
 
                         if (zonaEncontrada != null) {
+                            // Zona válida, ahora sí obtenemos la ubicación real del usuario
+                            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION)
+                                == PackageManager.PERMISSION_GRANTED
+                            ) {
+                                val fusedLocationClient = LocationServices.getFusedLocationProviderClient(ctx)
 
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    try {
+                                        val location = fusedLocationClient.lastLocation.await()
+                                        if (location != null) {
+                                            val latitudReal = location.latitude
+                                            val longitudReal = location.longitude
+                                            val id = zonaEncontrada.id
+                                            val latitud = center.latitude
+                                            val longitud = center.longitude
 
-
+                                            navController.navigate(
+                                                Routes.VistaRegistroDireccion.createRoute(
+                                                    id,
+                                                    latitud,
+                                                    longitud,
+                                                    latitudReal,
+                                                    longitudReal
+                                                ),
+                                                navOptions {
+                                                    launchSingleTop = true
+                                                }
+                                            )
+                                        } else {
+                                            Toast.makeText(ctx, "No se pudo obtener la ubicación real", Toast.LENGTH_SHORT).show()
+                                        }
+                                    } catch (e: Exception) {
+                                        Toast.makeText(ctx, "Error al obtener ubicación real", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            } else {
+                                popPermisoGPS = true
+                            }
                         } else {
-                            Toast
-                                .makeText(ctx, "Fuera de zona de entrega", Toast.LENGTH_SHORT)
-                                .show()
+                            Toast.makeText(ctx, "Fuera de zona de entrega", Toast.LENGTH_SHORT).show()
                         }
                     },
-                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 6.dp)
                 ) {
                     Text("Seleccionar ubicación", color = Color.White)
                 }
@@ -185,12 +223,12 @@ fun MapaScreen(
 
 
         if(popPermisoGPS){
-            androidx.compose.material3.AlertDialog(
+            AlertDialog(
                 onDismissRequest = { popPermisoGPS = false },
-                title = { androidx.compose.material3.Text(stringResource(R.string.permiso_gps_requerido)) },
-                text = { androidx.compose.material3.Text(stringResource(R.string.para_usar_esta_funcion_gps)) },
+                title = { Text(stringResource(R.string.permiso_gps_requerido)) },
+                text = { Text(stringResource(R.string.para_usar_esta_funcion_gps)) },
                 confirmButton = {
-                    androidx.compose.material3.Button(
+                    Button(
                         onClick = {
                             popPermisoGPS = false
                             redireccionarAjustes(ctx)
@@ -200,11 +238,11 @@ fun MapaScreen(
                             contentColor = colorResource(R.color.colorBlanco)
                         )
                     ) {
-                        androidx.compose.material3.Text(stringResource(R.string.ir_a_ajustes))
+                        Text(stringResource(R.string.ir_a_ajustes))
                     }
                 },
                 dismissButton = {
-                    androidx.compose.material3.Button(
+                    Button(
                         onClick = {
                             popPermisoGPS = false
                         },

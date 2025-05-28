@@ -44,8 +44,17 @@ sealed class Routes(val route: String) {
     // VISTA MAPA
     object VistaMapa: Routes("vistaMapa")
 
+    // VISTA REGISTRO DE DIRECCION NUEVA
+    object VistaRegistroDireccion: Routes("registroDireccionNueva/{id}/{latitud}/{longitud}/{latitudreal}/{longitudreal}") {
+        fun createRoute(
+            id: Int,
+            latitud: Double,
+            longitud: Double,
+            latitudreal: Double?,
+            longitudreal: Double?
+        ) = "registroDireccionNueva/$id/$latitud/$longitud/${latitudreal ?: "none"}/${longitudreal ?: "none"}"
 
-
+    }
 
 
 }

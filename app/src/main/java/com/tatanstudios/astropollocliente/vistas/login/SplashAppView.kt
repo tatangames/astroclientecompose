@@ -51,6 +51,7 @@ import com.tatanstudios.astropollocliente.vistas.principal.opciones.historial.Li
 import com.tatanstudios.astropollocliente.vistas.principal.PrincipalScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.direcciones.MapaScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.direcciones.MisDireccionesScreen
+import com.tatanstudios.astropollocliente.vistas.principal.opciones.direcciones.RegistrarNuevaDireccionScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.horarios.HorariosScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.password.ActualizarPasswordScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.premios.PremiosScreen
@@ -131,6 +132,28 @@ fun AppNavigation() {
         composable(Routes.VistaMisDirecciones.route) { MisDireccionesScreen(navController) }
         // VISTA MAPA
         composable(Routes.VistaMapa.route) { MapaScreen(navController) }
+
+        // VISTA REGISTRAR NUEVA DIRECCION
+        composable(Routes.VistaRegistroDireccion.route) { backStackEntry ->
+
+            val id = backStackEntry.arguments?.getString("id")?.toIntOrNull() ?: 0
+            val latitud = backStackEntry.arguments?.getString("latitud") ?: "0"
+            val longitud = backStackEntry.arguments?.getString("longitud") ?: "0"
+            val latitudrealStr = backStackEntry.arguments?.getString("latitudreal")
+            val longitudrealStr = backStackEntry.arguments?.getString("longitudreal")
+
+            val latitudreal = if (latitudrealStr == "none") null else latitudrealStr
+            val longitudreal = if (longitudrealStr == "none") null else longitudrealStr
+
+            RegistrarNuevaDireccionScreen(
+                navController = navController,
+                idzona = id,
+                latitud = latitud,
+                longitud = longitud,
+                latitudreal = latitudreal,
+                longitudreal = longitudreal
+            )
+        }
 
 
 

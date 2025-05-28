@@ -19,6 +19,7 @@ import com.tatanstudios.astropollocliente.network.RetrofitBuilder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import retrofit2.http.Field
 
 
 class LoginViewModel : ViewModel() {
@@ -792,5 +793,180 @@ class ListadoPoligonosViewModel() : ViewModel() {
         disposable?.dispose() // Limpiar la suscripción
     }
 }
+
+
+
+
+
+
+class RegistroNuevaDireccionViewModel() : ViewModel() {
+
+    private val _resultado = MutableLiveData<Event<ModeloDatosBasicos>>()
+    val resultado: LiveData<Event<ModeloDatosBasicos>> get() = _resultado
+
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    private val _nombre = MutableLiveData<String>()
+    val nombre: LiveData<String> get() = _nombre
+
+    private val _direccion = MutableLiveData<String>()
+    val direccion: LiveData<String> get() = _direccion
+
+    // UNICO OPCIONAL
+    private val _puntoReferencia = MutableLiveData<String?>()
+    val puntoReferencia: LiveData<String?> get() = _puntoReferencia
+
+    private val _telefono = MutableLiveData<String>()
+    val telefono: LiveData<String> get() = _telefono
+
+
+    private var disposable: Disposable? = null
+    private var isRequestInProgress = false
+
+    fun setNombre(nombre: String) {
+        _nombre.value = nombre
+    }
+
+    fun setDireccion(direccion: String) {
+        _direccion.value = direccion
+    }
+
+    fun setPuntoReferencia(puntoReferencia: String) {
+        _puntoReferencia.value = puntoReferencia
+    }
+
+    fun setTelefono(telefono: String) {
+        _telefono.value = telefono
+    }
+
+    fun registrarNuevaDireccionRetrofit(idusuario: String, idzona: String, latitud: String, longitud: String, latitudreal: String?,
+                                        longitudreal: String?) {
+        if (isRequestInProgress) return
+
+        isRequestInProgress = true
+
+        _isLoading.value = true
+        disposable = RetrofitBuilder.getApiService().registrarNuevaDireccion(idusuario, _nombre.value!!,
+            _direccion.value!!, _puntoReferencia.value!!, idzona, latitud, longitud, latitudreal, longitudreal,
+            _telefono.value!!)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .retry()
+            .subscribe(
+                { response ->
+                    _isLoading.value = false
+                    _resultado.value = Event(response)
+                    isRequestInProgress = false
+                },
+                { error ->
+                    _isLoading.value = false
+                    isRequestInProgress = false
+                }
+            )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposable?.dispose() // Limpiar la suscripción
+    }
+}
+
+
+
+class SeleccionarDireccionViewModel() : ViewModel() {
+
+    private val _resultado = MutableLiveData<Event<ModeloDatosBasicos>>()
+    val resultado: LiveData<Event<ModeloDatosBasicos>> get() = _resultado
+
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    private var disposable: Disposable? = null
+    private var isRequestInProgress = false
+
+    fun seleccionarDireccionRetrofit(idusuario: String, dirid: Int) {
+        if (isRequestInProgress) return
+
+        isRequestInProgress = true
+
+        _isLoading.value = true
+        disposable = RetrofitBuilder.getApiService().seleccionarDireccion(idusuario, dirid)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .retry()
+            .subscribe(
+                { response ->
+                    _isLoading.value = false
+                    _resultado.value = Event(response)
+                    isRequestInProgress = false
+                },
+                { error ->
+                    _isLoading.value = false
+                    isRequestInProgress = false
+                }
+            )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposable?.dispose() // Limpiar la suscripción
+    }
+}
+
+
+
+
+class BorrarDireccionViewModel() : ViewModel() {
+
+    private val _resultado = MutableLiveData<Event<ModeloDatosBasicos>>()
+    val resultado: LiveData<Event<ModeloDatosBasicos>> get() = _resultado
+
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    private var disposable: Disposable? = null
+    private var isRequestInProgress = false
+
+    fun borrarDireccionRetrofit(idusuario: String, dirid: Int) {
+        if (isRequestInProgress) return
+
+        isRequestInProgress = true
+
+        _isLoading.value = true
+        disposable = RetrofitBuilder.getApiService().borrarDireccion(idusuario, dirid)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .retry()
+            .subscribe(
+                { response ->
+                    _isLoading.value = false
+                    _resultado.value = Event(response)
+                    isRequestInProgress = false
+                },
+                { error ->
+                    _isLoading.value = false
+                    isRequestInProgress = false
+                }
+            )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposable?.dispose() // Limpiar la suscripción
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 

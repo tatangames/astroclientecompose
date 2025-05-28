@@ -126,9 +126,16 @@
     <string name="permiso_gps_requerido">Permiso GPS requerido</string>
     <string name="para_usar_esta_funcion_gps">Para usar esta función, necesitas conceder permiso GPS en los ajustes de la aplicación.</string>
     <string name="ir_a_ajustes">Ir a Ajustes</string>
-
-
-
+    <string name="fuera_zona_de_entrega">Fuera de zona de entrega</string>
+    <string name="nombre">Nombre</string>
+    <string name="punto_referencia">Punto de Referencia</string>
+    <string name="registrar_direccion">Registrar Dirección</string>
+    <string name="nueva_direccion">Nueva Dirección</string>
+    <string name="nombre_es_requerido">Nombre es requerido</string>
+    <string name="telefono_es_requerido">Teléfono es requerido</string>
+    <string name="telefono_son_8_digitos">Teléfono son 8 dígitos</string>
+    <string name="direccion_es_requerido">Dirección es requerido</string>
+    <string name="direccion_registrada">Dirección Registrada</string>
 
 
 
