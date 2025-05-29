@@ -6,7 +6,9 @@ data class ModeloDatosBasicos(
     @SerializedName("success") val success: Int,
     @SerializedName("id") val id: Int,
     @SerializedName("titulo") val titulo: String?,
-    @SerializedName("mensaje") val mensaje: String?
+    @SerializedName("mensaje") val mensaje: String?,
+    @SerializedName("usuario") val usuario: String?,
+    @SerializedName("correo") val correo: String?
 )
 
 

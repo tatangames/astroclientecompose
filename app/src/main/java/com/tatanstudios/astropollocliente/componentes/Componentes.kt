@@ -511,10 +511,172 @@ fun BloqueEntradaGeneral(
 
 
 
+@Composable
+fun BloqueTextFieldUsuario(
+    text: String,
+    onTextChanged: (String) -> Unit,
+    maxLength: Int,
+    labelText: String // Nuevo parámetro
+) {
+    val commonColor = Color.Gray
+
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 8.dp, vertical = 4.dp)
+    ) {
+        Text(
+            text = labelText,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color.Black,
+            modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color.White)
+                .padding(6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Person,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .size(24.dp),
+                tint = commonColor
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .drawBehind {
+                        val strokeWidth = 2.dp.toPx()
+                        val y = size.height - strokeWidth / 2
+                        drawLine(
+                            color = commonColor,
+                            start = Offset(0f, y),
+                            end = Offset(size.width, y),
+                            strokeWidth = strokeWidth
+                        )
+                    }
+            ) {
+                TextField(
+                    value = text,
+                    onValueChange = { newText ->
+                        if (newText.length <= maxLength) {
+                            onTextChanged(newText)
+                        }
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    textStyle = TextStyle(
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    placeholder = {
+                        Text(
+                            text = stringResource(id = R.string.usuario),
+                            color = commonColor
+                        )
+                    },
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White,
+                        disabledContainerColor = Color.White,
+                        errorContainerColor = Color.White,
+                        focusedIndicatorColor = commonColor,
+                        unfocusedIndicatorColor = commonColor
+                    )
+                )
+            }
+        }
+    }
+}
 
 
 
 
 
+@Composable
+fun BloqueTextFieldCorreoUsuario(
+    text: String,
+    textoPlaceholder: String,
+    onTextChanged: (String) -> Unit,
+    maxLength: Int,
+    labelText: String // Nuevo parámetro para el texto superior
+) {
+    val commonColor = Color.Gray
 
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 8.dp, vertical = 4.dp)
+    ) {
+        Text(
+            text = labelText,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color.Black,
+            modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
+        )
 
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color.White)
+                .padding(6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Email,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .size(24.dp),
+                tint = commonColor
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .drawBehind {
+                        val strokeWidth = 2.dp.toPx()
+                        val y = size.height - strokeWidth / 2
+                        drawLine(
+                            color = commonColor,
+                            start = Offset(0f, y),
+                            end = Offset(size.width, y),
+                            strokeWidth = strokeWidth
+                        )
+                    }
+            ) {
+                TextField(
+                    value = text,
+                    onValueChange = { newText ->
+                        if (newText.length <= maxLength) {
+                            onTextChanged(newText)
+                        }
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    textStyle = TextStyle(
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    placeholder = { Text(text = textoPlaceholder, color = commonColor) },
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White,
+                        disabledContainerColor = Color.White,
+                        errorContainerColor = Color.White,
+                        focusedIndicatorColor = commonColor,
+                        unfocusedIndicatorColor = commonColor
+                    )
+                )
+            }
+        }
+    }
+}

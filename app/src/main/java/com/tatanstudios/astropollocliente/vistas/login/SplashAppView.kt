@@ -56,6 +56,7 @@ import com.tatanstudios.astropollocliente.vistas.principal.opciones.direcciones.
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.horarios.HorariosScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.password.ActualizarPasswordScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.premios.PremiosScreen
+import com.tatanstudios.astropollocliente.vistas.principal.opciones.usuario.MiUsuarioScreen
 
 
 class SplashApp : ComponentActivity() {
@@ -174,6 +175,13 @@ fun AppNavigation() {
                 referencia
             )
         }
+
+
+        // VISTA MI USUARIO
+        composable(Routes.VistaMiUsuario.route) { MiUsuarioScreen(navController) }
+
+
+
 
 
     }

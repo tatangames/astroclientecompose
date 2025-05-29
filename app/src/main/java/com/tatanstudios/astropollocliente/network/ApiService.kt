@@ -181,7 +181,20 @@ interface ApiService {
 
 
 
+    // INFORMACION DEL USUARIO
+    @POST("cliente/informacion/personal")
+    @FormUrlEncoded
+    fun informacionUsuario(@Field("id") id: String,
+    ): Single<ModeloDatosBasicos>
 
+
+    // ACTUALIZAR CORREO DEL USUARIO
+    @POST("cliente/actualizar/correo/v2")
+    @FormUrlEncoded
+    fun actualizarCorreoUsuario(@Field("id") id: String,
+                                @Field("usuario") usuario: String,
+                                @Field("correo") correo: String,
+    ): Single<ModeloDatosBasicos>
 
 
 

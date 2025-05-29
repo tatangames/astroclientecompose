@@ -67,4 +67,9 @@ sealed class Routes(val route: String) {
         ) = "seleccionarDireccion/$id/$nombre/$telefono/${direccion}/${referencia}"
     }
 
+
+    // VISTA MI USUARIO
+    object VistaMiUsuario: Routes("vistaMiUsuario")
+
+
 }

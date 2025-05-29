@@ -8,18 +8,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.FormatListNumbered
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -59,7 +56,7 @@ sealed class Opcion(val icon: ImageVector?, open val label: String) {
     object CerrarSesion : Opcion(Icons.AutoMirrored.Default.Logout, "Cerrar Sesión")
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
+
 @Composable
 fun PerfilScreen(navController: NavHostController) {
 
@@ -117,7 +114,13 @@ fun PerfilScreen(navController: NavHostController) {
                                              }
                                          }
                                      }
-                                     is Opcion.Perfil -> {}
+                                     is Opcion.Perfil -> {
+                                         navController.navigate(Routes.VistaMiUsuario.route) {
+                                             navOptions {
+                                                 launchSingleTop = true
+                                             }
+                                         }
+                                     }
                                      is Opcion.Horarios -> {
                                          navController.navigate(Routes.VistaHorarios.route) {
                                              navOptions {
