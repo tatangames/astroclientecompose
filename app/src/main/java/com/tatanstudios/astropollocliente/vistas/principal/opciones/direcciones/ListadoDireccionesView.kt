@@ -1,5 +1,10 @@
 package com.tatanstudios.astropollocliente.vistas.principal.opciones.direcciones
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.LocationManager
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +20,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +46,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.navOptions
@@ -46,11 +55,15 @@ import com.tatanstudios.astropollocliente.componentes.BarraToolbarColor
 import com.tatanstudios.astropollocliente.componentes.CardMisDirecciones
 import com.tatanstudios.astropollocliente.componentes.CustomToasty
 import com.tatanstudios.astropollocliente.componentes.LoadingModal
+import com.tatanstudios.astropollocliente.componentes.SolicitarPermisosUbicacion
 import com.tatanstudios.astropollocliente.componentes.ToastType
 import com.tatanstudios.astropollocliente.extras.TokenManager
 import com.tatanstudios.astropollocliente.model.modelos.ModeloDireccionesArray
 import com.tatanstudios.astropollocliente.model.rutas.Routes
+import com.tatanstudios.astropollocliente.ui.theme.ColorBlanco
+import com.tatanstudios.astropollocliente.ui.theme.ColorGris
 import com.tatanstudios.astropollocliente.viewmodel.ListadoDireccionesViewModel
+import com.tatanstudios.astropollocliente.vistas.opciones.menu.redireccionarAjustes
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -71,6 +84,7 @@ fun MisDireccionesScreen(navController: NavHostController,
 
     val tokenManager = remember { TokenManager(ctx) }
     var idusuario by remember { mutableStateOf("") }
+    var popPermisoGPS by remember { mutableStateOf(false) }
 
     //val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -81,6 +95,16 @@ fun MisDireccionesScreen(navController: NavHostController,
             viewModel.listadoDireccionesRetrofit(idusuario)
         }
     }
+
+    if(boolDatosCargados){
+        SolicitarPermisosUbicacion (
+            onPermisosConcedidos = {
+            },
+            onPermisosDenegados = {
+            }
+        )
+    }
+
 
     Scaffold(
         topBar = {
@@ -93,10 +117,16 @@ fun MisDireccionesScreen(navController: NavHostController,
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    // Acción al hacer clic, por ejemplo navegar a agregar dirección
-                    navController.navigate(Routes.VistaMapa.route) {
-                        popUpTo(Routes.VistaMapa.route) { inclusive = true }
+                    // Acción al hacer clic, por ejemplo navegar a mapa
+                    if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+                        navController.navigate(Routes.VistaMapa.route) {
+                            popUpTo(Routes.VistaMapa.route) { inclusive = true }
+                        }
+                    }else{
+                        popPermisoGPS = true
                     }
+
                 },
                 containerColor = colorResource(R.color.colorRojo),
                 contentColor = Color.White,
@@ -161,7 +191,22 @@ fun MisDireccionesScreen(navController: NavHostController,
                         nombre = tipoDato.nombre?: "",
                         seleccionado = tipoDato.seleccionado,
                         minimoCompra = tipoDato.minimocompra?: "",
-                        direccion = tipoDato.direccion?: ""
+                        direccion = tipoDato.direccion?: "",
+                        onClick = {
+
+                            navController.navigate(
+                                Routes.VistaSeleccionarDireccion.createRoute(
+                                    tipoDato.id,
+                                    tipoDato.nombre?: "",
+                                    tipoDato.telefono,
+                                    tipoDato.direccion,
+                                    tipoDato.punto_referencia
+                                ),
+                                navOptions {
+                                    launchSingleTop = true
+                                }
+                            )
+                        }
                     )
                 }
 
@@ -173,6 +218,42 @@ fun MisDireccionesScreen(navController: NavHostController,
 
         if (isLoading) {
             LoadingModal(isLoading = true)
+        }
+
+
+        if(popPermisoGPS){
+            AlertDialog(
+                onDismissRequest = { popPermisoGPS = false },
+                title = { Text(stringResource(R.string.permiso_gps_requerido)) },
+                text = { Text(stringResource(R.string.para_usar_esta_funcion_gps)) },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            popPermisoGPS = false
+                            redireccionarAjustes(ctx)
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colorResource(R.color.colorAzul),
+                            contentColor = colorResource(R.color.colorBlanco)
+                        )
+                    ) {
+                        Text(stringResource(R.string.ir_a_ajustes))
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = {
+                            popPermisoGPS = false
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = ColorGris,
+                            contentColor = ColorBlanco
+                        )
+                    ) {
+                        Text(stringResource(R.string.cancelar))
+                    }
+                }
+            )
         }
 
     } // end-scalfold

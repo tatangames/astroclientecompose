@@ -10,8 +10,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -196,12 +199,12 @@ fun MenuPrincipalScreen(navController: NavHostController,
 
 
         if(popPermisoGPS){
-            androidx.compose.material3.AlertDialog(
+            AlertDialog(
                 onDismissRequest = { popPermisoGPS = false },
-                title = { androidx.compose.material3.Text(stringResource(R.string.permiso_gps_requerido)) },
-                text = { androidx.compose.material3.Text(stringResource(R.string.para_usar_esta_funcion_gps)) },
+                title = { Text(stringResource(R.string.permiso_gps_requerido)) },
+                text = { Text(stringResource(R.string.para_usar_esta_funcion_gps)) },
                 confirmButton = {
-                    androidx.compose.material3.Button(
+                    Button(
                         onClick = {
                             popPermisoGPS = false
                             redireccionarAjustes(ctx)
@@ -211,11 +214,11 @@ fun MenuPrincipalScreen(navController: NavHostController,
                             contentColor = colorResource(R.color.colorBlanco)
                         )
                     ) {
-                        androidx.compose.material3.Text(stringResource(R.string.ir_a_ajustes))
+                        Text(stringResource(R.string.ir_a_ajustes))
                     }
                 },
                 dismissButton = {
-                    androidx.compose.material3.Button(
+                    Button(
                         onClick = {
                             popPermisoGPS = false
                         },
@@ -224,7 +227,7 @@ fun MenuPrincipalScreen(navController: NavHostController,
                             contentColor = ColorBlanco
                         )
                     ) {
-                        androidx.compose.material3.Text(stringResource(R.string.cancelar))
+                        Text(stringResource(R.string.cancelar))
                     }
                 }
             )

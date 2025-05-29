@@ -30,8 +30,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.House
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -775,7 +777,8 @@ fun CardMisDirecciones(
     seleccionado: Int,
     minimoCompra: String,
     direccion: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     val backgroundColor = if (seleccionado == 1) Color(0xFFF2FFDB) else Color.White
 
@@ -784,7 +787,9 @@ fun CardMisDirecciones(
         .padding(8.dp)) {
 
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick),
             colors = CardDefaults.cardColors(containerColor = backgroundColor),
             shape = RoundedCornerShape(12.dp),
             elevation = CardDefaults.cardElevation(6.dp)
@@ -848,4 +853,45 @@ fun CardMisDirecciones(
 
 
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BarraToolbarColorDireccion(
+    titulo: String,
+    backgroundColor: Color,
+    onBackClick: (() -> Unit)? = null // nuevo parámetro opcional
+) {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                text = titulo,
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                color = Color.White,
+                fontWeight = FontWeight.Medium,
+            )
+        },
+        actions = {
+            IconButton(
+                onClick = {
+                    onBackClick?.invoke()
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Opciones",
+                    tint = Color.White
+                )
+            }
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = backgroundColor,
+            navigationIconContentColor = Color.White,
+            titleContentColor = Color.White,
+            actionIconContentColor = Color.White
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .requiredHeightIn(min = 56.dp)
+    )
+}
 

@@ -1,34 +1,29 @@
 package com.tatanstudios.astropollocliente.vistas.principal.opciones.direcciones
 
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.House
 import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,32 +40,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.animateLottieCompositionAsState
-import com.airbnb.lottie.compose.rememberLottieComposition
 import com.tatanstudios.astropollocliente.R
-import com.tatanstudios.astropollocliente.componentes.BloqueEntradaGeneral
+import com.tatanstudios.astropollocliente.componentes.BarraToolbarColorDireccion
 import com.tatanstudios.astropollocliente.componentes.CustomModal1Boton
 import com.tatanstudios.astropollocliente.componentes.CustomModal2Botones
 import com.tatanstudios.astropollocliente.componentes.CustomToasty
 import com.tatanstudios.astropollocliente.componentes.LoadingModal
 import com.tatanstudios.astropollocliente.componentes.ToastType
 import com.tatanstudios.astropollocliente.extras.TokenManager
-import com.tatanstudios.astropollocliente.model.rutas.Routes
 import com.tatanstudios.astropollocliente.viewmodel.BorrarDireccionViewModel
 import com.tatanstudios.astropollocliente.viewmodel.SeleccionarDireccionViewModel
 import kotlinx.coroutines.flow.first
@@ -79,10 +63,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun SeleccionarDireccionScreen(navController: NavHostController,
                                   id: Int, // id direccion
-                                  nombre: String,
-                                  telefono: String,
-                                  direccion: String,
-                                  puntoReferencia: String?,
+                                  _nombre: String,
+                                  _telefono: String?,
+                                  _direccion: String?,
+                                  _puntoReferencia: String?,
                                   viewModelSeleccionar: SeleccionarDireccionViewModel = viewModel(),
                                   viewModelBorrar: BorrarDireccionViewModel = viewModel(),
 ) {
@@ -98,7 +82,6 @@ fun SeleccionarDireccionScreen(navController: NavHostController,
     val tokenManager = remember { TokenManager(ctx) }
     var idusuario by remember { mutableStateOf("") }
 
-
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val elevation by animateDpAsState(if (isPressed) 12.dp else 6.dp)
@@ -106,8 +89,10 @@ fun SeleccionarDireccionScreen(navController: NavHostController,
     val keyboardController = LocalSoftwareKeyboardController.current
 
 
-    var showModal2Boton by remember { mutableStateOf(false) }
+    var showModal2BotonBorrar by remember { mutableStateOf(false) }
+    var showModal1Boton by remember { mutableStateOf(false) }
 
+    val textoNosePuedeBorrar = stringResource(R.string.no_se_puede_eliminar_direccion_ultima)
 
 
     // Definir el color del fondo al presionar
@@ -126,80 +111,135 @@ fun SeleccionarDireccionScreen(navController: NavHostController,
     }
 
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black)
-            .imePadding() // Acomoda el padding inferior cuando aparece el teclado
-    ) {
-        Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .fillMaxHeight()
-        ) {
+    Scaffold(
+        topBar = {
+            BarraToolbarColorDireccion(
+                titulo = stringResource(R.string.direccion),
+                backgroundColor = colorResource(R.color.colorRojo),
+                onBackClick = {
 
-            // Título
-            Text(
-                text = stringResource(id = R.string.nueva_direccion),
-                fontFamily = FontFamily(Font(R.font.arthura_medium)),
-                color = Color.White,
-                fontSize = 26.sp,
-                modifier = Modifier
-                    .offset(y = (-20).dp)
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Center
+                    showModal2BotonBorrar = true
+
+                }
             )
-
-
-            // Card de inicio de sesión
-            Card(
+        },
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            Column(
                 modifier = Modifier
-                    .padding(horizontal = 12.dp, vertical = 12.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(25.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 24.dp)
+                    .align(Alignment.TopCenter), // <-- alinear arriba
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier
-                        .background(Color.White)
-                        .padding(10.dp)
+                // Tu Card y Button aquí
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = CardDefaults.cardElevation(6.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
                 ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+
+                        Row(
+                            verticalAlignment = Alignment.Top,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(Icons.Default.Person, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Column {
+                                Text("Nombre:", fontWeight = FontWeight.Bold)
+                                Text(_nombre ?: "")
+                            }
+                        }
 
 
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                    Button(
-                        onClick = {
-                            // Acción de login
+                        Row(
+                            verticalAlignment = Alignment.Top,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(Icons.Default.Phone, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Column {
+                                Text("Teléfono:", fontWeight = FontWeight.Bold)
+                                Text(_telefono ?: "")
+                            }
+                        }
 
-                            keyboardController?.hide()
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.Top,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(Icons.Default.Map, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Column {
+                                Text("Dirección:", fontWeight = FontWeight.Bold)
+                                Text(_direccion ?: "")
+                            }
+                        }
 
 
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 32.dp, start = 24.dp, end = 24.dp)
-                            .shadow(
-                                elevation = elevation, // Cambia la sombra cuando se presiona
-                                shape = RoundedCornerShape(25.dp)
-                            ),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = loginButtonColor,  // Cambia color al presionar
-                            contentColor = colorResource(R.color.colorBlanco),
-                        ),
-                        interactionSource = interactionSource // Para detectar la interacción
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.guardar),
-                            fontSize = 18.sp,
-                            style = TextStyle(
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Medium,
-                            )
-                        )
+
+                        Row(
+                            verticalAlignment = Alignment.Top,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(Icons.Default.House, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Column {
+                                Text("Referencia:", fontWeight = FontWeight.Bold)
+                                Text(_puntoReferencia ?: "")
+                            }
+                        }
+
                     }
+                }
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        keyboardController?.hide()
+
+                        scope.launch {
+                           viewModelSeleccionar.seleccionarDireccionRetrofit(
+                               idusuario,
+                               id
+                           )
+                       }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 32.dp, start = 24.dp, end = 24.dp)
+                        .shadow(
+                            elevation = elevation, // Cambia la sombra cuando se presiona
+                            shape = RoundedCornerShape(25.dp)
+                        ),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = loginButtonColor,  // Cambia color al presionar
+                        contentColor = colorResource(R.color.colorBlanco),
+                    ),
+                    interactionSource = interactionSource // Para detectar la interacción
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.seleccionar),
+                        fontSize = 18.sp,
+                        style = TextStyle(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Medium,
+                        )
+                    )
                 }
 
 
@@ -211,13 +251,23 @@ fun SeleccionarDireccionScreen(navController: NavHostController,
                     LoadingModal(isLoading = isLoadingBorrar)
                 }
 
+                if(showModal1Boton){
+                    CustomModal1Boton(showModal1Boton, textoNosePuedeBorrar, onDismiss = {showModal1Boton = false})
+                }
+
                 resultadoSeleccionar?.getContentIfNotHandled()?.let { result ->
                     when (result.success) {
 
                         1 -> {
+                            CustomToasty(
+                                ctx,
+                                stringResource(id = R.string.direccion_seleccionada),
+                                ToastType.SUCCESS
+                            )
 
-
+                            navController.popBackStack()
                         }
+
                         else -> {
                             // Error, mostrar Toast
                             CustomToasty(
@@ -234,8 +284,18 @@ fun SeleccionarDireccionScreen(navController: NavHostController,
                     when (result.success) {
 
                         1 -> {
+                            // DIRECCION BORRADA
+                            CustomToasty(
+                                ctx,
+                                stringResource(id = R.string.direccion_borrada),
+                                ToastType.SUCCESS
+                            )
 
-
+                            navController.popBackStack()
+                        }
+                        2 -> {
+                            // NO SE PUEDE BORRAR, MINIMO 1 DIRECCION
+                            showModal1Boton = true
                         }
                         else -> {
                             // Error, mostrar Toast
@@ -250,46 +310,26 @@ fun SeleccionarDireccionScreen(navController: NavHostController,
 
             } // end-card
 
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Spacer(modifier = Modifier.weight(1f)) // Empuja la imagen hacia la derecha
-
-                Image(
-                    painter = painterResource(id = R.drawable.cubetapollo2),
-                    contentDescription = stringResource(id = R.string.logotipo),
-                    modifier = Modifier
-                        .size(width = 120.dp, height = 100.dp)
-                )
-            }
-
-            // CONFIRMAR PARA REGISTRAR NUEVA DIRECCION
-            if(showModal2Boton){
+            // CONFIRMAR PARA BORRAR DIRECCION
+            if (showModal2BotonBorrar) {
                 CustomModal2Botones(
                     showDialog = true,
-                    message = stringResource(R.string.registrar_direccion),
-                    onDismiss = { showModal2Boton = false },
+                    message = stringResource(R.string.borrar_direccion),
+                    onDismiss = { showModal2BotonBorrar = false },
                     onAccept = {
-                        showModal2Boton = false
+                        showModal2BotonBorrar = false
 
-                        /*scope.launch {
-                            viewModel.registrarNuevaDireccionRetrofit(
+                        scope.launch {
+                            viewModelBorrar.borrarDireccionRetrofit(
                                 idusuario,
-                                idzona.toString(),
-                                latitud,
-                                longitud,
-                                latitudreal,
-                                longitudreal
+                                id
                             )
-                        }*/
+                        }
                     },
                     stringResource(R.string.si),
                     stringResource(R.string.no),
                 )
             }
-
         }
     }
 }

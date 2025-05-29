@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tatanstudios.astropollocliente.R
 import com.tatanstudios.astropollocliente.componentes.BarraToolbarColor
-import com.tatanstudios.astropollocliente.componentes.BarraToolbarColorMenuPrincipal
 import com.tatanstudios.astropollocliente.componentes.CardHorarioV1
 import com.tatanstudios.astropollocliente.componentes.CardHorarioV2
 import com.tatanstudios.astropollocliente.componentes.CustomToasty

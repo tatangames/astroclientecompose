@@ -53,8 +53,18 @@ sealed class Routes(val route: String) {
             latitudreal: Double?,
             longitudreal: Double?
         ) = "registroDireccionNueva/$id/$latitud/$longitud/${latitudreal ?: "none"}/${longitudreal ?: "none"}"
-
     }
 
+
+    // VISTA SELECCIONAR DIRECCION
+    object VistaSeleccionarDireccion: Routes("seleccionarDireccion/{id}/{nombre}/{telefono}/{direccion}/{referencia}") {
+        fun createRoute(
+            id: Int,
+            nombre: String,
+            telefono: String?,
+            direccion: String?,
+            referencia: String?
+        ) = "seleccionarDireccion/$id/$nombre/$telefono/${direccion}/${referencia}"
+    }
 
 }

@@ -136,6 +136,11 @@
     <string name="telefono_son_8_digitos">Teléfono son 8 dígitos</string>
     <string name="direccion_es_requerido">Dirección es requerido</string>
     <string name="direccion_registrada">Dirección Registrada</string>
+    <string name="borrar_direccion">Borrar Dirección</string>
+    <string name="direccion_borrada">Dirección Borrada</string>
+    <string name="no_se_puede_eliminar_direccion_ultima">No se puede eliminar, se requiere mínimo 1 dirección</string>
+    <string name="direccion_seleccionada">Dirección Seleccionada</string>
+
 
 
 

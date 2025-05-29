@@ -52,6 +52,7 @@ import com.tatanstudios.astropollocliente.vistas.principal.PrincipalScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.direcciones.MapaScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.direcciones.MisDireccionesScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.direcciones.RegistrarNuevaDireccionScreen
+import com.tatanstudios.astropollocliente.vistas.principal.opciones.direcciones.SeleccionarDireccionScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.horarios.HorariosScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.password.ActualizarPasswordScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.premios.PremiosScreen
@@ -155,7 +156,24 @@ fun AppNavigation() {
             )
         }
 
+        // VISTA SELECCIONAR DIRECCION
+        composable(Routes.VistaSeleccionarDireccion.route) { backStackEntry ->
 
+            val id = backStackEntry.arguments?.getString("id")?.toIntOrNull() ?: 0
+            val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
+            val telefono = backStackEntry.arguments?.getString("telefono") ?: ""
+            val direccion = backStackEntry.arguments?.getString("direccion") ?: ""
+            val referencia = backStackEntry.arguments?.getString("referencia") ?: ""
+
+            SeleccionarDireccionScreen(
+                navController = navController,
+                id = id,
+                nombre,
+                telefono,
+                direccion,
+                referencia
+            )
+        }
 
 
     }
