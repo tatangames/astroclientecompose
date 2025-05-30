@@ -1,19 +1,13 @@
 package com.tatanstudios.astropollocliente.vistas.principal.opciones.usuario
 
-import android.content.Context
-import android.content.pm.PackageManager
-import android.util.Patterns
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -23,28 +17,21 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.tatanstudios.astropollocliente.R
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -57,32 +44,17 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.navOptions
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.animateLottieCompositionAsState
-import com.airbnb.lottie.compose.rememberLottieComposition
 import com.tatanstudios.astropollocliente.componentes.BarraToolbarColor
-import com.tatanstudios.astropollocliente.componentes.BloqueTextFieldCorreo
 import com.tatanstudios.astropollocliente.componentes.BloqueTextFieldCorreoUsuario
-import com.tatanstudios.astropollocliente.componentes.BloqueTextFieldLogin
-import com.tatanstudios.astropollocliente.componentes.BloqueTextFieldPassword
 import com.tatanstudios.astropollocliente.componentes.BloqueTextFieldUsuario
-import com.tatanstudios.astropollocliente.componentes.CardMisDirecciones
 import com.tatanstudios.astropollocliente.componentes.CustomModal1Boton
-import com.tatanstudios.astropollocliente.componentes.CustomModal1BotonTitulo
-import com.tatanstudios.astropollocliente.componentes.CustomModal2Botones
 import com.tatanstudios.astropollocliente.componentes.CustomToasty
 import com.tatanstudios.astropollocliente.componentes.LoadingModal
 import com.tatanstudios.astropollocliente.componentes.ToastType
 import com.tatanstudios.astropollocliente.extras.TokenManager
-import com.tatanstudios.astropollocliente.model.rutas.Routes
 import com.tatanstudios.astropollocliente.viewmodel.ActualizarCorreoUsuarioViewModel
 import com.tatanstudios.astropollocliente.viewmodel.InformacionUsuarioViewModel
 import com.tatanstudios.astropollocliente.vistas.login.esCorreoValido
-import com.tatanstudios.astropollocliente.vistas.login.getOneSignalUserId
-import com.tatanstudios.astropollocliente.vistas.login.getVersionName
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -183,9 +155,7 @@ fun MiUsuarioScreen(navController: NavHostController,
                             labelText = stringResource(R.string.usuario)
                         )
 
-
                         Spacer(modifier = Modifier.height(6.dp))
-
 
                         // bloque para correo opciones
                         BloqueTextFieldCorreoUsuario(

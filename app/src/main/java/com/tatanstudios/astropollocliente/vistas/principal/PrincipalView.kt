@@ -120,7 +120,7 @@ fun BottomAppBarWithCart(
     BottomAppBar(
         modifier = Modifier.navigationBarsPadding(),
         cutoutShape = CircleShape,
-        backgroundColor = Color.White,
+        backgroundColor = Color.Transparent,
         elevation = 8.dp
     ) {
         Row(
