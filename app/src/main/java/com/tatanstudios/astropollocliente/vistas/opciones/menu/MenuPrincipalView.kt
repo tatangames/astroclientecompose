@@ -11,9 +11,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -59,6 +63,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -92,11 +97,15 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MenuPrincipalScreen(navController: NavHostController,
-                        viewModel: ListadoMenuPrincipal = viewModel()
+fun MenuPrincipalScreen(
+    navController: NavHostController,
+    viewModel: ListadoMenuPrincipal = viewModel(),
+    // 👉 padding que viene del Scaffold padre (bottom bar + FAB)
+    contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
+    val layoutDirection = LocalLayoutDirection.current
 
     // listado de productos
     val isLoading by viewModel.isLoading.observeAsState(initial = false)
@@ -105,28 +114,16 @@ fun MenuPrincipalScreen(navController: NavHostController,
     val tokenManager = remember { TokenManager(ctx) }
     var idusuario by remember { mutableStateOf("") }
 
-    //val keyboardController = LocalSoftwareKeyboardController.current
-
-
     var boolDatosCargados by remember { mutableStateOf(false) }
     var popPermisoGPS by remember { mutableStateOf(false) }
 
-
-
     var imageUrls by remember { mutableStateOf(listOf<String>()) }
-
     var modeloListaCategoriasArray by remember { mutableStateOf(listOf<ModeloMenuPrincipalCategoriasArray>()) }
 
-
-
-    // MODAL 1 BOTON
     var showModal1Boton by remember { mutableStateOf(false) }
     var modalMensajeString by remember { mutableStateOf("") }
-
     var showModal1BotonUsuarioBloqueado by remember { mutableStateOf(false) }
 
-
-    // Lanzar la solicitud cuando se carga la pantalla
     LaunchedEffect(Unit) {
         scope.launch {
             idusuario = tokenManager.idUsuario.first()
@@ -134,19 +131,12 @@ fun MenuPrincipalScreen(navController: NavHostController,
         }
     }
 
-    // CUANDO HAYA CARGADO LA VISTA, VERIFICAR SI HAY PERMISOS UBICACION
-    if(boolDatosCargados){
-        SolicitarPermisosUbicacion (
+    if (boolDatosCargados) {
+        SolicitarPermisosUbicacion(
             onPermisosConcedidos = { },
             onPermisosDenegados = { }
         )
     }
-
-
-
-
-
-
 
     Scaffold(
         topBar = {
@@ -155,59 +145,66 @@ fun MenuPrincipalScreen(navController: NavHostController,
                 stringResource(R.string.menu),
                 colorResource(R.color.colorRojo)
             )
-        }
+        },
+        // 👇 evita que este Scaffold agregue insets extra que se sumen al padre
+        contentWindowInsets = WindowInsets(0)
     ) { innerPadding ->
+
+        // 👇 combinamos el top padding del topBar local con el padding del padre (FAB/bottom bar)
+        val totalPadding = PaddingValues(
+            top = innerPadding.calculateTopPadding(),
+            bottom = contentPadding.calculateBottomPadding(),
+            start = contentPadding.calculateStartPadding(layoutDirection),
+            end = contentPadding.calculateEndPadding(layoutDirection)
+        )
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .background(colorResource(id = R.color.colorCremaV1))
+                .background(colorResource(id = R.color.colorCremaV1)),
+            contentPadding = totalPadding
         ) {
-            // 1. HorizontalPager con imágenes
+            // 1) Slider
             if (imageUrls.isNotEmpty()) {
                 item {
                     val pagerState = rememberPagerState(pageCount = { imageUrls.size })
+
                     Column {
                         HorizontalPager(
                             state = pagerState,
                             modifier = Modifier
-                                .fillMaxWidth()
+                                .fillMaxSize()
                                 .height(210.dp)
                         ) { page ->
-                            Box(
+                            AsyncImage(
+                                model = ImageRequest.Builder(ctx)
+                                    .data(imageUrls[page])
+                                    .crossfade(true)
+                                    .placeholder(R.drawable.spinloading)
+                                    .error(R.drawable.camaradefecto)
+                                    .build(),
+                                contentDescription = null,
                                 modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                AsyncImage(
-                                    model = ImageRequest.Builder(LocalContext.current)
-                                        .data(imageUrls[page])
-                                        .crossfade(true)
-                                        .placeholder(R.drawable.spinloading)
-                                        .error(R.drawable.camaradefecto)
-                                        .build(),
-                                    contentDescription = null,
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.FillBounds
-                                )
-                            }
+                                contentScale = ContentScale.FillBounds
+                            )
                         }
 
-                        // Indicadores de página
+                        // indicadores
                         Row(
-                            Modifier
-                                .height(50.dp)
-                                .fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .height(50.dp),
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            repeat(pagerState.pageCount) { iteration ->
-                                val color =
-                                    if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+                            repeat(pagerState.pageCount) { i ->
+                                val dotColor =
+                                    if (pagerState.currentPage == i) Color.DarkGray else Color.LightGray
                                 Box(
                                     modifier = Modifier
                                         .padding(2.dp)
-                                        .clip(CircleShape)
-                                        .background(color)
+                                        .clip(MaterialTheme.shapes.extraLarge)
+                                        .background(dotColor)
                                         .size(8.dp)
                                 )
                             }
@@ -216,11 +213,11 @@ fun MenuPrincipalScreen(navController: NavHostController,
                 }
             }
 
-            // 2. Texto vertical con título y "ver más"
+            // 2) Título + ver más
             item {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxSize()
                         .padding(horizontal = 16.dp, vertical = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -229,33 +226,29 @@ fun MenuPrincipalScreen(navController: NavHostController,
                         text = "Categorías",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            color = Color.Red,          // Color rojo directo
-                            fontSize = 20.sp            // Tamaño de fuente personalizado
+                            color = Color.Red,
+                            fontSize = 20.sp
                         )
                     )
                     Text(
                         text = "Ver más",
                         style = MaterialTheme.typography.bodyMedium.copy(
-                            color = Color.Black,        // Color negro directo
-                            fontSize = 16.sp            // Tamaño personalizado para este texto
-                        ),
-                        modifier = Modifier.clickable { /* acción */ }
+                            color = Color.Black,
+                            fontSize = 16.sp
+                        )
                     )
                 }
             }
 
+            item { Spacer(Modifier.height(8.dp)) }
 
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
-            // 3. Grid horizontal con 2 filas para categorías
+            // 3) Grid categorías
             item {
                 LazyHorizontalGrid(
                     rows = GridCells.Fixed(2),
                     modifier = Modifier
                         .height(380.dp)
-                        .fillMaxWidth()
+                        .fillMaxSize()
                         .padding(horizontal = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -265,9 +258,8 @@ fun MenuPrincipalScreen(navController: NavHostController,
                         Card(
                             modifier = Modifier
                                 .width(140.dp)
-                                .height(180.dp)
-                                .clickable { /* acción */ },
-                            shape = RoundedCornerShape(12.dp),
+                                .height(180.dp),
+                            shape = MaterialTheme.shapes.medium,
                             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                             colors = CardDefaults.cardColors(containerColor = Color.White)
                         ) {
@@ -278,7 +270,7 @@ fun MenuPrincipalScreen(navController: NavHostController,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 AsyncImage(
-                                    model = ImageRequest.Builder(LocalContext.current)
+                                    model = ImageRequest.Builder(ctx)
                                         .data(imagenUrl)
                                         .crossfade(true)
                                         .placeholder(R.drawable.spinloading)
@@ -288,8 +280,8 @@ fun MenuPrincipalScreen(navController: NavHostController,
                                     contentScale = ContentScale.Fit,
                                     modifier = Modifier
                                         .height(100.dp)
-                                        .fillMaxWidth()
-                                        .clip(RoundedCornerShape(8.dp))
+                                        .fillMaxSize()
+                                        .clip(MaterialTheme.shapes.small)
                                 )
                                 Spacer(Modifier.height(8.dp))
                                 Text(
@@ -306,94 +298,39 @@ fun MenuPrincipalScreen(navController: NavHostController,
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        if (isLoading) {
-            LoadingModal(isLoading = true)
-        }
-
+        // ======= tus diálogos/modales abajo tal cual =======
+        if (isLoading) LoadingModal(true)
 
         resultado?.getContentIfNotHandled()?.let { result ->
             when (result.success) {
-                1 -> {
-                    // CLIENTE BLOQUEADO
-                    showModal1BotonUsuarioBloqueado = true
-                }
-                2 -> {
-                    // NO HAY DIRECCION DE ENTREGA
-                    scope.launch {
-                        navigateToDirecciones(navController)
-                    }
-                }
+                1 -> showModal1BotonUsuarioBloqueado = true
+                2 -> scope.launch { navigateToDirecciones(navController, btnBloqueoAtras = 1) }
                 3 -> {
-                    // MENU DE PRODUCTOS
-                    imageUrls = result.arraySlider.map { sliderItem ->
-                        // Construir la URL completa de la imagen
-                        "${RetrofitBuilder.urlImagenes}${sliderItem.imagen}"
-                    }
-
+                    imageUrls = result.arraySlider.map { "${RetrofitBuilder.urlImagenes}${it.imagen}" }
                     modeloListaCategoriasArray = result.arrayCategorias
-
                     boolDatosCargados = true
                 }
-                4 -> {
-                    // NO HAY UN SERVICIO ASOCIADO A LA ZONA
-                    modalMensajeString = result.mensaje ?: ""
-                    showModal1Boton = true
-                }
-                5 -> {
-                    // NO HAY DIRECCION DE ENTREGA SELECCIONADA
-                    scope.launch {
-                        navigateToDirecciones(navController)
-                    }
-                }
-                else -> {
-                    // Error, recargar de nuevo
-                    CustomToasty(
-                        ctx,
-                        stringResource(id = R.string.error_reintentar_de_nuevo),
-                        ToastType.ERROR
-                    )
+                4 -> { modalMensajeString = result.mensaje ?: ""; showModal1Boton = true }
+                5 -> scope.launch { navigateToDirecciones(navController, btnBloqueoAtras = 1) }
+                else -> CustomToasty(ctx, ctx.getString(R.string.error_reintentar_de_nuevo), ToastType.ERROR)
+            }
+        }
+
+        if (showModal1Boton) {
+            CustomModal1Boton(showModal1Boton, modalMensajeString) { showModal1Boton = false }
+        }
+
+        if (showModal1BotonUsuarioBloqueado) {
+            CustomModal1Boton(showModal1BotonUsuarioBloqueado, ctx.getString(R.string.usuario_bloqueado)) {
+                scope.launch {
+                    tokenManager.deletePreferences()
+                    showModal1BotonUsuarioBloqueado = false
+                    navigateToLogin(navController)
                 }
             }
         }
 
-
-        if(showModal1Boton){
-            CustomModal1Boton(showModal1Boton, modalMensajeString, onDismiss = {showModal1Boton = false})
-        }
-
-        if(showModal1BotonUsuarioBloqueado){
-            CustomModal1Boton(showModal1BotonUsuarioBloqueado, stringResource(R.string.usuario_bloqueado), onDismiss = {
-
-
-                scope.launch {
-                    // Llamamos a deletePreferences de manera segura dentro de una coroutine
-                    tokenManager.deletePreferences()
-
-                    // cerrar modal
-                    showModal1BotonUsuarioBloqueado = false
-
-                    navigateToLogin(navController)
-                }
-            })
-        }
-
-
-
-        if(popPermisoGPS){
+        if (popPermisoGPS) {
             AlertDialog(
                 onDismissRequest = { popPermisoGPS = false },
                 title = { Text(stringResource(R.string.permiso_gps_requerido)) },
@@ -408,27 +345,20 @@ fun MenuPrincipalScreen(navController: NavHostController,
                             containerColor = colorResource(R.color.colorAzul),
                             contentColor = colorResource(R.color.colorBlanco)
                         )
-                    ) {
-                        Text(stringResource(R.string.ir_a_ajustes))
-                    }
+                    ) { Text(stringResource(R.string.ir_a_ajustes)) }
                 },
                 dismissButton = {
                     Button(
-                        onClick = {
-                            popPermisoGPS = false
-                        },
+                        onClick = { popPermisoGPS = false },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = ColorGris,
                             contentColor = ColorBlanco
                         )
-                    ) {
-                        Text(stringResource(R.string.cancelar))
-                    }
+                    ) { Text(stringResource(R.string.cancelar)) }
                 }
             )
         }
-
-    } // end-scalfold
+    } // end Scaffold
 }
 
 
@@ -451,11 +381,17 @@ private fun navigateToLogin(navController: NavHostController) {
 }
 
 
-private fun navigateToDirecciones(navController: NavHostController) {
-    navController.navigate(Routes.VistaMisDirecciones.route) {
+private fun navigateToDirecciones(
+    navController: NavHostController,
+    btnBloqueoAtras: Int = 0
+) {
+
+    navController.navigate(
+        Routes.VistaMisDirecciones.createRoute(btnBloqueoAtras)
+    ) {
         popUpTo(Routes.VistaMisDirecciones.route) {
-            inclusive = true // Elimina VistaPrincipal de la pila
+            inclusive = true
         }
-        launchSingleTop = true // Asegura que no se creen múltiples instancias de VistaLogin
+        launchSingleTop = true
     }
 }

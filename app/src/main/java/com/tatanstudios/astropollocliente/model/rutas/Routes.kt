@@ -40,7 +40,13 @@ sealed class Routes(val route: String) {
     // VISTA PREMIOS
     object VistaPremios: Routes("vistaPremios")
     // VISTA MIS DIRECCIONES
-    object VistaMisDirecciones: Routes("vistaMisDirecciones")
+    object VistaMisDirecciones : Routes("vistaMisDirecciones/{estadoBoton}") {
+        fun createRoute(
+            estadoBoton: Int
+        ) = "vistaMisDirecciones/$estadoBoton"
+    }
+
+
     // VISTA MAPA
     object VistaMapa: Routes("vistaMapa")
 

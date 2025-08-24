@@ -1,9 +1,5 @@
 package com.tatanstudios.astropollocliente.vistas.principal
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,23 +22,18 @@ import androidx.compose.material.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import com.tatanstudios.astropollocliente.componentes.SolicitarPermisosUbicacion
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.tatanstudios.astropollocliente.model.rutas.Routes
-import com.tatanstudios.astropollocliente.ui.theme.ColorBlanco
-import com.tatanstudios.astropollocliente.ui.theme.ColorGris
 import com.tatanstudios.astropollocliente.vistas.opciones.menu.MenuPrincipalScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
 
 @Composable
 fun PrincipalScreen(navController: NavHostController) {
@@ -50,7 +41,6 @@ fun PrincipalScreen(navController: NavHostController) {
     val scope = rememberCoroutineScope()
     var canClickCart by remember { mutableStateOf(true) }
 
-    // Declarar la función dentro del cuerpo composable
     val openCart = {
         if (canClickCart) {
             canClickCart = false
@@ -58,12 +48,11 @@ fun PrincipalScreen(navController: NavHostController) {
                 launchSingleTop = true
             }
             scope.launch {
-                delay(500) // Tiempo para prevenir doble click
+                delay(500) // evitar doble click
                 canClickCart = true
             }
         }
     }
-
 
 
 
@@ -73,12 +62,12 @@ fun PrincipalScreen(navController: NavHostController) {
                 selectedScreen = selectedScreen,
                 onMenuClick = { selectedScreen = "menu" },
                 onOrdersClick = { selectedScreen = "ordenes" },
-                onCartClick = openCart // ✅ sin error
+                onCartClick = openCart
             )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = openCart, // ✅ sin error
+                onClick = openCart,
                 backgroundColor = Color.White,
                 elevation = FloatingActionButtonDefaults.elevation(8.dp),
                 shape = CircleShape
@@ -92,21 +81,27 @@ fun PrincipalScreen(navController: NavHostController) {
         },
         floatingActionButtonPosition = FabPosition.Center,
         isFloatingActionButtonDocked = true
-    ) { padding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            when (selectedScreen) {
-                "menu" -> MenuPrincipalScreen(navController)
-                "ordenes" -> PantallaOrdenes()
-            }
+    ) { innerPadding ->
+
+        // No aplicar innerPadding a un Box contenedor.
+        // En su lugar, pásalo a la pantalla hija como contentPadding.
+        when (selectedScreen) {
+            "menu" -> MenuPrincipalScreen(
+                navController = navController,
+                contentPadding = PaddingValues(
+                    top = innerPadding.calculateTopPadding(),
+                    // Sumar margen extra para el diámetro del FAB (opcional)
+                    bottom = innerPadding.calculateBottomPadding() + 72.dp
+                )
+            )
+            "ordenes" -> PantallaOrdenes(
+                contentPadding = PaddingValues(
+                    top = innerPadding.calculateTopPadding(),
+                    bottom = innerPadding.calculateBottomPadding()
+                )
+            )
         }
     }
-
-
-
 }
 
 
@@ -120,7 +115,7 @@ fun BottomAppBarWithCart(
     BottomAppBar(
         modifier = Modifier.navigationBarsPadding(),
         cutoutShape = CircleShape,
-        backgroundColor = Color.Transparent,
+        backgroundColor = Color.White,
         elevation = 8.dp
     ) {
         Row(
@@ -148,7 +143,7 @@ fun BottomAppBarWithCart(
                 )
             }
 
-            Spacer(modifier = Modifier.weight(1f)) // Espacio para FAB
+            Spacer(modifier = Modifier.weight(1f)) // espacio del FAB
 
             Column(
                 modifier = Modifier
@@ -175,14 +170,16 @@ fun BottomAppBarWithCart(
 
 
 
-
-
-
-
 @Composable
-fun PantallaOrdenes() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+fun PantallaOrdenes(
+    contentPadding: PaddingValues = PaddingValues(0.dp)
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(contentPadding),
+        contentAlignment = Alignment.Center
+    ) {
         Text("Pantalla de Órdenes")
     }
 }
-

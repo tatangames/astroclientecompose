@@ -101,11 +101,15 @@ fun PerfilScreen(navController: NavHostController) {
                              it.clickable {
                                  when (opcion) {
                                      is Opcion.Direcciones -> {
-                                         navController.navigate(Routes.VistaMisDirecciones.route) {
+
+                                         navController.navigate(
+                                             Routes.VistaMisDirecciones.createRoute(0)
+                                         ) {
                                              navOptions {
                                                  launchSingleTop = true
                                              }
                                          }
+
                                      }
                                      is Opcion.CambioPassword -> {
                                          navController.navigate(Routes.VistaActualizarContrasena.route) {
@@ -210,4 +214,5 @@ private fun navigateToLogin(navController: NavHostController) {
         launchSingleTop = true // Asegura que no se creen múltiples instancias de VistaLogin
     }
 }
+
 

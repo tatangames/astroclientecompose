@@ -1,7 +1,9 @@
 package com.tatanstudios.astropollocliente.vistas.login
 
 import android.content.pm.ActivityInfo
+import android.os.Build
 import android.os.Bundle
+import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -32,9 +34,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
@@ -65,6 +72,13 @@ class SplashApp : ComponentActivity() {
 
         // MODO VERTICAL
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
+
+        // Asegurar que se cree el decorView antes de manipular el controller
+        window.decorView.post {
+            val controller = WindowInsetsControllerCompat(window, window.decorView)
+            controller.isAppearanceLightNavigationBars = true
+        }
 
         enableEdgeToEdge()
         setContent {
@@ -131,7 +145,22 @@ fun AppNavigation() {
         // VISTA PREMIOS
         composable(Routes.VistaPremios.route) { PremiosScreen(navController) }
         // VISTA MIS DIRECCIONES
-        composable(Routes.VistaMisDirecciones.route) { MisDireccionesScreen(navController) }
+        // composable(Routes.VistaMisDirecciones.route) { MisDireccionesScreen(navController) }
+        composable(
+            route = Routes.VistaMisDirecciones.route,
+            arguments = listOf(
+                navArgument("estadoBoton") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val estadoBoton = backStackEntry.arguments?.getInt("estadoBoton") ?: 0
+
+            MisDireccionesScreen(
+                navController = navController,
+                estadoBotonAtras = estadoBoton
+            )
+        }
+
+
         // VISTA MAPA
         composable(Routes.VistaMapa.route) { MapaScreen(navController) }
 

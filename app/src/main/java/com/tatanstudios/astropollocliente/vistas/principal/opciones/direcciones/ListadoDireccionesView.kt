@@ -69,7 +69,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun MisDireccionesScreen(navController: NavHostController,
-                                viewModel: ListadoDireccionesViewModel = viewModel(),
+                         estadoBotonAtras: Int = 0, // defecto, para boton Atras
+                         viewModel: ListadoDireccionesViewModel = viewModel(),
 ) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -111,7 +112,8 @@ fun MisDireccionesScreen(navController: NavHostController,
             BarraToolbarColor(
                 navController,
                 stringResource(R.string.mis_direcciones),
-                colorResource(R.color.colorRojo)
+                colorResource(R.color.colorRojo),
+                estadoBotonAtras = estadoBotonAtras
             )
         },
         floatingActionButton = {

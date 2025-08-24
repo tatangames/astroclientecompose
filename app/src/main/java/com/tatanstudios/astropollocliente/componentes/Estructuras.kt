@@ -3,6 +3,7 @@ package com.tatanstudios.astropollocliente.componentes
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -85,7 +86,7 @@ import com.tatanstudios.astropollocliente.model.rutas.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BarraToolbarColor(navController: NavController, titulo: String, backgroundColor: Color) {
+fun BarraToolbarColor(navController: NavController, titulo: String, backgroundColor: Color, estadoBotonAtras: Int = 0) {
 
     var isNavigating by remember { mutableStateOf(false) }
 
@@ -103,9 +104,12 @@ fun BarraToolbarColor(navController: NavController, titulo: String, backgroundCo
         navigationIcon = {
             IconButton(
                 onClick = {
-                    if (!isNavigating) {
-                        isNavigating = true
-                        navController.popBackStack()
+
+                    if(estadoBotonAtras == 0){
+                        if (!isNavigating) {
+                            isNavigating = true
+                            navController.popBackStack()
+                        }
                     }
                 },
             ) {

@@ -7,9 +7,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.MenuOpen
-import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,6 +43,12 @@ import com.tatanstudios.astropollocliente.viewmodel.DeseleccionarPremioViewModel
 import com.tatanstudios.astropollocliente.viewmodel.ListadoPremiosViewModel
 import com.tatanstudios.astropollocliente.viewmodel.SeleccionarPremioViewModel
 import kotlinx.coroutines.flow.first
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
 
 @Composable
 fun PremiosScreen(navController: NavHostController,
@@ -71,6 +74,7 @@ fun PremiosScreen(navController: NavHostController,
     var textoDescripcion by remember { mutableStateOf("") }
     var modeloPremiosArray by remember { mutableStateOf(listOf<ModeloPremiosArray>()) }
     var boolDatosCargados by remember { mutableStateOf(false) }
+    var conteoPremiosDisponibles by remember { mutableStateOf(0) }
 
     var textoMisPuntos by remember { mutableStateOf("") }
 
@@ -122,22 +126,44 @@ fun PremiosScreen(navController: NavHostController,
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
-                // Listado dinámico
-                items(modeloPremiosArray) { tipoDato ->
-                    // Aquí colocas tu componente personalizado o vista para cada producto
 
-                    CardSeleccionPremioItem(
-                        texto = tipoDato.nombre ?: "",
-                        seleccionado = tipoDato.seleccionado,
-                        puntos = tipoDato.puntos,
-                        onClick = {
-                            idPremioSeleccionado = tipoDato.id
-                            itemSeleccionado = tipoDato
-                            accionSeleccion = if (tipoDato.seleccionado == 1) ACCION_BORRAR else ACCION_SELECCIONAR
-                            mostrarDialogo = true
+                if (modeloPremiosArray.isEmpty()) {
+                    item {
+                        // Imagen centrada
+                        Column(
+                            modifier = Modifier
+                                .fillParentMaxSize(), // ocupa el espacio disponible en el LazyColumn
+                            verticalArrangement = Arrangement.Top,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.noremios),
+                                contentDescription = "Sin premios disponibles",
+                                modifier = Modifier
+                                    .fillMaxWidth(0.6f)
+                                    .padding(16.dp)
+                            )
                         }
-                    )
+                    }
+                } else {
+                    // Listado dinámico
+                    items(modeloPremiosArray) { tipoDato ->
+                        // Aquí colocas tu componente personalizado o vista para cada producto
+
+                        CardSeleccionPremioItem(
+                            texto = tipoDato.nombre ?: "",
+                            seleccionado = tipoDato.seleccionado,
+                            puntos = tipoDato.puntos,
+                            onClick = {
+                                idPremioSeleccionado = tipoDato.id
+                                itemSeleccionado = tipoDato
+                                accionSeleccion = if (tipoDato.seleccionado == 1) ACCION_BORRAR else ACCION_SELECCIONAR
+                                mostrarDialogo = true
+                            }
+                        )
+                    }
                 }
+
 
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
@@ -222,6 +248,7 @@ fun PremiosScreen(navController: NavHostController,
                     textoDescripcion = result.nota?: ""
                     modeloPremiosArray = result.lista
                     boolDatosCargados = true
+                    conteoPremiosDisponibles = result.conteo
                 }
                 else -> {
                     // Error, recargar de nuevo
