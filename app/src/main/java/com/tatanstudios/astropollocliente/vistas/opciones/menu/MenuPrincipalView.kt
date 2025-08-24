@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -35,6 +37,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -65,8 +68,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -86,6 +91,7 @@ import com.tatanstudios.astropollocliente.componentes.ToastType
 import com.tatanstudios.astropollocliente.extras.TokenManager
 import com.tatanstudios.astropollocliente.model.modelos.ModeloDireccionesArray
 import com.tatanstudios.astropollocliente.model.modelos.ModeloMenuPrincipalCategoriasArray
+import com.tatanstudios.astropollocliente.model.modelos.ModeloMenuPrincipalPopularesArray
 import com.tatanstudios.astropollocliente.model.rutas.Routes
 import com.tatanstudios.astropollocliente.network.RetrofitBuilder
 import com.tatanstudios.astropollocliente.ui.theme.ColorBlanco
@@ -119,6 +125,9 @@ fun MenuPrincipalScreen(
 
     var imageUrls by remember { mutableStateOf(listOf<String>()) }
     var modeloListaCategoriasArray by remember { mutableStateOf(listOf<ModeloMenuPrincipalCategoriasArray>()) }
+    var modeloListaPopularesArray by remember { mutableStateOf(listOf<ModeloMenuPrincipalPopularesArray>()) }
+
+
 
     var showModal1Boton by remember { mutableStateOf(false) }
     var modalMensajeString by remember { mutableStateOf("") }
@@ -213,7 +222,7 @@ fun MenuPrincipalScreen(
                 }
             }
 
-            // 2) Título + ver más
+            // 2) Título unicamente
             item {
                 Row(
                     modifier = Modifier
@@ -230,43 +239,37 @@ fun MenuPrincipalScreen(
                             fontSize = 20.sp
                         )
                     )
-                    Text(
-                        text = "Ver más",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = Color.Black,
-                            fontSize = 16.sp
-                        )
-                    )
                 }
             }
 
-            item { Spacer(Modifier.height(8.dp)) }
 
             // 3) Grid categorías
             item {
                 LazyHorizontalGrid(
                     rows = GridCells.Fixed(2),
                     modifier = Modifier
-                        .height(380.dp)
-                        .fillMaxSize()
-                        .padding(horizontal = 8.dp),
+                        // alto = 2 filas * altoCard + 1 spacing entre filas + padding vertical
+                        .height(170.dp * 2 + 8.dp + 8.dp + 8.dp)
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(
+                        start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp
+                    )
                 ) {
                     items(modeloListaCategoriasArray) { categoria ->
                         val imagenUrl = "${RetrofitBuilder.urlImagenes}${categoria.imagen}"
+
                         Card(
                             modifier = Modifier
-                                .width(140.dp)
-                                .height(180.dp),
-                            shape = MaterialTheme.shapes.medium,
-                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                                .width(160.dp)
+                                .height(170.dp), // 🔹 altura fija para alinear filas
+                            shape = RoundedCornerShape(16.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                             colors = CardDefaults.cardColors(containerColor = Color.White)
                         ) {
                             Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(8.dp),
+                                modifier = Modifier.padding(10.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 AsyncImage(
@@ -279,11 +282,12 @@ fun MenuPrincipalScreen(
                                     contentDescription = categoria.nombre,
                                     contentScale = ContentScale.Fit,
                                     modifier = Modifier
-                                        .height(100.dp)
-                                        .fillMaxSize()
-                                        .clip(MaterialTheme.shapes.small)
+                                        .height(90.dp)
+                                        .fillMaxWidth()
                                 )
-                                Spacer(Modifier.height(8.dp))
+
+                                Spacer(Modifier.height(6.dp))
+
                                 Text(
                                     text = categoria.nombre ?: "",
                                     style = MaterialTheme.typography.bodyMedium,
@@ -296,6 +300,121 @@ fun MenuPrincipalScreen(
                     }
                 }
             }
+
+            item { Spacer(Modifier.height(10.dp)) }
+
+            // 2) Título unicamente
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp, vertical = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Populares",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Red,
+                            fontSize = 20.sp
+                        )
+                    )
+                }
+            }
+
+
+           /// AQUI VA POPULARES
+
+
+            item {
+                LazyHorizontalGrid(
+                    rows = GridCells.Fixed(1),
+                    modifier = Modifier
+                        .height(200.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp) // 🔹 separa el 1er y último card
+                ) {
+                    items(modeloListaPopularesArray) { prod ->
+                        val imagenUrl = "${RetrofitBuilder.urlImagenes}${prod.imagen}"
+
+                        Card(
+                            modifier = Modifier
+                                .width(160.dp)
+                                .wrapContentHeight(), // 🔹 evita espacio vacío
+                            shape = RoundedCornerShape(16.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(12.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(6.dp) // 🔹 control fino de separaciones
+                            ) {
+                                // Imagen
+                                AsyncImage(
+                                    model = ImageRequest.Builder(ctx)
+                                        .data(imagenUrl)
+                                        .crossfade(true)
+                                        .placeholder(R.drawable.spinloading)
+                                        .error(R.drawable.camaradefecto)
+                                        .build(),
+                                    contentDescription = prod.nombre,
+                                    contentScale = ContentScale.Fit,
+                                    modifier = Modifier
+                                        .height(84.dp)           // 🔹 un poco más compacta
+                                        .fillMaxWidth()
+                                )
+
+                                // Nombre
+                                Text(
+                                    text = prod.nombre ?: "",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Medium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+
+                                // Precio centrado + botón en misma fila
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 2.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = prod.precio?.let { "$it" } ?: "$0.00",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color(0xFF444444),
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.weight(1f) // centra el precio
+                                    )
+
+                                    Box(
+                                        modifier = Modifier
+                                            .size(26.dp) // 🔹 un poco más compacto
+                                            .clip(CircleShape)
+                                            .background(Color(0xFFE74C3C))
+                                            .clickable { /* onAdd(prod) */ },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Add,
+                                            contentDescription = "Agregar",
+                                            tint = Color.White,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+
         }
 
         // ======= tus diálogos/modales abajo tal cual =======
@@ -308,6 +427,7 @@ fun MenuPrincipalScreen(
                 3 -> {
                     imageUrls = result.arraySlider.map { "${RetrofitBuilder.urlImagenes}${it.imagen}" }
                     modeloListaCategoriasArray = result.arrayCategorias
+                    modeloListaPopularesArray = result.arrayPopulares
                     boolDatosCargados = true
                 }
                 4 -> { modalMensajeString = result.mensaje ?: ""; showModal1Boton = true }

@@ -22,7 +22,7 @@ data class ModeloMenuPrincipal(
     @SerializedName("activo") val activo: Int,
     @SerializedName("slider") val arraySlider: List<ModeloMenuPrincipalSliderArray>,
     @SerializedName("categorias") val arrayCategorias: List<ModeloMenuPrincipalCategoriasArray>,
-    @SerializedName("populares") val arrayPopulares: List<ModeloMenuPrincipalProductosArray>,
+    @SerializedName("populares") val arrayPopulares: List<ModeloMenuPrincipalPopularesArray>,
     @SerializedName("activo_slider") val activoSlider: Int,
     @SerializedName("btntesteocliente") val btnTesteoCliente: Int,
     @SerializedName("btntesteoservicio") val btnTesteoServicio: Int,
@@ -218,3 +218,21 @@ data class ModeloPoligonosLatitudLongitudArray(
     @SerializedName("latitudPoligono") val latitud: String,
     @SerializedName("longitudPoligono") val longitud: String,
 )
+
+
+
+data class ModeloMenuPrincipalPopularesArray(
+    @SerializedName("id") val id: Int,
+    @SerializedName("nombre") val nombre: String?,
+    @SerializedName("imagen") val imagen: String?,
+    @SerializedName("utiliza_imagen") val utilizaImagen: Int,
+    @SerializedName("precio") val precio: String?,
+)
+
+
+
+
+
+
+
+
