@@ -9,6 +9,7 @@ import com.tatanstudios.astropollocliente.model.modelos.ModeloMenuPrincipal
 import com.tatanstudios.astropollocliente.model.modelos.ModeloPoligonos
 import com.tatanstudios.astropollocliente.model.modelos.ModeloPremios
 import com.tatanstudios.astropollocliente.model.modelos.ModeloProductoHistorialOrdenes
+import com.tatanstudios.astropollocliente.model.modelos.ModeloProductos
 import io.reactivex.rxjava3.core.Single
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -195,6 +196,14 @@ interface ApiService {
                                 @Field("usuario") usuario: String,
                                 @Field("correo") correo: String,
     ): Single<ModeloDatosBasicos>
+
+
+    // LISTADO DE PRODUCTOS DE UNA CATEGORIA
+    @POST("cliente/listado/productos/servicios")
+    @FormUrlEncoded
+    fun listadoProductos(@Field("id") idcategoria: Int,
+    ): Single<ModeloProductos>
+
 
 
 

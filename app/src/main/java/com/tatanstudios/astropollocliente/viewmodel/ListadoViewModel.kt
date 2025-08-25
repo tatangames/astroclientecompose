@@ -15,6 +15,7 @@ import com.tatanstudios.astropollocliente.model.modelos.ModeloMenuPrincipal
 import com.tatanstudios.astropollocliente.model.modelos.ModeloPoligonos
 import com.tatanstudios.astropollocliente.model.modelos.ModeloPremios
 import com.tatanstudios.astropollocliente.model.modelos.ModeloProductoHistorialOrdenes
+import com.tatanstudios.astropollocliente.model.modelos.ModeloProductos
 import com.tatanstudios.astropollocliente.network.RetrofitBuilder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.Disposable
@@ -1041,6 +1042,46 @@ class ActualizarCorreoUsuarioViewModel() : ViewModel() {
     }
 }
 
+
+class ListadoProductosViewModel() : ViewModel() {
+
+    private val _resultado = MutableLiveData<Event<ModeloProductos>>()
+    val resultado: LiveData<Event<ModeloProductos>> get() = _resultado
+
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    private var disposable: Disposable? = null
+    private var isRequestInProgress = false
+
+    fun listadoProductosRetrofit(idcategoria: Int) {
+        if (isRequestInProgress) return
+
+        isRequestInProgress = true
+
+        _isLoading.value = true
+        disposable = RetrofitBuilder.getApiService().listadoProductos(idcategoria = idcategoria)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .retry()
+            .subscribe(
+                { response ->
+                    _isLoading.value = false
+                    _resultado.value = Event(response)
+                    isRequestInProgress = false
+                },
+                { error ->
+                    _isLoading.value = false
+                    isRequestInProgress = false
+                }
+            )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposable?.dispose() // Limpiar la suscripción
+    }
+}
 
 
 

@@ -233,6 +233,32 @@ data class ModeloMenuPrincipalPopularesArray(
 
 
 
+data class ModeloProductos(
+    @SerializedName("success") val success: Int,
+    @SerializedName("productos") val listaProductoCategoria: List<ModeloProductosArray>
+)
+
+
+data class ModeloProductosArray(
+    @SerializedName("id") val id: Int,
+    @SerializedName("id_categorias") val idCategorias: Int,
+    @SerializedName("nombre") val nombre: String?,
+    @SerializedName("productos") val listaProductoCategoriaTercera: List<ModeloProductosTerceraArray>
+)
+
+data class ModeloProductosTerceraArray(
+    @SerializedName("id") val id: Int,
+    @SerializedName("id_subcategorias") val idSubCategoria: Int,
+    @SerializedName("nombre") val nombre: String?,
+    @SerializedName("imagen") val imagen: String?,
+    @SerializedName("descripcion") val descripcion: String?,
+    @SerializedName("precio") val precio: String?,
+    @SerializedName("utiliza_nota") val utilizaNota: Int,
+    @SerializedName("nota") val nota: String?,
+    @SerializedName("utiliza_imagen") val utilizaImagen: Int
+)
+
+
 
 
 

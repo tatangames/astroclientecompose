@@ -263,7 +263,19 @@ fun MenuPrincipalScreen(
                         Card(
                             modifier = Modifier
                                 .width(160.dp)
-                                .height(170.dp), // 🔹 altura fija para alinear filas
+                                .height(170.dp) // 🔹 altura fija para alinear filas
+                            .clickable {
+
+                                navController.navigate(
+                                    Routes.VistaListadoProductos.createRoute(categoria.id)
+                                ) {
+                                    popUpTo(Routes.VistaListadoProductos.route) {
+                                        inclusive = true
+                                    }
+                                    launchSingleTop = true
+                                }
+
+                        },
                             shape = RoundedCornerShape(16.dp),
                             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                             colors = CardDefaults.cardColors(containerColor = Color.White)
@@ -515,3 +527,5 @@ private fun navigateToDirecciones(
         launchSingleTop = true
     }
 }
+
+

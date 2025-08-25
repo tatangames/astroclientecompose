@@ -79,7 +79,6 @@ fun MisDireccionesScreen(navController: NavHostController,
     val isLoading by viewModel.isLoading.observeAsState(initial = false)
     val resultado by viewModel.resultado.observeAsState()
     var boolDatosCargados by remember { mutableStateOf(false) }
-    var boolNohayDirecciones by remember { mutableStateOf(false) }
 
     var modeloListaDireccionesArray by remember { mutableStateOf(listOf<ModeloDireccionesArray>()) }
 
@@ -222,7 +221,6 @@ fun MisDireccionesScreen(navController: NavHostController,
             LoadingModal(isLoading = true)
         }
 
-
         if(popPermisoGPS){
             AlertDialog(
                 onDismissRequest = { popPermisoGPS = false },
@@ -265,13 +263,11 @@ fun MisDireccionesScreen(navController: NavHostController,
         when (result.success) {
             1 -> {
                 // NO HAY DIRECCION REGISTRADA
-                boolNohayDirecciones = true
                 boolDatosCargados = true
             }
             2 -> {
                 // SI HAY DIRECCIONES
                 boolDatosCargados = true
-                boolNohayDirecciones = false
                 modeloListaDireccionesArray = result.lista
             }
             else -> {

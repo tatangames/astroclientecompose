@@ -64,6 +64,7 @@ import com.tatanstudios.astropollocliente.vistas.principal.opciones.horarios.Hor
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.password.ActualizarPasswordScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.premios.PremiosScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.usuario.MiUsuarioScreen
+import com.tatanstudios.astropollocliente.vistas.principal.productos.ListadoProductosScreen
 
 
 class SplashApp : ComponentActivity() {
@@ -145,7 +146,6 @@ fun AppNavigation() {
         // VISTA PREMIOS
         composable(Routes.VistaPremios.route) { PremiosScreen(navController) }
         // VISTA MIS DIRECCIONES
-        // composable(Routes.VistaMisDirecciones.route) { MisDireccionesScreen(navController) }
         composable(
             route = Routes.VistaMisDirecciones.route,
             arguments = listOf(
@@ -211,6 +211,22 @@ fun AppNavigation() {
 
 
 
+        // VISTA LISTADO DE PRODUCTOS
+        composable(
+            route = Routes.VistaListadoProductos.route,
+            arguments = listOf(
+                navArgument("idcategoria") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val idCategoria = backStackEntry.arguments?.getInt("idcategoria") ?: 0
+
+            ListadoProductosScreen(
+                navController = navController,
+                idCategoria = idCategoria
+            )
+        }
+
+
 
 
     }
@@ -260,9 +276,10 @@ fun SplashScreen(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color(0xFFD84B4B)),
+            .background(color = Color(0xFFD84B4B)), // Fondo rojo
         contentAlignment = Alignment.Center
     ) {
+        // Animación en el centro
         LottieAnimation(
             composition = composition,
             progress = { progress },
@@ -271,11 +288,13 @@ fun SplashScreen(navController: NavHostController) {
                 .align(Alignment.Center)
         )
 
+        // Texto + logo en la parte inferior
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomStart)
-                .padding(bottom = 36.dp, start = 8.dp, end = 12.dp),
+                .padding(start = 8.dp, end = 12.dp, bottom = 36.dp)
+                .navigationBarsPadding(),   // 👈 evita solaparse con los 3 botones o gestos
             verticalAlignment = Alignment.Bottom
         ) {
             Text(

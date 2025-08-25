@@ -86,6 +86,7 @@ fun InfoProductoHistorialScreen(navController: NavHostController, _idproducto: I
             )
         }
     ) { innerPadding ->
+
         LazyColumn(
             contentPadding = innerPadding,
             modifier = Modifier
