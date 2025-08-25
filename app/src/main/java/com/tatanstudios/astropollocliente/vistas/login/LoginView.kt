@@ -272,8 +272,6 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 
-
-
                 if(showModal1Boton){
                     CustomModal1Boton(showModal1Boton, modalMensajeString, onDismiss = {showModal1Boton = false})
                 }

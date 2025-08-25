@@ -1,4 +1,4 @@
-package com.tatanstudios.astropollocliente.vistas.principal.productos
+package com.tatanstudios.astropollocliente.vistas.principal.carrito
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -75,13 +75,14 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.ui.draw.clip
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.tatanstudios.astropollocliente.model.modelos.ModeloCarritoTemporal
 import com.tatanstudios.astropollocliente.model.modelos.ModeloProductosTerceraArray
 import com.tatanstudios.astropollocliente.network.RetrofitBuilder
+import com.tatanstudios.astropollocliente.viewmodel.ListadoCarritoComprasViewModel
 
 @Composable
-fun ListadoProductosScreen(navController: NavHostController,
-                           idCategoria: Int,
-                           viewModel: ListadoProductosViewModel = viewModel()
+fun CarritoComprasScreen(navController: NavHostController,
+                           viewModel: ListadoCarritoComprasViewModel = viewModel()
 ) {
 
     val ctx = LocalContext.current
@@ -91,13 +92,14 @@ fun ListadoProductosScreen(navController: NavHostController,
     val resultado by viewModel.resultado.observeAsState()
     val scope = rememberCoroutineScope() // Crea el alcance de coroutine
     val keyboardController = LocalSoftwareKeyboardController.current
+    var idusuario by remember { mutableStateOf("") }
 
-    var modeloListaProductosArray: List<ModeloProductosArray> by remember { mutableStateOf(listOf<ModeloProductosArray>()) }
-
+    var modeloListaCarritoArray: List<ModeloCarritoTemporal> by remember { mutableStateOf(listOf<ModeloCarritoTemporal>()) }
 
     LaunchedEffect(Unit) {
         scope.launch {
-            viewModel.listadoProductosRetrofit(idCategoria)
+            idusuario = tokenManager.idUsuario.first()
+            viewModel.listadoCarritoComprasRetrofit(idusuario)
         }
     }
 
@@ -112,7 +114,7 @@ fun ListadoProductosScreen(navController: NavHostController,
         topBar = {
             BarraToolbarColor(
                 navController,
-                stringResource(R.string.productos),
+                stringResource(R.string.carrito),
                 colorResource(R.color.colorRojo),
             )
         }
@@ -130,32 +132,10 @@ fun ListadoProductosScreen(navController: NavHostController,
                     verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
 
-                    modeloListaProductosArray.forEach { categoria ->
-                        // Encabezado de categoría (rojo subrayado + fondo crema)
-                        item {
-                            CategoriaHeader(title = categoria.nombre ?: "")
-                        }
-
-                        // Productos de la categoría
-                        items(categoria.listaProductoCategoriaTercera) { producto ->
-                            ProductoItemCard(
-                                producto = producto,
-                                onClick = {
-
-                                    navController.navigate(
-                                        Routes.VistaInformacionProducto.createRoute(producto.id)
-                                    ) {
-                                        popUpTo(Routes.VistaInformacionProducto.route) {
-                                            inclusive = true
-                                        }
-                                        launchSingleTop = true
-                                    }
 
 
-                                }
-                            )
-                        }
-                    }
+
+
                 }
             }
         }
@@ -165,10 +145,9 @@ fun ListadoProductosScreen(navController: NavHostController,
         resultado?.getContentIfNotHandled()?.let { result ->
             when (result.success) {
                 1 -> {
-                    modeloListaProductosArray = result.listaProductoCategoria
+                    modeloListaCarritoArray = result.listadoCarritoTemporal
                     boolDatosCargados = true
                 }
-
                 else -> {
                     CustomToasty(
                         ctx,

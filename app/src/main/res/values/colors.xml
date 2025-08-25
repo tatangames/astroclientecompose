@@ -35,6 +35,9 @@
 
     <color name="colorRojoCarrito">#C8FF0000</color>
     <color name="colorRojo">#FF0000</color>
+    <color name="colorLetraRoja">#D32F2F</color>
+
+
     <color name="colorVerde">#689f38</color>
     <color name="ucrop_color_toolbar_widget">#FFFFFF</color>
 

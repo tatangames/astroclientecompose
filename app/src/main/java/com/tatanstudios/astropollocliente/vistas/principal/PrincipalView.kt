@@ -1,5 +1,6 @@
 package com.tatanstudios.astropollocliente.vistas.principal
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -112,11 +113,14 @@ fun BottomAppBarWithCart(
     onOrdersClick: () -> Unit,
     onCartClick: () -> Unit
 ) {
+
     BottomAppBar(
-        modifier = Modifier.navigationBarsPadding(),
-        cutoutShape = CircleShape,
-        backgroundColor = Color.White,
-        elevation = 8.dp
+        backgroundColor = Color.Transparent,
+        elevation = 0.dp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)                     // fondo blanco
+            .windowInsetsPadding(WindowInsets.navigationBars) // y lo extiende a la zona del gesto
     ) {
         Row(
             Modifier.fillMaxWidth(),

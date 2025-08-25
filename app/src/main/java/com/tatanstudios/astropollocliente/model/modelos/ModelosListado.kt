@@ -259,6 +259,58 @@ data class ModeloProductosTerceraArray(
 )
 
 
+data class ModeloInformacionProducto(
+    @SerializedName("success") val success: Int,
+    @SerializedName("producto") val informacionProducto: List<ModeloInformacionProductoArray>
+)
+
+data class ModeloInformacionProductoArray(
+    @SerializedName("id") val id: Int,
+    @SerializedName("id_subcategorias") val idSubCategoria: Int,
+    @SerializedName("nombre") val nombre: String?,
+    @SerializedName("imagen") val imagen: String?,
+    @SerializedName("descripcion") val descripcion: String?,
+    @SerializedName("precio") val precio: String?,
+    @SerializedName("activo") val activo: Int,
+    @SerializedName("utiliza_nota") val utilizaNota: Int,
+    @SerializedName("nota") val nota: String?,
+    @SerializedName("utiliza_imagen") val utilizaImagen: Int,
+    )
+
+
+
+data class ModeloBasico(
+    @SerializedName("success") val success: Int,
+    @SerializedName("titulo") val titulo: String?,
+    @SerializedName("mensaje") val mensaje: String?,
+)
+
+
+
+data class ModeloCarrito(
+    @SerializedName("success") val success: Int,
+    @SerializedName("subtotal") val subTotal: String?,
+    @SerializedName("estadoProductoGlobal") val estadoProductoGlobal: Int,
+    @SerializedName("producto") val listadoCarritoTemporal: List<ModeloCarritoTemporal>
+)
+
+data class ModeloCarritoTemporal(
+    @SerializedName("productoID") val id: Int,
+    @SerializedName("nombre") val nombre: String?,
+    @SerializedName("cantidad") val cantidad: Int,
+    @SerializedName("imagen") val imagen: String?,
+    @SerializedName("precio") val precio: String?,
+
+    @SerializedName("activo") val activo: Int,
+    @SerializedName("carritoid") val carritoid: Int,
+    @SerializedName("utiliza_imagen") val utilizaImagen: Int,
+    @SerializedName("id_subcategorias") val idSubCategorias: Int,
+    @SerializedName("estadoLocal") val estadoLocal: Int,
+
+    @SerializedName("titulo") val titulo: String?,
+    @SerializedName("mensaje") val mensaje: String?,
+    @SerializedName("precioformat") val precioformat: String?,
+)
 
 
 

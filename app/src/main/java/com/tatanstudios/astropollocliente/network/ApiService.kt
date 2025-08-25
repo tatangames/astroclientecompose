@@ -1,10 +1,14 @@
 package com.tatanstudios.astropollocliente.network
 
+import com.tatanstudios.astropollocliente.model.modelos.ModeloBasico
+import com.tatanstudios.astropollocliente.model.modelos.ModeloCarrito
+import com.tatanstudios.astropollocliente.model.modelos.ModeloCarritoTemporal
 import com.tatanstudios.astropollocliente.model.modelos.ModeloDatosBasicos
 import com.tatanstudios.astropollocliente.model.modelos.ModeloDirecciones
 import com.tatanstudios.astropollocliente.model.modelos.ModeloHistorialOrdenes
 import com.tatanstudios.astropollocliente.model.modelos.ModeloHorario
 import com.tatanstudios.astropollocliente.model.modelos.ModeloInfoProducto
+import com.tatanstudios.astropollocliente.model.modelos.ModeloInformacionProducto
 import com.tatanstudios.astropollocliente.model.modelos.ModeloMenuPrincipal
 import com.tatanstudios.astropollocliente.model.modelos.ModeloPoligonos
 import com.tatanstudios.astropollocliente.model.modelos.ModeloPremios
@@ -203,6 +207,34 @@ interface ApiService {
     @FormUrlEncoded
     fun listadoProductos(@Field("id") idcategoria: Int,
     ): Single<ModeloProductos>
+
+
+    // INFORMACION DE UN PRODUCTO PARA METER AL CARRITO
+    @POST("cliente/informacion/producto/individual")
+    @FormUrlEncoded
+    fun informacionProducto(@Field("id") idproducto: Int,
+    ): Single<ModeloInformacionProducto>
+
+
+    // AGREGAR PRODUCTO A CARRITO TEMPORAL
+    @POST("cliente/carrito/producto/agregar")
+    @FormUrlEncoded
+    fun enviarProductosAlCarrito(@Field("clienteid") clienteid: String,
+                                 @Field("productoid") productoid: Int,
+                                 @Field("cantidad") cantidad: Int,
+                                 @Field("notaproducto") notaproducto: String?,
+    ): Single<ModeloBasico>
+
+
+    // LISTADO CARRITO DE COMPRAS
+    @POST("cliente/carrito/ver/orden")
+    @FormUrlEncoded
+    fun listadoCarritoComprs(@Field("clienteid") idcliente: String,
+    ): Single<ModeloCarrito>
+
+
+
+
 
 
 

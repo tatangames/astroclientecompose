@@ -77,12 +77,23 @@ sealed class Routes(val route: String) {
     // VISTA MI USUARIO
     object VistaMiUsuario: Routes("vistaMiUsuario")
 
-
     // VISTA LISTADO PRODUCTOS
     object VistaListadoProductos : Routes("vistaListadoProductos/{idcategoria}") {
         fun createRoute(
             idcategoria: Int
         ) = "vistaListadoProductos/$idcategoria"
     }
+
+
+    // VISTA INFORMACION DE UN PRODUCTO
+    object VistaInformacionProducto : Routes("vistaInformacionProducto/{idproducto}") {
+        fun createRoute(
+            idproducto: Int
+        ) = "vistaInformacionProducto/$idproducto"
+    }
+
+
+
+
 
 }

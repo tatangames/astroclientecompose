@@ -222,208 +222,216 @@ fun MenuPrincipalScreen(
                 }
             }
 
-            // 2) Título unicamente
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp, vertical = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Categorías",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Red,
-                            fontSize = 20.sp
+            if (!modeloListaCategoriasArray.isNullOrEmpty()) {
+
+                // 2) Título unicamente
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp, vertical = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Categorías",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Red,
+                                fontSize = 20.sp
+                            )
                         )
-                    )
-                }
-            }
-
-
-            // 3) Grid categorías
-            item {
-                LazyHorizontalGrid(
-                    rows = GridCells.Fixed(2),
-                    modifier = Modifier
-                        // alto = 2 filas * altoCard + 1 spacing entre filas + padding vertical
-                        .height(170.dp * 2 + 8.dp + 8.dp + 8.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(
-                        start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp
-                    )
-                ) {
-                    items(modeloListaCategoriasArray) { categoria ->
-                        val imagenUrl = "${RetrofitBuilder.urlImagenes}${categoria.imagen}"
-
-                        Card(
-                            modifier = Modifier
-                                .width(160.dp)
-                                .height(170.dp) // 🔹 altura fija para alinear filas
-                            .clickable {
-
-                                navController.navigate(
-                                    Routes.VistaListadoProductos.createRoute(categoria.id)
-                                ) {
-                                    popUpTo(Routes.VistaListadoProductos.route) {
-                                        inclusive = true
-                                    }
-                                    launchSingleTop = true
-                                }
-
-                        },
-                            shape = RoundedCornerShape(16.dp),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White)
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(10.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                AsyncImage(
-                                    model = ImageRequest.Builder(ctx)
-                                        .data(imagenUrl)
-                                        .crossfade(true)
-                                        .placeholder(R.drawable.spinloading)
-                                        .error(R.drawable.camaradefecto)
-                                        .build(),
-                                    contentDescription = categoria.nombre,
-                                    contentScale = ContentScale.Fit,
-                                    modifier = Modifier
-                                        .height(90.dp)
-                                        .fillMaxWidth()
-                                )
-
-                                Spacer(Modifier.height(6.dp))
-
-                                Text(
-                                    text = categoria.nombre ?: "",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Medium,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                        }
                     }
                 }
-            }
 
-            item { Spacer(Modifier.height(10.dp)) }
 
-            // 2) Título unicamente
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp, vertical = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Populares",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Red,
-                            fontSize = 20.sp
+                // 3) Grid categorías
+                item {
+                    LazyHorizontalGrid(
+                        rows = GridCells.Fixed(2),
+                        modifier = Modifier
+                            // alto = 2 filas * altoCard + 1 spacing entre filas + padding vertical
+                            .height(170.dp * 2 + 8.dp + 8.dp + 8.dp)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(
+                            start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp
                         )
-                    )
-                }
-            }
+                    ) {
+                        items(modeloListaCategoriasArray) { categoria ->
+                            val imagenUrl = "${RetrofitBuilder.urlImagenes}${categoria.imagen}"
 
+                            Card(
+                                modifier = Modifier
+                                    .width(160.dp)
+                                    .height(170.dp) // 🔹 altura fija para alinear filas
+                                    .clickable {
 
-           /// AQUI VA POPULARES
+                                        navController.navigate(
+                                            Routes.VistaListadoProductos.createRoute(categoria.id)
+                                        ) {
+                                            popUpTo(Routes.VistaListadoProductos.route) {
+                                                inclusive = true
+                                            }
+                                            launchSingleTop = true
+                                        }
 
-
-            item {
-                LazyHorizontalGrid(
-                    rows = GridCells.Fixed(1),
-                    modifier = Modifier
-                        .height(200.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp) // 🔹 separa el 1er y último card
-                ) {
-                    items(modeloListaPopularesArray) { prod ->
-                        val imagenUrl = "${RetrofitBuilder.urlImagenes}${prod.imagen}"
-
-                        Card(
-                            modifier = Modifier
-                                .width(160.dp)
-                                .wrapContentHeight(), // 🔹 evita espacio vacío
-                            shape = RoundedCornerShape(16.dp),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White)
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(12.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(6.dp) // 🔹 control fino de separaciones
+                                    },
+                                shape = RoundedCornerShape(16.dp),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color.White)
                             ) {
-                                // Imagen
-                                AsyncImage(
-                                    model = ImageRequest.Builder(ctx)
-                                        .data(imagenUrl)
-                                        .crossfade(true)
-                                        .placeholder(R.drawable.spinloading)
-                                        .error(R.drawable.camaradefecto)
-                                        .build(),
-                                    contentDescription = prod.nombre,
-                                    contentScale = ContentScale.Fit,
-                                    modifier = Modifier
-                                        .height(84.dp)           // 🔹 un poco más compacta
-                                        .fillMaxWidth()
-                                )
-
-                                // Nombre
-                                Text(
-                                    text = prod.nombre ?: "",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Medium,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-
-                                // Precio centrado + botón en misma fila
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 2.dp),
-                                    verticalAlignment = Alignment.CenterVertically
+                                Column(
+                                    modifier = Modifier.padding(10.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    Text(
-                                        text = prod.precio?.let { "$it" } ?: "$0.00",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = Color(0xFF444444),
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.weight(1f) // centra el precio
+                                    AsyncImage(
+                                        model = ImageRequest.Builder(ctx)
+                                            .data(imagenUrl)
+                                            .crossfade(true)
+                                            .placeholder(R.drawable.spinloading)
+                                            .error(R.drawable.camaradefecto)
+                                            .build(),
+                                        contentDescription = categoria.nombre,
+                                        contentScale = ContentScale.Fit,
+                                        modifier = Modifier
+                                            .height(90.dp)
+                                            .fillMaxWidth()
                                     )
 
-                                    Box(
+                                    Spacer(Modifier.height(6.dp))
+
+                                    Text(
+                                        text = categoria.nombre ?: "",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Medium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            if (!modeloListaPopularesArray.isNullOrEmpty()) {
+
+                item { Spacer(Modifier.height(10.dp)) }
+
+                // 2) Título unicamente
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp, vertical = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Populares",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Red,
+                                fontSize = 20.sp
+                            )
+                        )
+                    }
+                }
+
+
+                /// AQUI VA POPULARES
+
+
+                item {
+                    LazyHorizontalGrid(
+                        rows = GridCells.Fixed(1),
+                        modifier = Modifier
+                            .height(200.dp)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp) // 🔹 separa el 1er y último card
+                    ) {
+                        items(modeloListaPopularesArray) { prod ->
+                            val imagenUrl = "${RetrofitBuilder.urlImagenes}${prod.imagen}"
+
+                            Card(
+                                modifier = Modifier
+                                    .width(160.dp)
+                                    .wrapContentHeight(), // 🔹 evita espacio vacío
+                                shape = RoundedCornerShape(16.dp),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color.White)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(12.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(6.dp) // 🔹 control fino de separaciones
+                                ) {
+                                    // Imagen
+                                    AsyncImage(
+                                        model = ImageRequest.Builder(ctx)
+                                            .data(imagenUrl)
+                                            .crossfade(true)
+                                            .placeholder(R.drawable.spinloading)
+                                            .error(R.drawable.camaradefecto)
+                                            .build(),
+                                        contentDescription = prod.nombre,
+                                        contentScale = ContentScale.Fit,
                                         modifier = Modifier
-                                            .size(26.dp) // 🔹 un poco más compacto
-                                            .clip(CircleShape)
-                                            .background(Color(0xFFE74C3C))
-                                            .clickable { /* onAdd(prod) */ },
-                                        contentAlignment = Alignment.Center
+                                            .height(84.dp)           // 🔹 un poco más compacta
+                                            .fillMaxWidth()
+                                    )
+
+                                    // Nombre
+                                    Text(
+                                        text = prod.nombre ?: "",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Medium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+
+                                    // Precio centrado + botón en misma fila
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 2.dp),
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Add,
-                                            contentDescription = "Agregar",
-                                            tint = Color.White,
-                                            modifier = Modifier.size(16.dp)
+                                        Text(
+                                            text = prod.precio?.let { "$it" } ?: "$0.00",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = Color(0xFF444444),
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.weight(1f) // centra el precio
                                         )
+
+                                        Box(
+                                            modifier = Modifier
+                                                .size(26.dp) // 🔹 un poco más compacto
+                                                .clip(CircleShape)
+                                                .background(Color(0xFFE74C3C))
+                                                .clickable { /* onAdd(prod) */ },
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Add,
+                                                contentDescription = "Agregar",
+                                                tint = Color.White,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
+
             }
 
 

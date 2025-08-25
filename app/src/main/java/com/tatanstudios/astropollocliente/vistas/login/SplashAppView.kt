@@ -49,13 +49,13 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.LottieConstants
 import com.tatanstudios.astropollocliente.extras.TokenManager
 import com.tatanstudios.astropollocliente.model.rutas.Routes
-import com.tatanstudios.astropollocliente.vistas.opciones.carrito.CarritoScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.perfil.PerfilScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.historial.HistorialFechaScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.historial.HistorialOrdenScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.historial.InfoProductoHistorialScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.historial.ListadoProductosHistorialScreen
 import com.tatanstudios.astropollocliente.vistas.principal.PrincipalScreen
+import com.tatanstudios.astropollocliente.vistas.principal.carrito.CarritoComprasScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.direcciones.MapaScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.direcciones.MisDireccionesScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.direcciones.RegistrarNuevaDireccionScreen
@@ -64,6 +64,7 @@ import com.tatanstudios.astropollocliente.vistas.principal.opciones.horarios.Hor
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.password.ActualizarPasswordScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.premios.PremiosScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.usuario.MiUsuarioScreen
+import com.tatanstudios.astropollocliente.vistas.principal.productos.ElegirProductoScreen
 import com.tatanstudios.astropollocliente.vistas.principal.productos.ListadoProductosScreen
 
 
@@ -111,7 +112,7 @@ fun AppNavigation() {
 
 
         composable(Routes.VistaPrincipal.route) { PrincipalScreen(navController) }
-        composable(Routes.VistaCarrito.route) { CarritoScreen(navController) }
+        composable(Routes.VistaCarrito.route) { CarritoComprasScreen(navController) }
         composable(Routes.VistaPerfil.route) { PerfilScreen(navController) }
         composable(Routes.VistaHistorialFecha.route) { HistorialFechaScreen(navController) }
 
@@ -225,6 +226,15 @@ fun AppNavigation() {
                 idCategoria = idCategoria
             )
         }
+
+        // VISTA INFORMACION PRODUCTO
+        composable(Routes.VistaInformacionProducto.route) { backStackEntry ->
+            val idproductoStr = backStackEntry.arguments?.getString("idproducto") ?: "0"
+            val idproducto = idproductoStr.toIntOrNull() ?: 0
+
+            ElegirProductoScreen(navController = navController, idProducto = idproducto)
+        }
+
 
 
 
