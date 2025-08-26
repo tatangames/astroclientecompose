@@ -149,6 +149,9 @@
     <string name="nota_es_requerida">Nota es requerida</string>
     <string name="agregado_al_carrito">Agregado al Carrito</string>
     <string name="carrito">Carrito</string>
+    <string name="subtotal">Sub Total</string>
+    <string name="borrar_carrito">¿Borrar Carrito?</string>
+    <string name="carrito_borrado">Carrito Borrado</string>
 
 
 

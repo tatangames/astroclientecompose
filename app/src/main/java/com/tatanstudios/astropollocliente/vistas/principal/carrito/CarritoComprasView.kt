@@ -1,22 +1,17 @@
 package com.tatanstudios.astropollocliente.vistas.principal.carrito
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,7 +22,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -35,11 +29,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.tatanstudios.astropollocliente.extras.TokenManager
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,233 +41,367 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.navOptions
 import com.tatanstudios.astropollocliente.R
-import com.tatanstudios.astropollocliente.componentes.BarraToolbarColor
-import com.tatanstudios.astropollocliente.componentes.CardHistorialOrden
 import com.tatanstudios.astropollocliente.componentes.CustomToasty
 import com.tatanstudios.astropollocliente.componentes.LoadingModal
 import com.tatanstudios.astropollocliente.componentes.ToastType
-import com.tatanstudios.astropollocliente.model.modelos.ModeloDireccionesArray
-import com.tatanstudios.astropollocliente.model.modelos.ModeloHistorialOrdenesArray
-import com.tatanstudios.astropollocliente.model.modelos.ModeloProductos
-import com.tatanstudios.astropollocliente.model.modelos.ModeloProductosArray
-import com.tatanstudios.astropollocliente.model.rutas.Routes
-import com.tatanstudios.astropollocliente.viewmodel.HistorialFechasBuscarViewModel
-import com.tatanstudios.astropollocliente.viewmodel.ListadoProductosViewModel
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.TabRowDefaults.Divider
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.tatanstudios.astropollocliente.componentes.BarraToolbarColorCarritoCompras
+import com.tatanstudios.astropollocliente.componentes.CustomModal2Botones
 import com.tatanstudios.astropollocliente.model.modelos.ModeloCarritoTemporal
-import com.tatanstudios.astropollocliente.model.modelos.ModeloProductosTerceraArray
 import com.tatanstudios.astropollocliente.network.RetrofitBuilder
+import com.tatanstudios.astropollocliente.viewmodel.BorrarCarritoComprasViewModel
 import com.tatanstudios.astropollocliente.viewmodel.ListadoCarritoComprasViewModel
+import kotlinx.coroutines.launch
 
 @Composable
-fun CarritoComprasScreen(navController: NavHostController,
-                           viewModel: ListadoCarritoComprasViewModel = viewModel()
+fun CarritoComprasScreen(
+    navController: NavHostController,
+    viewModel: ListadoCarritoComprasViewModel = viewModel(),
+    viewModelBorrarCarrito: BorrarCarritoComprasViewModel = viewModel()
 ) {
-
     val ctx = LocalContext.current
-    var boolDatosCargados by remember { mutableStateOf(false) }
     val isLoading by viewModel.isLoading.observeAsState(true)
-    val tokenManager = remember { TokenManager(ctx) }
     val resultado by viewModel.resultado.observeAsState()
-    val scope = rememberCoroutineScope() // Crea el alcance de coroutine
+
+    val isLoadingBorrar by viewModelBorrarCarrito.isLoading.observeAsState(true)
+    val resultadoBorrar by viewModelBorrarCarrito.resultado.observeAsState()
+
     val keyboardController = LocalSoftwareKeyboardController.current
+    val scope = rememberCoroutineScope() // Crea el alcance de coroutine
+
     var idusuario by remember { mutableStateOf("") }
+    var datosCargados by remember { mutableStateOf(false) }   // usa solo este
+    var estadoProductoGlobal by remember { mutableStateOf(false) }
 
-    var modeloListaCarritoArray: List<ModeloCarritoTemporal> by remember { mutableStateOf(listOf<ModeloCarritoTemporal>()) }
 
-    LaunchedEffect(Unit) {
-        scope.launch {
-            idusuario = tokenManager.idUsuario.first()
-            viewModel.listadoCarritoComprasRetrofit(idusuario)
-        }
+    var subtotal: String by remember { mutableStateOf("") }
+    var modeloListaCarritoArray by remember {                 // usa esta lista
+        mutableStateOf(listOf<ModeloCarritoTemporal>())
     }
 
-    // ocultar teclado
+    // MODAL PREGUNTA BOTON
+    var showModal2Boton by remember { mutableStateOf(false) }
+
+
+    LaunchedEffect(Unit) {
+        idusuario = TokenManager(ctx).idUsuario.first()
+        viewModel.listadoCarritoComprasRetrofit(idusuario)
+    }
+
     keyboardController?.hide()
-
-
-
-
 
     Scaffold(
         topBar = {
-            BarraToolbarColor(
+            // Pasa argumentos posicionales (o usa los nombres correctos según tu función)
+            BarraToolbarColorCarritoCompras(
                 navController,
                 stringResource(R.string.carrito),
                 colorResource(R.color.colorRojo),
+                onDeleteClick = {
+                    // 👇 aquí escuchas el click
+                    if(datosCargados){
+                        if(estadoProductoGlobal){
+                            showModal2Boton = true
+                        }else{
+                            CustomToasty(
+                                ctx,
+                                "No hay Productos",
+                                ToastType.INFO
+                            )
+                        }
+                    }
+                }
+            )
+        },
+        bottomBar = {
+            if (datosCargados) BarraSubtotal(
+                subtotal = subtotal,
+                onClick = { /* navegar a checkout */ }
             )
         }
     ) { innerPadding ->
-
         Box(
-            modifier = Modifier
+            Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            if (boolDatosCargados) {
+            if (datosCargados) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-
-
-
-
-
+                    // usa la lista correcta
+                    items(
+                        items = modeloListaCarritoArray,
+                        key = { it.carritoid }   // asegúrate que el nombre del campo es correcto
+                    ) { p ->
+                        ItemCarritoCard(p)       // la función debe aceptar ModeloCarritoTemporal
+                    }
                 }
             }
-        }
 
-        if (isLoading) LoadingModal(isLoading = true)
 
-        resultado?.getContentIfNotHandled()?.let { result ->
-            when (result.success) {
-                1 -> {
-                    modeloListaCarritoArray = result.listadoCarritoTemporal
-                    boolDatosCargados = true
-                }
-                else -> {
-                    CustomToasty(
-                        ctx,
-                        stringResource(id = R.string.error_reintentar_de_nuevo),
-                        ToastType.ERROR
-                    )
-                }
+            if (isLoading) LoadingModal(true)
+
+
+            // MENSAJES
+            if(showModal2Boton){
+                CustomModal2Botones(
+                    showDialog = true,
+                    message = stringResource(R.string.borrar_carrito),
+                    onDismiss = { showModal2Boton = false },
+                    onAccept = {
+                        showModal2Boton = false
+
+                        // BORRAR CARRITO DE COMPRAS
+                        scope.launch {
+                            viewModelBorrarCarrito.eliminarCarritoComprasRetrofit(idusuario)
+                        }
+
+                    },
+                    stringResource(R.string.si),
+                    stringResource(R.string.no),
+                )
             }
+
+
         }
     }
 
 
 
+    // Manejo del resultado
+    resultado?.getContentIfNotHandled()?.let { result ->
+        when (result.success) {
+            1 -> {
+                // SI HAY DATOS
 
-}
+                modeloListaCarritoArray = result.listadoCarritoTemporal
 
-// Encabezado de categoría con estilo solicitado
-@Composable
-fun CategoriaHeader(title: String) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(colorResource(id = R.color.colorBlanco)) // define este color (p.ej. #FFFDF4)
-            .padding(vertical = 8.dp)
-    ) {
-        Text(
-            text = title,
-            color = colorResource(id = R.color.colorRojo),
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(horizontal = 8.dp)
-        )
-        Divider(
-            color = colorResource(id = R.color.colorRojo),
-            thickness = 2.dp,
-            modifier = Modifier
-                .padding(top = 4.dp)
-        )
+                // producto no disponible
+                estadoProductoGlobal = (result.estadoProductoGlobal == 1)
+
+
+                subtotal = result.subTotal ?: ""
+                datosCargados = true
+            }
+            2 -> {
+                // NO HAY DATOS
+                CustomToasty(
+                    ctx,
+                    stringResource(R.string.carrito_vacio),
+                    ToastType.INFO
+                )
+                datosCargados = true
+                subtotal = "$0.00"
+            }
+            else -> {
+                CustomToasty(
+                    ctx,
+                    stringResource(id = R.string.error_reintentar_de_nuevo),
+                    ToastType.ERROR
+                )
+            }
+        }
     }
+
+
+    resultadoBorrar?.getContentIfNotHandled()?.let { result ->
+        when (result.success) {
+            1 -> {
+                // carrito borrado
+                CustomToasty(
+                    ctx,
+                    stringResource(id = R.string.carrito_borrado),
+                    ToastType.SUCCESS
+                )
+                navController.popBackStack()
+            }
+            2 -> {
+                // carrito de compras no encontrado
+                CustomToasty(
+                    ctx,
+                    stringResource(id = R.string.carrito_borrado),
+                    ToastType.SUCCESS
+                )
+                navController.popBackStack()
+            }
+            else -> {
+                CustomToasty(
+                    ctx,
+                    stringResource(id = R.string.error_reintentar_de_nuevo),
+                    ToastType.ERROR
+                )
+            }
+        }
+    }
+
+
 }
 
-// Card del producto con imagen abajo-derecha y fallback
+
 @Composable
-fun ProductoItemCard(
-    producto: ModeloProductosTerceraArray,
-    onClick: () -> Unit
-) {
-    val baseUrlImagenes = "${RetrofitBuilder.urlImagenes}${producto.imagen}"
-    var traeImagen = (producto.utilizaImagen == 1)
-    if (producto.imagen.isNullOrBlank()) traeImagen = false
-
-    val imageSlot = 96.dp // ancho reservado para la imagen + padding
-
+private fun ItemCarritoCard(p: ModeloCarritoTemporal) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(min = 110.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Cantidad: Badge azul
+            CantidadBadge(cantidad = p.cantidad)
 
-            // Texto: reservamos espacio a la derecha para la imagen
+            Spacer(Modifier.width(8.dp))
+
+            // Imagen (opcional)
+            if (p.utilizaImagen == 1 && !p.imagen.isNullOrBlank()) {
+
+                val imagenUrl = "${RetrofitBuilder.urlImagenes}${p.imagen}"
+
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(imagenUrl)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = p.nombre,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(RoundedCornerShape(6.dp)),
+                    placeholder = painterResource(R.drawable.spinloading),
+                    error = painterResource(R.drawable.camaradefecto),
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(Modifier.width(8.dp))
+            } else {
+                Image(
+                    painter = painterResource(id = R.drawable.camaradefecto),
+                    contentDescription = p.nombre,
+                    modifier = Modifier
+                        .size(72.dp)                 // 👈 define tamaño cuadrado
+                        .clip(CircleShape)           // 👈 recorta en forma de círculo
+                        .border(2.dp, Color.LightGray, CircleShape), // 👈 borde opcional
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(Modifier.width(8.dp))
+            }
+
+            // Nombre + Nota (columna central)
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp)
-                    .padding(end = imageSlot),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 Text(
-                    text = producto.nombre ?: "",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
+                    text = p.nombre ?: "",
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
-
-                if (!producto.descripcion.isNullOrBlank()) {
+                if (!p.titulo.isNullOrBlank() || !p.mensaje.isNullOrBlank()) {
                     Text(
-                        text = producto.descripcion!!.replace("\\r\\n|\\n".toRegex(), "\n"),
+                        text = (p.titulo.orEmpty() + " " + p.mensaje.orEmpty()).trim(),
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray,
-                        lineHeight = 16.sp
-                    )
-                }
-
-                if (!producto.precio.isNullOrBlank()) {
-                    Text(
-                        text = "$${producto.precio}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = colorResource(id = R.color.colorRojo)
+                        color = colorResource(R.color.colorRojo),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
 
-            // Imagen: CENTRADA verticalmente a la derecha
-            Box(
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)   // <-- clave
-                    .padding(end = 10.dp)
-                    .size(72.dp)
-            ) {
-                if (traeImagen) {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(baseUrlImagenes)
-                            .crossfade(true)
-                            .placeholder(R.drawable.spinloading)
-                            .error(R.drawable.camaradefecto)
-                            .build(),
-                        contentDescription = producto.nombre,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                } else {
-                    Image(
-                        painter = painterResource(id = R.drawable.camaradefecto),
-                        contentDescription = producto.nombre,
-                        modifier = Modifier
-                            .size(72.dp)                 // 👈 define tamaño cuadrado
-                            .clip(CircleShape)           // 👈 recorta en forma de círculo
-                            .border(2.dp, Color.LightGray, CircleShape), // 👈 borde opcional
-                        contentScale = ContentScale.Crop
-                    )
-                }
-            }
+            // Precio a la derecha
+            val precioUnit = p.precio?.toDoubleOrNull() ?: 0.0
+            val totalLinea = if (!p.precioformat.isNullOrBlank())
+                null
+            else
+                precioUnit * (p.cantidad)
+
+            Text(
+                text = p.precioformat?:"",
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.End,
+                modifier = Modifier.widthIn(min = 72.dp)
+            )
+        }
+        Divider(thickness = 1.dp, color = Color(0xFFE0E0E0))
+    }
+}
+
+/* ---------- Badge cantidad ---------- */
+
+@Composable
+private fun CantidadBadge(cantidad: Int) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .height(24.dp)
+            .widthIn(min = 36.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .background(Color(0xFF1976D2)) // azul
+            .padding(horizontal = 6.dp)
+    ) {
+        Text(
+            text = "${cantidad}x",
+            color = Color.White,
+            style = MaterialTheme.typography.labelLarge,
+            maxLines = 1
+        )
+    }
+}
+
+/* ---------- Bottom bar Subtotal ---------- */
+
+@Composable
+private fun BarraSubtotal(subtotal: String, onClick: () -> Unit) {
+    Surface(shadowElevation = 6.dp) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(colorResource(R.color.colorRojo))
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .navigationBarsPadding(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.subtotal) + ": $subtotal",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center
+            )
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                contentDescription = null,
+                tint = Color.White
+            )
         }
     }
 }
+
+
+
+/* ---------- Util ---------- */
+
+

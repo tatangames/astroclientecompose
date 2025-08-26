@@ -1,8 +1,6 @@
 package com.tatanstudios.astropollocliente.network
 
-import com.tatanstudios.astropollocliente.model.modelos.ModeloBasico
 import com.tatanstudios.astropollocliente.model.modelos.ModeloCarrito
-import com.tatanstudios.astropollocliente.model.modelos.ModeloCarritoTemporal
 import com.tatanstudios.astropollocliente.model.modelos.ModeloDatosBasicos
 import com.tatanstudios.astropollocliente.model.modelos.ModeloDirecciones
 import com.tatanstudios.astropollocliente.model.modelos.ModeloHistorialOrdenes
@@ -223,14 +221,21 @@ interface ApiService {
                                  @Field("productoid") productoid: Int,
                                  @Field("cantidad") cantidad: Int,
                                  @Field("notaproducto") notaproducto: String?,
-    ): Single<ModeloBasico>
+    ): Single<ModeloDatosBasicos>
 
 
     // LISTADO CARRITO DE COMPRAS
     @POST("cliente/carrito/ver/orden")
     @FormUrlEncoded
-    fun listadoCarritoComprs(@Field("clienteid") idcliente: String,
+    fun listadoCarritoCompras(@Field("clienteid") idcliente: String,
     ): Single<ModeloCarrito>
+
+    // PETICION PARA BORRAR CARRITO DE COMPRAS
+    @POST("cliente/carrito/borrar/orden")
+    @FormUrlEncoded
+    fun borrarCarritoCompras(@Field("clienteid") idcliente: String,
+    ): Single<ModeloDatosBasicos>
+
 
 
 

@@ -49,22 +49,6 @@ data class ModeloMenuPrincipalCategoriasArray(
     @SerializedName("activo") val activo: Int,
 )
 
-data class ModeloMenuPrincipalProductosArray(
-    @SerializedName("id") val id: Int,
-    @SerializedName("id_productos") val idProducto: Int,
-    @SerializedName("id_servicios") val idServicios: Int,
-    @SerializedName("id_categorias") val idCategoria: Int,
-    @SerializedName("nombre") val nombre: String?,
-    @SerializedName("imagen") val imagen: String?,
-    @SerializedName("descripcion") val descripcion: String?,
-    @SerializedName("precio") val precio: String?,
-    @SerializedName("activo") val activo: Int,
-    @SerializedName("utiliza_nota") val utilizaNota: Int,
-    @SerializedName("nota") val nota: String?,
-    @SerializedName("utiliza_imagen") val utilizaImagen: Int,
-)
-
-
 
 
 
@@ -276,14 +260,6 @@ data class ModeloInformacionProductoArray(
     @SerializedName("nota") val nota: String?,
     @SerializedName("utiliza_imagen") val utilizaImagen: Int,
     )
-
-
-
-data class ModeloBasico(
-    @SerializedName("success") val success: Int,
-    @SerializedName("titulo") val titulo: String?,
-    @SerializedName("mensaje") val mensaje: String?,
-)
 
 
 

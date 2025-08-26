@@ -29,6 +29,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
@@ -899,3 +900,54 @@ fun BarraToolbarColorDireccion(
     )
 }
 
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BarraToolbarColorCarritoCompras(
+    navController: NavController,
+    titulo: String,
+    backgroundColor: Color,
+    onDeleteClick: () -> Unit   // 👈 nuevo callback
+) {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                text = titulo,
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                color = Color.White,
+                fontWeight = FontWeight.Medium,
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Atrás",
+                    tint = Color.White
+                )
+            }
+        },
+        actions = {
+            IconButton(
+                onClick = { onDeleteClick() } // 👈 lo llamas aquí
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Eliminar carrito",
+                    tint = Color.White
+                )
+            }
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = backgroundColor,
+            navigationIconContentColor = Color.White,
+            titleContentColor = Color.White,
+            actionIconContentColor = Color.White
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .requiredHeightIn(min = 56.dp)
+    )
+}
