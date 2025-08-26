@@ -68,6 +68,7 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import coil.compose.AsyncImage
@@ -335,44 +336,45 @@ fun CarritoComprasScreen(
 
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ItemCarritoSwipeAction(
+fun ItemCarritoSwipeAction(
     p: ModeloCarritoTemporal,
     onClick: (ModeloCarritoTemporal) -> Unit,          // tap normal al card
     onSwipeAction: (ModeloCarritoTemporal) -> Unit     // acción al deslizar completo o tocar botón
 ) {
     val scope = rememberCoroutineScope()
+    val itemShape = RoundedCornerShape(8.dp)
+
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
             if (value == SwipeToDismissBoxValue.EndToStart) {
-                // Llamá tu función
                 onSwipeAction(p)
-                // NO eliminar: reseteamos para que el item quede visible
-
-                false // <- indicamos que NO se “dismissee”
+                // No permitir que se "desaparezca" el item
+                false
             } else false
         },
         positionalThreshold = { distance -> distance * 0.5f } // 50%
     )
 
     SwipeToDismissBox(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(itemShape) // recorta fondo y contenido
+            .background(MaterialTheme.colorScheme.surface),
         state = dismissState,
         enableDismissFromStartToEnd = false,
         enableDismissFromEndToStart = true,
         backgroundContent = {
-            Row(
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color(0xFFFFE5E5))
+                    .fillMaxSize()                      // ← en lugar de matchParentSize()
+                    .clip(itemShape)                    // asegura bordes redondeados
+                    .background(Color(0xFFFFE5E5))      // fondo del swipe
                     .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .height(IntrinsicSize.Min),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End
             ) {
-                // Botón visible mientras deslizás (también dispara la acción)
                 AssistChip(
+                    modifier = Modifier.align(Alignment.CenterEnd),
                     onClick = {
                         onSwipeAction(p)
                         scope.launch { dismissState.reset() }
@@ -388,21 +390,22 @@ private fun ItemCarritoSwipeAction(
             }
         },
         content = {
+            // Deja el Card rectangular; el redondeo lo hace el clip externo
             ItemCarritoCard(p = p, onClick = onClick)
         }
     )
 }
 
-
-
 @Composable
-private fun ItemCarritoCard(p: ModeloCarritoTemporal,
-                            onClick: (ModeloCarritoTemporal) -> Unit) {
+private fun ItemCarritoCard(
+    p: ModeloCarritoTemporal,
+    onClick: (ModeloCarritoTemporal) -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick(p) }, // 👈 aquí detectás el click
-        shape = RoundedCornerShape(8.dp),
+            .clickable { onClick(p) },
+        shape = RectangleShape, // ← sin bordes redondeados aquí
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Row(
@@ -411,16 +414,14 @@ private fun ItemCarritoCard(p: ModeloCarritoTemporal,
                 .padding(horizontal = 8.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Cantidad: Badge azul
+            // Badge de cantidad (usa tu implementación existente)
             CantidadBadge(cantidad = p.cantidad)
 
             Spacer(Modifier.width(8.dp))
 
             // Imagen (opcional)
             if (p.utilizaImagen == 1 && !p.imagen.isNullOrBlank()) {
-
                 val imagenUrl = "${RetrofitBuilder.urlImagenes}${p.imagen}"
-
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(imagenUrl)
@@ -440,9 +441,9 @@ private fun ItemCarritoCard(p: ModeloCarritoTemporal,
                     painter = painterResource(id = R.drawable.camaradefecto),
                     contentDescription = p.nombre,
                     modifier = Modifier
-                        .size(72.dp)                 // 👈 define tamaño cuadrado
-                        .clip(CircleShape)           // 👈 recorta en forma de círculo
-                        .border(2.dp, Color.LightGray, CircleShape), // 👈 borde opcional
+                        .size(72.dp)
+                        .clip(CircleShape)
+                        .border(2.dp, Color.LightGray, CircleShape),
                     contentScale = ContentScale.Crop
                 )
                 Spacer(Modifier.width(8.dp))
@@ -463,17 +464,15 @@ private fun ItemCarritoCard(p: ModeloCarritoTemporal,
                     Text(
                         text = (p.titulo.orEmpty() + " " + p.mensaje.orEmpty()).trim(),
                         style = MaterialTheme.typography.bodySmall,
-                        color = colorResource(R.color.colorRojo),
+                        color = MaterialTheme.colorScheme.error,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
             }
 
-
-
             Text(
-                text = p.precioformat?:"",
+                text = p.precioformat ?: "",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.End,
                 modifier = Modifier.widthIn(min = 72.dp)
@@ -482,7 +481,6 @@ private fun ItemCarritoCard(p: ModeloCarritoTemporal,
         Divider(thickness = 1.dp, color = Color(0xFFE0E0E0))
     }
 }
-
 /* ---------- Badge cantidad ---------- */
 
 @Composable

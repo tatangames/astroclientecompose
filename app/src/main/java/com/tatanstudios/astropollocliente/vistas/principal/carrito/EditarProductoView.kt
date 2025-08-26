@@ -66,6 +66,8 @@ import com.tatanstudios.astropollocliente.componentes.CustomModal1Boton
 import com.tatanstudios.astropollocliente.componentes.CustomModal1BotonTitulo
 import com.tatanstudios.astropollocliente.model.modelos.ModeloInformacionProductoArray
 import com.tatanstudios.astropollocliente.model.modelos.ModeloInformacionProductoEditarArray
+import com.tatanstudios.astropollocliente.network.RetrofitBuilder
+import com.tatanstudios.astropollocliente.viewmodel.ActualizarProductoEditadoViewModel
 
 import com.tatanstudios.astropollocliente.viewmodel.InformacionProductoEditadoViewModel
 import java.util.Locale
@@ -76,7 +78,7 @@ fun EditarProductoScreen(
     navController: NavHostController,
     idFilaCarrito: Int,
     viewModel: InformacionProductoEditadoViewModel = viewModel(),
-    //viewModelGuardar: EditarProductoCarritoViewModel = viewModel(),   // ← VM para guardar cambios
+    viewModelGuardar: ActualizarProductoEditadoViewModel = viewModel(),   // ← VM para guardar cambios
 ) {
     val ctx = LocalContext.current
     val tokenManager = remember { TokenManager(ctx) }
@@ -86,16 +88,8 @@ fun EditarProductoScreen(
     val resultado by viewModel.resultado.observeAsState()
 
     // Guardar cambios
-    //val isLoadingGuardar by viewModelGuardar.isLoading.observeAsState(false)
-    //val resultadoGuardar by viewModelGuardar.resultado.observeAsState()
-
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val scope = rememberCoroutineScope()
-
-    // MODAL 1 BOTON
-    var showModal1Boton by remember { mutableStateOf(false) }
-    var modalMensajeString by remember { mutableStateOf("") }
-    var modalTituloString by remember { mutableStateOf("") }
+    val isLoadingGuardar by viewModelGuardar.isLoading.observeAsState(false)
+    val resultadoGuardar by viewModelGuardar.resultado.observeAsState()
 
     // Estado de datos
     var producto by remember { mutableStateOf<ModeloInformacionProductoEditarArray?>(null) }
@@ -113,27 +107,7 @@ fun EditarProductoScreen(
         viewModel.informacionProductoEditarRetrofit(idusuario, idFilaCarrito)
     }
 
-    // manejar resultado retrofit (carga)
-    resultado?.getContentIfNotHandled()?.let { res ->
-        if (res.success == 1) {
-            producto = res.producto
-            // Setear estados iniciales sólo una vez
-            res.producto?.let { p ->
-                if (!datosInicializados) {
-                    cantidad = (p.cantidad).coerceAtLeast(1)                   // viene del JSON
-                    // toma 'nota' si tu backend la manda; si no, usa nota_producto
-                    nota = (p.nota ?: p.notaProducto ?: "").trim()
-                    datosInicializados = true
-                }
-            }
-        } else {
-            CustomToasty(
-                ctx,
-                ctx.getString(R.string.error_reintentar_de_nuevo),
-                ToastType.ERROR
-            )
-        }
-    }
+
 
     Scaffold(
         topBar = {
@@ -167,9 +141,11 @@ fun EditarProductoScreen(
                     item {
                         val tieneImagen = prod.utilizaImagen == 1 && !prod.imagen.isNullOrBlank()
                         if (tieneImagen) {
+                            val imagenUrl = "${RetrofitBuilder.urlImagenes}${prod.imagen}"
+
                             AsyncImage(
                                 model = ImageRequest.Builder(ctx)
-                                    .data(/* TU_URL_BASE + */ prod.imagen)
+                                    .data(imagenUrl)
                                     .crossfade(true)
                                     .build(),
                                 contentDescription = prod.nombre,
@@ -320,17 +296,14 @@ fun EditarProductoScreen(
                                     return@Button
                                 }
 
-                                val cantidadElegida = cantidad
-                                val notaElegida = nota.trim()
-
                                 // Llama tu endpoint de actualización/edición del carrito
                                 // Ajusta parámetros según tu API:
-                                /*viewModelGuardar.editarProductoCarritoRetrofit(
-                                    idusuario = idusuario,
-                                    idFilaCarrito = idFilaCarrito,
-                                    cantidad = cantidadElegida,
-                                    nota = notaElegida
-                                )*/
+                                viewModelGuardar.actualizarProductoEditadoRetrofit(
+                                    idusuario,
+                                    cantidad,
+                                    idFilaCarrito,
+                                    nota = nota.trim()
+                                )
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -353,34 +326,53 @@ fun EditarProductoScreen(
             }
 
             if (isLoading) LoadingModal(isLoading = true)
+            if (isLoadingGuardar) LoadingModal(isLoading = true)
 
-            /*if (showModal1Boton) {
-                CustomModal1BotonTitulo(
-                    show = showModal1Boton,
-                    titulo = modalTituloString,
-                    mensaje = modalMensajeString,
-                    onDismiss = { showModal1Boton = false }
-                )
-            }*/
+
+        }
+    }
+
+
+    // manejar resultado retrofit (carga)
+    resultado?.getContentIfNotHandled()?.let { res ->
+        if (res.success == 1) {
+            producto = res.producto
+            // Setear estados iniciales sólo una vez
+            res.producto?.let { p ->
+                if (!datosInicializados) {
+                    cantidad = (p.cantidad).coerceAtLeast(1)                   // viene del JSON
+                    // toma 'nota' si tu backend la manda; si no, usa nota_producto
+                    nota = (p.nota ?: p.notaProducto ?: "").trim()
+                    datosInicializados = true
+                }
+            }
+        } else {
+            CustomToasty(
+                ctx,
+                ctx.getString(R.string.error_reintentar_de_nuevo),
+                ToastType.ERROR
+            )
         }
     }
 
     // manejar resultado de GUARDAR
-    /*resultadoGuardar?.getContentIfNotHandled()?.let { res ->
+    resultadoGuardar?.getContentIfNotHandled()?.let { res ->
         // Ajusta según tu backend:
-        if (res.success == 1 || res.success == 6) {
+        if (res.success == 1 || res.success == 2) {
             CustomToasty(
                 ctx,
-                ctx.getString(R.string.actualizado_correctamente),
+                ctx.getString(R.string.actualizado),
                 ToastType.SUCCESS
             )
             navController.popBackStack()
         } else {
-            modalTituloString = res.titulo ?: ctx.getString(R.string.atencion)
-            modalMensajeString = res.mensaje ?: ctx.getString(R.string.error_reintentar_de_nuevo)
-            showModal1Boton = true
+            CustomToasty(
+                ctx,
+                ctx.getString(R.string.error_reintentar_de_nuevo),
+                ToastType.ERROR
+            )
         }
-    }*/
+    }
 }
 
 /** ===== Utilidades ===== **/

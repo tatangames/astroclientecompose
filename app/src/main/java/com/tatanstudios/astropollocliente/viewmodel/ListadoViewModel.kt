@@ -1340,3 +1340,47 @@ class BorrarFilaCarritoViewModel() : ViewModel() {
         disposable?.dispose() // Limpiar la suscripción
     }
 }
+
+
+
+class ActualizarProductoEditadoViewModel() : ViewModel() {
+
+    private val _resultado = MutableLiveData<Event<ModeloDatosBasicos>>()
+    val resultado: LiveData<Event<ModeloDatosBasicos>> get() = _resultado
+
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    private var disposable: Disposable? = null
+    private var isRequestInProgress = false
+
+    fun actualizarProductoEditadoRetrofit(idcliente: String, cantidad: Int, idcarritofila: Int, nota: String?) {
+        if (isRequestInProgress) return
+
+        isRequestInProgress = true
+
+        _isLoading.value = true
+        disposable = RetrofitBuilder.getApiService().actualizarProductoEditado(idcliente, cantidad, idcarritofila, nota)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .retry()
+            .subscribe(
+                { response ->
+                    _isLoading.value = false
+                    _resultado.value = Event(response)
+                    isRequestInProgress = false
+                },
+                { error ->
+                    _isLoading.value = false
+                    isRequestInProgress = false
+                }
+            )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposable?.dispose() // Limpiar la suscripción
+    }
+}
+
+

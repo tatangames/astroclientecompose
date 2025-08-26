@@ -255,6 +255,15 @@ interface ApiService {
     ): Single<ModeloInformacionProductoEditar>
 
 
+    // ACTUALIZAR PRODUCTO EDITADO
+    @POST("cliente/carrito/cambiar/cantidad")
+    @FormUrlEncoded
+    fun actualizarProductoEditado(@Field("clienteid") idcliente: String,
+                                  @Field("cantidad") cantidad: Int,
+                                  @Field("carritoid") idcarrito: Int,
+                                  @Field("nota") nota: String?,
+    ): Single<ModeloDatosBasicos>
+
 }
 
 
