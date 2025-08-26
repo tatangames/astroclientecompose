@@ -7,6 +7,7 @@ import com.tatanstudios.astropollocliente.model.modelos.ModeloHistorialOrdenes
 import com.tatanstudios.astropollocliente.model.modelos.ModeloHorario
 import com.tatanstudios.astropollocliente.model.modelos.ModeloInfoProducto
 import com.tatanstudios.astropollocliente.model.modelos.ModeloInformacionProducto
+import com.tatanstudios.astropollocliente.model.modelos.ModeloInformacionProductoEditar
 import com.tatanstudios.astropollocliente.model.modelos.ModeloMenuPrincipal
 import com.tatanstudios.astropollocliente.model.modelos.ModeloPoligonos
 import com.tatanstudios.astropollocliente.model.modelos.ModeloPremios
@@ -238,9 +239,19 @@ interface ApiService {
 
 
 
+    // INFORMACION DE PRODUCTO PARA EDITARLO
+    @POST("cliente/carrito/ver/producto")
+    @FormUrlEncoded
+    fun informacionProductoParaEditar(@Field("clienteid") idcliente: String,
+                                      @Field("carritoid") idcarrito: Int,
+    ): Single<ModeloInformacionProductoEditar>
 
 
-
+    @POST("cliente/carrito/eliminar/producto")
+    @FormUrlEncoded
+    fun eliminarFilaCarrito(@Field("clienteid") idcliente: String,
+                            @Field("carritoid") idcarrito: Int,
+    ): Single<ModeloDatosBasicos>
 
 
 

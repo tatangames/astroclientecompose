@@ -3,9 +3,11 @@ package com.tatanstudios.astropollocliente.vistas.principal.carrito
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -54,9 +56,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
@@ -66,8 +75,10 @@ import coil.request.ImageRequest
 import com.tatanstudios.astropollocliente.componentes.BarraToolbarColorCarritoCompras
 import com.tatanstudios.astropollocliente.componentes.CustomModal2Botones
 import com.tatanstudios.astropollocliente.model.modelos.ModeloCarritoTemporal
+import com.tatanstudios.astropollocliente.model.rutas.Routes
 import com.tatanstudios.astropollocliente.network.RetrofitBuilder
 import com.tatanstudios.astropollocliente.viewmodel.BorrarCarritoComprasViewModel
+import com.tatanstudios.astropollocliente.viewmodel.BorrarFilaCarritoViewModel
 import com.tatanstudios.astropollocliente.viewmodel.ListadoCarritoComprasViewModel
 import kotlinx.coroutines.launch
 
@@ -75,7 +86,8 @@ import kotlinx.coroutines.launch
 fun CarritoComprasScreen(
     navController: NavHostController,
     viewModel: ListadoCarritoComprasViewModel = viewModel(),
-    viewModelBorrarCarrito: BorrarCarritoComprasViewModel = viewModel()
+    viewModelBorrarCarrito: BorrarCarritoComprasViewModel = viewModel(),
+    viewModelBorrarFila: BorrarFilaCarritoViewModel = viewModel()
 ) {
     val ctx = LocalContext.current
     val isLoading by viewModel.isLoading.observeAsState(true)
@@ -84,13 +96,16 @@ fun CarritoComprasScreen(
     val isLoadingBorrar by viewModelBorrarCarrito.isLoading.observeAsState(true)
     val resultadoBorrar by viewModelBorrarCarrito.resultado.observeAsState()
 
+    val isLoadingFilaBorrar by viewModelBorrarFila.isLoading.observeAsState(true)
+    val resultadoFilaBorrar by viewModelBorrarFila.resultado.observeAsState()
+
+
     val keyboardController = LocalSoftwareKeyboardController.current
     val scope = rememberCoroutineScope() // Crea el alcance de coroutine
 
     var idusuario by remember { mutableStateOf("") }
     var datosCargados by remember { mutableStateOf(false) }   // usa solo este
     var estadoProductoGlobal by remember { mutableStateOf(false) }
-
 
     var subtotal: String by remember { mutableStateOf("") }
     var modeloListaCarritoArray by remember {                 // usa esta lista
@@ -99,7 +114,6 @@ fun CarritoComprasScreen(
 
     // MODAL PREGUNTA BOTON
     var showModal2Boton by remember { mutableStateOf(false) }
-
 
     LaunchedEffect(Unit) {
         idusuario = TokenManager(ctx).idUsuario.first()
@@ -149,19 +163,40 @@ fun CarritoComprasScreen(
                     contentPadding = PaddingValues(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // usa la lista correcta
                     items(
                         items = modeloListaCarritoArray,
-                        key = { it.carritoid }   // asegúrate que el nombre del campo es correcto
+                        key = { it.carritoid }
                     ) { p ->
-                        ItemCarritoCard(p)       // la función debe aceptar ModeloCarritoTemporal
+                        ItemCarritoSwipeAction(
+                            p = p,
+                            onClick = { item ->
+                                navController.navigate(
+                                    Routes.VistaEditarProducto.createRoute(item.carritoid)
+                                ) {
+                                    popUpTo(Routes.VistaInformacionProducto.route) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            },
+                            onSwipeAction = { item ->
+
+
+                                // 👉 AQUÍ MANDAR A ELIMINAR FILA
+                                scope.launch {
+                                    viewModelBorrarFila.eliminarFilaCarritoRetrofit(idusuario, item.carritoid)
+                                }
+
+
+                            }
+                        )
+
+                        Spacer(Modifier.height(6.dp))
                     }
                 }
             }
 
-
             if (isLoading) LoadingModal(true)
-
+            if(isLoadingBorrar) LoadingModal(true)
+            if(isLoadingFilaBorrar) LoadingModal(true)
 
             // MENSAJES
             if(showModal2Boton){
@@ -182,11 +217,8 @@ fun CarritoComprasScreen(
                     stringResource(R.string.no),
                 )
             }
-
-
         }
     }
-
 
 
     // Manejo del resultado
@@ -199,7 +231,6 @@ fun CarritoComprasScreen(
 
                 // producto no disponible
                 estadoProductoGlobal = (result.estadoProductoGlobal == 1)
-
 
                 subtotal = result.subTotal ?: ""
                 datosCargados = true
@@ -223,7 +254,6 @@ fun CarritoComprasScreen(
             }
         }
     }
-
 
     resultadoBorrar?.getContentIfNotHandled()?.let { result ->
         when (result.success) {
@@ -256,13 +286,122 @@ fun CarritoComprasScreen(
     }
 
 
+    resultadoFilaBorrar?.getContentIfNotHandled()?.let { result ->
+        when (result.success) {
+            1 -> {
+                // carrito de compras borrado completamente
+                datosCargados = false
+                CustomToasty(
+                    ctx,
+                    stringResource(id = R.string.carrito_borrado),
+                    ToastType.SUCCESS
+                )
+                navController.popBackStack()
+            }
+            2 -> {
+                // producto eliminado
+                datosCargados = false
+                CustomToasty(
+                    ctx,
+                    stringResource(id = R.string.producto_eliminado),
+                    ToastType.SUCCESS
+                )
+                scope.launch {
+                    viewModel.listadoCarritoComprasRetrofit(idusuario)
+                }
+            }
+            3 -> { // producto no encontrado
+
+                datosCargados = false
+                CustomToasty(
+                    ctx,
+                    stringResource(id = R.string.producto_eliminado),
+                    ToastType.SUCCESS
+                )
+                scope.launch {
+                    viewModel.listadoCarritoComprasRetrofit(idusuario)
+                }
+            }
+            else -> {
+                CustomToasty(
+                    ctx,
+                    stringResource(id = R.string.error_reintentar_de_nuevo),
+                    ToastType.ERROR
+                )
+            }
+        }
+    }
+
+
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ItemCarritoCard(p: ModeloCarritoTemporal) {
+private fun ItemCarritoSwipeAction(
+    p: ModeloCarritoTemporal,
+    onClick: (ModeloCarritoTemporal) -> Unit,          // tap normal al card
+    onSwipeAction: (ModeloCarritoTemporal) -> Unit     // acción al deslizar completo o tocar botón
+) {
+    val scope = rememberCoroutineScope()
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { value ->
+            if (value == SwipeToDismissBoxValue.EndToStart) {
+                // Llamá tu función
+                onSwipeAction(p)
+                // NO eliminar: reseteamos para que el item quede visible
+
+                false // <- indicamos que NO se “dismissee”
+            } else false
+        },
+        positionalThreshold = { distance -> distance * 0.5f } // 50%
+    )
+
+    SwipeToDismissBox(
+        state = dismissState,
+        enableDismissFromStartToEnd = false,
+        enableDismissFromEndToStart = true,
+        backgroundContent = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFFFFE5E5))
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .height(IntrinsicSize.Min),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End
+            ) {
+                // Botón visible mientras deslizás (también dispara la acción)
+                AssistChip(
+                    onClick = {
+                        onSwipeAction(p)
+                        scope.launch { dismissState.reset() }
+                    },
+                    label = { Text("Borrar", color = Color.White) },
+                    leadingIcon = {
+                        Icon(Icons.Default.Delete, contentDescription = null, tint = Color.White)
+                    },
+                    colors = AssistChipDefaults.assistChipColors(
+                        containerColor = Color(0xFFFF1744)
+                    )
+                )
+            }
+        },
+        content = {
+            ItemCarritoCard(p = p, onClick = onClick)
+        }
+    )
+}
+
+
+
+@Composable
+private fun ItemCarritoCard(p: ModeloCarritoTemporal,
+                            onClick: (ModeloCarritoTemporal) -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick(p) }, // 👈 aquí detectás el click
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
@@ -331,12 +470,7 @@ private fun ItemCarritoCard(p: ModeloCarritoTemporal) {
                 }
             }
 
-            // Precio a la derecha
-            val precioUnit = p.precio?.toDoubleOrNull() ?: 0.0
-            val totalLinea = if (!p.precioformat.isNullOrBlank())
-                null
-            else
-                precioUnit * (p.cantidad)
+
 
             Text(
                 text = p.precioformat?:"",

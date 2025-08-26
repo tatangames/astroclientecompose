@@ -152,7 +152,8 @@
     <string name="subtotal">Sub Total</string>
     <string name="borrar_carrito">¿Borrar Carrito?</string>
     <string name="carrito_borrado">Carrito Borrado</string>
-
+    <string name="editar_cantidad">Editar Cantidad</string>
+    <string name="producto_eliminado">Producto Eliminado</string>
 
 
 

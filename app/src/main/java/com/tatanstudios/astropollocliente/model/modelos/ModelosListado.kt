@@ -13,8 +13,6 @@ data class ModeloDatosBasicos(
 
 
 
-
-
 data class ModeloMenuPrincipal(
     @SerializedName("success") val success: Int,
     @SerializedName("titulo") val titulo: String?,
@@ -290,3 +288,19 @@ data class ModeloCarritoTemporal(
 
 
 
+data class ModeloInformacionProductoEditar(
+    @SerializedName("success") val success: Int,
+    @SerializedName("producto") val informacionProductoEditar: List<ModeloInformacionProductoEditarArray>
+)
+
+data class ModeloInformacionProductoEditarArray(
+    @SerializedName("productoID") val productoID: Int,
+    @SerializedName("nombre") val nombre: String?,
+    @SerializedName("descripcion") val descripcion: String?,
+    @SerializedName("cantidad") val cantidad: Int,
+    @SerializedName("nota_producto") val notaProducto: String?,
+    @SerializedName("imagen") val imagen: String?,
+    @SerializedName("precio") val precio: String?,
+    @SerializedName("utiliza_nota") val utilizaNota: Int,
+    @SerializedName("utiliza_imagen") val utilizaImagen: Int,
+)

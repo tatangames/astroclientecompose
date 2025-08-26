@@ -56,6 +56,7 @@ import com.tatanstudios.astropollocliente.vistas.principal.opciones.historial.In
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.historial.ListadoProductosHistorialScreen
 import com.tatanstudios.astropollocliente.vistas.principal.PrincipalScreen
 import com.tatanstudios.astropollocliente.vistas.principal.carrito.CarritoComprasScreen
+import com.tatanstudios.astropollocliente.vistas.principal.carrito.EditarProductoScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.direcciones.MapaScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.direcciones.MisDireccionesScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.direcciones.RegistrarNuevaDireccionScreen
@@ -233,6 +234,14 @@ fun AppNavigation() {
             val idproducto = idproductoStr.toIntOrNull() ?: 0
 
             ElegirProductoScreen(navController = navController, idProducto = idproducto)
+        }
+
+        // VISTA INFORMACION PRODUCTO PARA EDITARLO
+        composable(Routes.VistaEditarProducto.route) { backStackEntry ->
+            val idfilaCarritoStr = backStackEntry.arguments?.getString("idfilacarrito") ?: "0"
+            val idfilaCarrito = idfilaCarritoStr.toIntOrNull() ?: 0
+
+            EditarProductoScreen(navController = navController, idFilaProducto = idfilaCarrito)
         }
 
 
