@@ -134,14 +134,11 @@ fun ElegirProductoScreen(
 
     // cargar datos
     LaunchedEffect(idProducto) {
+        idusuario = tokenManager.idUsuario.first()
         viewModel.informacionProductoRetrofit(idProducto)
     }
 
-    // ocultar teclado al entrar
-    LaunchedEffect(Unit) {
-        idusuario = tokenManager.idUsuario.first()
-        keyboardController?.hide()
-    }
+
 
     // manejar resultado retrofit
     resultado?.getContentIfNotHandled()?.let { result ->

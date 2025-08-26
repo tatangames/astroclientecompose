@@ -238,6 +238,14 @@ interface ApiService {
     ): Single<ModeloDatosBasicos>
 
 
+    @POST("cliente/carrito/eliminar/producto")
+    @FormUrlEncoded
+    fun eliminarFilaCarrito(@Field("clienteid") idcliente: String,
+                            @Field("carritoid") idcarrito: Int,
+    ): Single<ModeloDatosBasicos>
+
+
+
 
     // INFORMACION DE PRODUCTO PARA EDITARLO
     @POST("cliente/carrito/ver/producto")
@@ -245,14 +253,6 @@ interface ApiService {
     fun informacionProductoParaEditar(@Field("clienteid") idcliente: String,
                                       @Field("carritoid") idcarrito: Int,
     ): Single<ModeloInformacionProductoEditar>
-
-
-    @POST("cliente/carrito/eliminar/producto")
-    @FormUrlEncoded
-    fun eliminarFilaCarrito(@Field("clienteid") idcliente: String,
-                            @Field("carritoid") idcarrito: Int,
-    ): Single<ModeloDatosBasicos>
-
 
 
 }

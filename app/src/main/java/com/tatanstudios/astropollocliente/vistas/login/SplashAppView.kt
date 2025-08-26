@@ -241,7 +241,7 @@ fun AppNavigation() {
             val idfilaCarritoStr = backStackEntry.arguments?.getString("idfilacarrito") ?: "0"
             val idfilaCarrito = idfilaCarritoStr.toIntOrNull() ?: 0
 
-            EditarProductoScreen(navController = navController, idFilaProducto = idfilaCarrito)
+            EditarProductoScreen(navController = navController, idfilaCarrito)
         }
 
 

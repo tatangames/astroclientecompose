@@ -1268,13 +1268,13 @@ class InformacionProductoEditadoViewModel() : ViewModel() {
     private var disposable: Disposable? = null
     private var isRequestInProgress = false
 
-    fun informacionProductoRetrofit(idcliente: String, idcarrito: Int) {
+    fun informacionProductoEditarRetrofit(idcliente: String, idfilacarrito: Int) {
         if (isRequestInProgress) return
 
         isRequestInProgress = true
 
         _isLoading.value = true
-        disposable = RetrofitBuilder.getApiService().informacionProductoParaEditar(idcliente, idcarrito)
+        disposable = RetrofitBuilder.getApiService().informacionProductoParaEditar(idcliente, idfilacarrito)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .retry()

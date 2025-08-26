@@ -290,7 +290,7 @@ data class ModeloCarritoTemporal(
 
 data class ModeloInformacionProductoEditar(
     @SerializedName("success") val success: Int,
-    @SerializedName("producto") val informacionProductoEditar: List<ModeloInformacionProductoEditarArray>
+    @SerializedName("producto") val producto: ModeloInformacionProductoEditarArray?
 )
 
 data class ModeloInformacionProductoEditarArray(
@@ -300,7 +300,8 @@ data class ModeloInformacionProductoEditarArray(
     @SerializedName("cantidad") val cantidad: Int,
     @SerializedName("nota_producto") val notaProducto: String?,
     @SerializedName("imagen") val imagen: String?,
-    @SerializedName("precio") val precio: String?,
+    @SerializedName("precio") val precio: String?,         // viene como String ("10.25")
     @SerializedName("utiliza_nota") val utilizaNota: Int,
-    @SerializedName("utiliza_imagen") val utilizaImagen: Int,
+    @SerializedName("nota") val nota: String?,             // está en tu JSON de ejemplo
+    @SerializedName("utiliza_imagen") val utilizaImagen: Int
 )

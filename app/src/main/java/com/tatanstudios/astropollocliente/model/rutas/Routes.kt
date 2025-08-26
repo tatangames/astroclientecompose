@@ -94,10 +94,10 @@ sealed class Routes(val route: String) {
 
 
     // VISTA PARA EDITAR PRODUCTO
-    object VistaEditarProducto : Routes("vistaInformacionProductoEditar/{idfilaproducto}") {
+    object VistaEditarProducto : Routes("vistaInformacionProductoEditar/{idfilacarrito}") {
         fun createRoute(
-            idfilaproducto: Int
-        ) = "vistaInformacionProductoEditar/$idfilaproducto"
+            idfilacarrito: Int
+        ) = "vistaInformacionProductoEditar/$idfilacarrito"
     }
 
 
