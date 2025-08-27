@@ -6,6 +6,7 @@ import com.tatanstudios.astropollocliente.model.modelos.ModeloDirecciones
 import com.tatanstudios.astropollocliente.model.modelos.ModeloHistorialOrdenes
 import com.tatanstudios.astropollocliente.model.modelos.ModeloHorario
 import com.tatanstudios.astropollocliente.model.modelos.ModeloInfoProducto
+import com.tatanstudios.astropollocliente.model.modelos.ModeloInformacionOrdenParaEnviar
 import com.tatanstudios.astropollocliente.model.modelos.ModeloInformacionProducto
 import com.tatanstudios.astropollocliente.model.modelos.ModeloInformacionProductoEditar
 import com.tatanstudios.astropollocliente.model.modelos.ModeloMenuPrincipal
@@ -263,6 +264,44 @@ interface ApiService {
                                   @Field("carritoid") idcarrito: Int,
                                   @Field("nota") nota: String?,
     ): Single<ModeloDatosBasicos>
+
+
+
+    // INFORMACION DE ORDEN PARA ENVIAR
+    @POST("cliente/carrito/ver/proceso-orden")
+    @FormUrlEncoded
+    fun informacionOrdenParaEnviar(@Field("clienteid") idcliente: String,
+    ): Single<ModeloInformacionOrdenParaEnviar>
+
+
+    // VERIFICAR CUPON
+    @POST("cliente/verificar/cupon")
+    @FormUrlEncoded
+    fun verificarCupon(@Field("clienteid") idcliente: String,
+                       @Field("cupon") cupon: String
+    ): Single<ModeloDatosBasicos>
+
+
+
+    // ENVIAR ORDEN FINAL
+    @POST("cliente/proceso/enviar/orden")
+    @FormUrlEncoded
+    fun enviarOrdenFinal(@Field("clienteid") idcliente: String,
+                         @Field("nota") nota: String?,
+                         @Field("cupon") cupon: String?,
+                         @Field("aplicacupon") aplicacupon: Int?,
+                         @Field("version") version: String?,
+                         @Field("idfirebase") idfirebase: String?,
+    ): Single<ModeloDatosBasicos>
+
+
+
+
+
+
+
+
+
 
 }
 

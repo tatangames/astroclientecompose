@@ -8,7 +8,8 @@ data class ModeloDatosBasicos(
     @SerializedName("titulo") val titulo: String?,
     @SerializedName("mensaje") val mensaje: String?,
     @SerializedName("usuario") val usuario: String?,
-    @SerializedName("correo") val correo: String?
+    @SerializedName("correo") val correo: String?,
+    @SerializedName("resta") val resta: String?
 )
 
 
@@ -305,3 +306,21 @@ data class ModeloInformacionProductoEditarArray(
     @SerializedName("nota") val nota: String?,             // está en tu JSON de ejemplo
     @SerializedName("utiliza_imagen") val utilizaImagen: Int
 )
+
+
+data class ModeloInformacionOrdenParaEnviar(
+    @SerializedName("success") val success: Int,
+    @SerializedName("total") val total: String?,
+    @SerializedName("direccion") val direccion: String?,
+    @SerializedName("cliente") val cliente: String?,
+    @SerializedName("minimo") val minimo: Int,
+    @SerializedName("mensaje") val mensaje: String?,
+    @SerializedName("usacupon") val usacupon: Int,
+    @SerializedName("usapremio") val usapremio: Int,
+    @SerializedName("textopremio") val textopremio: String?,
+)
+
+
+
+
+

@@ -101,5 +101,9 @@ sealed class Routes(val route: String) {
     }
 
 
+    // VISTA PARA ENVIAR LA ORDEN
+    object VistaEnviarOrden: Routes("vistaEnviarOrden")
+
+
 
 }

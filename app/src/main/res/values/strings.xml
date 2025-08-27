@@ -154,7 +154,16 @@
     <string name="carrito_borrado">Carrito Borrado</string>
     <string name="editar_cantidad">Editar Cantidad</string>
     <string name="producto_eliminado">Producto Eliminado</string>
-
+    <string name="enviar_orden">ENVIAR ORDEN</string>
+    <string name="procesar_orden">PROCESAR ORDEN</string>
+    <string name="nota_para_la_orden_ejemplo">Nota para orden (Ejemplo: Tocar timbre)</string>
+    <string name="confirmar_orden">Confirmar Orden</string>
+    <string name="direccion_de_entrega">Dirección de Entrega</string>
+    <string name="cupon_es_requerido">Cupón es requerido</string>
+    <string name="cupon_no_valido">Cupón no Válido</string>
+    <string name="agregar_cupon">Agregar Cupón</string>
+    <string name="borrar_cupon">Borrar Cupón</string>
+    <string name="minimo_de_consumo">Mínimo de Consumo</string>
 
 
 

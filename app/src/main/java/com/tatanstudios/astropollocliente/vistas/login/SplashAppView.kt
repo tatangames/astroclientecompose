@@ -66,6 +66,7 @@ import com.tatanstudios.astropollocliente.vistas.principal.opciones.password.Act
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.premios.PremiosScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.usuario.MiUsuarioScreen
 import com.tatanstudios.astropollocliente.vistas.principal.productos.ElegirProductoScreen
+import com.tatanstudios.astropollocliente.vistas.principal.productos.EnviarOrdenScreen
 import com.tatanstudios.astropollocliente.vistas.principal.productos.ListadoProductosScreen
 
 
@@ -243,6 +244,9 @@ fun AppNavigation() {
 
             EditarProductoScreen(navController = navController, idfilaCarrito)
         }
+
+        // VISTA ENVIAR ORDEN
+        composable(Routes.VistaEnviarOrden.route) { EnviarOrdenScreen(navController) }
 
 
 

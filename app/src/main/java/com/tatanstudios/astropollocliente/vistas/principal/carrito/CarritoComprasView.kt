@@ -1,5 +1,6 @@
 package com.tatanstudios.astropollocliente.vistas.principal.carrito
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -100,7 +101,6 @@ fun CarritoComprasScreen(
     val isLoadingFilaBorrar by viewModelBorrarFila.isLoading.observeAsState(true)
     val resultadoFilaBorrar by viewModelBorrarFila.resultado.observeAsState()
 
-
     val keyboardController = LocalSoftwareKeyboardController.current
     val scope = rememberCoroutineScope() // Crea el alcance de coroutine
 
@@ -149,7 +149,16 @@ fun CarritoComprasScreen(
         bottomBar = {
             if (datosCargados) BarraSubtotal(
                 subtotal = subtotal,
-                onClick = { /* navegar a checkout */ }
+                onClick = {
+
+
+                    if(estadoProductoGlobal && datosCargados){
+                        navController.navigate(Routes.VistaEnviarOrden.route) {
+                            popUpTo(Routes.VistaEnviarOrden.route) { inclusive = true }
+                        }
+                    }
+
+                }
             )
         }
     ) { innerPadding ->
@@ -507,7 +516,8 @@ private fun CantidadBadge(cantidad: Int) {
 
 @Composable
 private fun BarraSubtotal(subtotal: String, onClick: () -> Unit) {
-    Surface(shadowElevation = 6.dp) {
+    Surface(shadowElevation = 6.dp,
+            modifier = Modifier.clickable { onClick() } ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
