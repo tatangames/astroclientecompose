@@ -249,7 +249,7 @@ fun ProductoItemCard(
 
                 if (!producto.descripcion.isNullOrBlank()) {
                     Text(
-                        text = producto.descripcion!!.replace("\\r\\n|\\n".toRegex(), "\n"),
+                        text = producto.descripcion.replace("\\r\\n|\\n".toRegex(), "\n"),
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.Gray,
                         lineHeight = 16.sp

@@ -111,15 +111,18 @@ import com.tatanstudios.astropollocliente.componentes.BarraToolbarColorMenuPrinc
 import com.tatanstudios.astropollocliente.componentes.BarraToolbarColorOrdenesEstado
 import com.tatanstudios.astropollocliente.componentes.CustomModal1Boton
 import com.tatanstudios.astropollocliente.componentes.CustomModal1BotonTitulo
+import com.tatanstudios.astropollocliente.componentes.CustomModal2Botones
 import com.tatanstudios.astropollocliente.model.modelos.ModeloCarritoTemporal
 import com.tatanstudios.astropollocliente.model.modelos.ModeloInformacionProductoArray
 import com.tatanstudios.astropollocliente.model.modelos.ModeloOrdenesArray
 import com.tatanstudios.astropollocliente.model.modelos.ModeloOrdenesIndividualArray
 import com.tatanstudios.astropollocliente.model.modelos.ModeloProductosTerceraArray
 import com.tatanstudios.astropollocliente.network.RetrofitBuilder
+import com.tatanstudios.astropollocliente.viewmodel.CancelarOrdenViewModel
 import com.tatanstudios.astropollocliente.viewmodel.EnviarProductoAlCarritoViewModel
-import com.tatanstudios.astropollocliente.viewmodel.InformacionDeUnaOrden
+import com.tatanstudios.astropollocliente.viewmodel.InformacionDeUnaOrdenViewModel
 import com.tatanstudios.astropollocliente.viewmodel.InformacionProductoViewModel
+import com.tatanstudios.astropollocliente.vistas.login.getVersionName
 import java.util.Locale
 import kotlin.collections.first
 
@@ -128,12 +131,17 @@ import kotlin.collections.first
 fun EstadoOrdenScreen(
     navController: NavHostController,
     idorden: Int,
-    viewModel: InformacionDeUnaOrden = viewModel(),
+    viewModel: InformacionDeUnaOrdenViewModel = viewModel(),
+    viewModelCancelar: CancelarOrdenViewModel = viewModel(),
 ) {
     val ctx = LocalContext.current
     val tokenManager = remember { TokenManager(ctx) }
+
     val isLoading by viewModel.isLoading.observeAsState(true)
     val resultado by viewModel.resultado.observeAsState()
+
+    val isLoadingCancelar by viewModelCancelar.isLoading.observeAsState(true)
+    val resultadoCancelar by viewModelCancelar.resultado.observeAsState()
 
     var idusuario by remember { mutableStateOf("") }
     var modeloOrdenesArray by remember { mutableStateOf(listOf<ModeloOrdenesIndividualArray>()) }
@@ -147,6 +155,13 @@ fun EstadoOrdenScreen(
     var showRatingDialog by rememberSaveable { mutableStateOf(false) }
     var rating by rememberSaveable { mutableIntStateOf(1) } // ⭐ por defecto y mínima
 
+    var showModalCancelarOrden by rememberSaveable { mutableStateOf(false) }
+
+
+    var showModalOrdenYaFueIniciada by rememberSaveable { mutableStateOf(false) }
+    var tituloOrdenYaIniciada by rememberSaveable { mutableStateOf("") }
+    var mensajeOrdenYaIniciada by rememberSaveable { mutableStateOf("") }
+
 
     // estado de refresco
     var refreshing by remember { mutableStateOf(false) }
@@ -156,20 +171,6 @@ fun EstadoOrdenScreen(
         viewModel.informacionOrdenIndividualRetrofit(idorden)
     }
 
-
-    // manejar resultado retrofit
-    resultado?.getContentIfNotHandled()?.let { result ->
-        refreshing = false
-        if (result.success == 1) {
-            modeloOrdenesArray = result.ordenes
-        } else {
-            CustomToasty(
-                ctx,
-                stringResource(id = R.string.error_reintentar_de_nuevo),
-                ToastType.ERROR
-            )
-        }
-    }
 
     val pullRefreshState = rememberPullRefreshState(refreshing, { recargar() })
 
@@ -188,9 +189,6 @@ fun EstadoOrdenScreen(
                 .padding(innerPadding)
                 .pullRefresh(pullRefreshState) // 👈 habilita “jalón para recargar”
         ) {
-            if(refreshing){
-                LoadingModal(isLoading = true)
-            }
             // Contenido con scroll
             if (isLoading && !refreshing) {
                 LoadingModal(isLoading = true)
@@ -209,9 +207,6 @@ fun EstadoOrdenScreen(
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        // ===========================
-                        // TU CONTENIDO EXISTENTE AQUÍ
-                        // (desde "#orden: ${orden.id}" hasta el final)
                         // ===========================
 
                         Text(
@@ -246,7 +241,11 @@ fun EstadoOrdenScreen(
                             if (orden.estadoIniciada == 0) {
                                 Button(
                                     onClick = {
-                                        CustomToasty(ctx, "Cancelar orden (conecta acción)", ToastType.INFO)
+
+                                        // == CANCELAR ORDEN ==
+                                        showModalCancelarOrden = true
+
+
                                     },
                                     modifier = Modifier.weight(1f),
                                     shape = RoundedCornerShape(12.dp),
@@ -339,6 +338,30 @@ fun EstadoOrdenScreen(
                 modifier = Modifier.align(Alignment.TopCenter)
             )
 
+            if(refreshing){
+                LoadingModal(isLoading = true)
+            }
+
+            if(isLoadingCancelar){
+                LoadingModal(isLoading = true)
+            }
+
+            if(showModalCancelarOrden){
+                CustomModal2Botones(
+                    showDialog = true,
+                    message = stringResource(R.string.cancelar_orden),
+                    onDismiss = { showModalCancelarOrden = false },
+                    onAccept = {
+                        showModalCancelarOrden = false
+
+                            viewModelCancelar.cancelarOrdenRetrofit(
+                                idorden
+                            )
+                    },
+                    stringResource(R.string.si),
+                    stringResource(R.string.no),
+                )
+            }
 
             if (showRatingDialog) {
                 RatingDialog(
@@ -353,6 +376,71 @@ fun EstadoOrdenScreen(
                         CustomToasty(ctx, "¡Gracias! Calificación: $rating ⭐", ToastType.SUCCESS)
                     },
                     onCancel = { showRatingDialog = false }
+                )
+            }
+
+            if(showModalOrdenYaFueIniciada){
+                CustomModal1BotonTitulo(showModalOrdenYaFueIniciada, tituloOrdenYaIniciada, mensajeOrdenYaIniciada, onDismiss = {
+                    showModalOrdenYaFueIniciada = false
+                    viewModel.informacionOrdenIndividualRetrofit(idorden)
+                })
+            }
+        }
+    }
+
+
+
+
+    // manejar resultado retrofit
+    resultado?.getContentIfNotHandled()?.let { result ->
+        refreshing = false
+        if (result.success == 1) {
+            modeloOrdenesArray = result.ordenes
+
+        } else {
+            CustomToasty(
+                ctx,
+                stringResource(id = R.string.error_reintentar_de_nuevo),
+                ToastType.ERROR
+            )
+        }
+    }
+
+
+
+
+    // manejar resultado retrofit
+    resultadoCancelar?.getContentIfNotHandled()?.let { result ->
+
+        when (result.success) {
+
+            1 -> {
+                // ORDEN YA FUE INICIADA POR RESTAURANTE
+                val titulo = result.titulo ?: ""
+                val mensaje = result.mensaje ?: ""
+                tituloOrdenYaIniciada = titulo
+                mensajeOrdenYaIniciada = mensaje
+                showModalOrdenYaFueIniciada = true
+            }
+            2 -> {
+                // ORDEN CANCELADA CORRECTAMENTE
+               // val titulo = result.titulo ?: ""
+              //  val mensaje = result.mensaje ?: ""
+
+                CustomToasty(
+                    ctx,
+                    stringResource(id = R.string.orden_cancelada),
+                    ToastType.SUCCESS
+                )
+
+                navController.popBackStack()
+            }
+            else -> {
+                // Error, mostrar Toast
+                CustomToasty(
+                    ctx,
+                    stringResource(id = R.string.error_reintentar_de_nuevo),
+                    ToastType.ERROR
                 )
             }
         }

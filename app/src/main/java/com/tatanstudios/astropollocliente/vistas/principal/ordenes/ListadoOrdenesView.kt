@@ -1,18 +1,13 @@
 package com.tatanstudios.astropollocliente.vistas.principal.ordenes
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -33,12 +28,9 @@ import kotlinx.coroutines.flow.first
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -46,69 +38,38 @@ import com.tatanstudios.astropollocliente.R
 import com.tatanstudios.astropollocliente.componentes.CustomToasty
 import com.tatanstudios.astropollocliente.componentes.LoadingModal
 import com.tatanstudios.astropollocliente.componentes.ToastType
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.TabRowDefaults.Divider
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.tatanstudios.astropollocliente.componentes.BarraToolbarColor
-import com.tatanstudios.astropollocliente.componentes.BarraToolbarColorCarritoCompras
 import com.tatanstudios.astropollocliente.componentes.BarraToolbarColorParaListaOrdenes
-import com.tatanstudios.astropollocliente.componentes.CustomModal2Botones
-import com.tatanstudios.astropollocliente.model.modelos.ModeloCarritoTemporal
 import com.tatanstudios.astropollocliente.model.modelos.ModeloOrdenesArray
-import com.tatanstudios.astropollocliente.model.modelos.ModeloProductosArray
 import com.tatanstudios.astropollocliente.model.rutas.Routes
-import com.tatanstudios.astropollocliente.network.RetrofitBuilder
-import com.tatanstudios.astropollocliente.viewmodel.BorrarCarritoComprasViewModel
-import com.tatanstudios.astropollocliente.viewmodel.BorrarFilaCarritoViewModel
-import com.tatanstudios.astropollocliente.viewmodel.ListadoCarritoComprasViewModel
 import com.tatanstudios.astropollocliente.viewmodel.ListadoOrdenesViewModel
-import kotlinx.coroutines.launch
+import com.tatanstudios.astropollocliente.viewmodel.OcultarOrdenViewModel
 
 @Composable
 fun ListadoOrdenesScreen(
     navController: NavHostController,
     viewModel: ListadoOrdenesViewModel = viewModel(),
+    viewModelOcultarOrden: OcultarOrdenViewModel = viewModel(),
 ) {
     val ctx = LocalContext.current
     val isLoading by viewModel.isLoading.observeAsState(true)
     val resultado by viewModel.resultado.observeAsState()
 
+    val isLoadingOcultar by viewModelOcultarOrden.isLoading.observeAsState(true)
+    val resultadoOcultar by viewModelOcultarOrden.resultado.observeAsState()
+
     val keyboardController = LocalSoftwareKeyboardController.current
-    val scope = rememberCoroutineScope() // Crea el alcance de coroutine
 
     var idusuario by remember { mutableStateOf("") }
     var datosCargados by remember { mutableStateOf(false) } // usa solo este
 
-
     var modeloOrdenesArray: List<ModeloOrdenesArray> by remember { mutableStateOf(listOf<ModeloOrdenesArray>()) }
-
-
 
 
     LaunchedEffect(Unit) {
@@ -167,10 +128,7 @@ fun ListadoOrdenesScreen(
                         val onAccion = {
                             if (esCancelada) {
                                 // TODO: borrar (ajusta a tu ViewModel)
-
-
-
-
+                                viewModelOcultarOrden.ocultarOrdenRetrofit(orden.id)
                             } else {
                                 // TODO: navegar a detalle
 
@@ -265,7 +223,7 @@ fun ListadoOrdenesScreen(
                                 if (orden.estadoCancelada == 1) {
                                     if(!orden.notaCancelada.isNullOrBlank()){
                                         Text(
-                                            text = "Cancelada: " + orden.textoPremio,
+                                            text = "Cancelada: " + orden.notaCancelada,
                                             style = MaterialTheme.typography.bodyMedium,
                                             color = Color.Red,
                                             fontWeight = FontWeight.Medium
@@ -307,6 +265,7 @@ fun ListadoOrdenesScreen(
             }
 
             if (isLoading) LoadingModal(true)
+            if (isLoadingOcultar) LoadingModal(true)
 
         }
     }
@@ -331,6 +290,21 @@ fun ListadoOrdenesScreen(
     }
 
 
-
+    resultadoOcultar?.getContentIfNotHandled()?.let { result ->
+        when (result.success) {
+            1 -> {
+               // ORDEN OCULTADA
+               // Recargar datos
+                viewModel.listadoOrdenesRetrofit(idusuario)
+            }
+            else -> {
+                CustomToasty(
+                    ctx,
+                    stringResource(id = R.string.error_reintentar_de_nuevo),
+                    ToastType.ERROR
+                )
+            }
+        }
+    }
 }
 

@@ -328,6 +328,22 @@ interface ApiService {
 
 
 
+    // CANCELAR ORDEN ANTES DE INICIARSE
+    @POST("cliente/proceso/cancelar/orden")
+    @FormUrlEncoded
+    fun cancelarOrden(@Field("idorden") idorden: Int,
+    ): Single<ModeloDatosBasicos>
+
+
+    // OCULTAR UNA ORDEN COMPLETADA
+    @POST("cliente/ocultar/mi/orden")
+    @FormUrlEncoded
+    fun ocultarOrden(@Field("ordenid") idorden: Int,
+    ): Single<ModeloDatosBasicos>
+
+
+
+
 
 
 }

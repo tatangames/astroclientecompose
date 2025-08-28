@@ -309,13 +309,6 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
                             scope.launch {
                                 tokenManager.saveID(_id)
 
-                                /*navController.navigate(Routes.VistaPrincipal.route) {
-                                    popUpTo(0) { // Esto elimina todas las vistas de la pila de navegación
-                                        inclusive = true // Asegura que ninguna pantalla anterior quede en la pila
-                                    }
-                                    launchSingleTop = true // Evita múltiples instancias de la misma vista
-                                }*/
-
                                 navController.navigate(
                                     Routes.VistaPrincipal.createRoute("menu")
                                 ) {
