@@ -951,3 +951,92 @@ fun BarraToolbarColorCarritoCompras(
             .requiredHeightIn(min = 56.dp)
     )
 }
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BarraToolbarColorParaListaOrdenes(titulo: String, backgroundColor: Color) {
+
+
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                text = titulo,
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                color = Color.White,
+                fontWeight = FontWeight.Medium,
+            )
+        },
+
+        actions = {
+            // Puedes agregar acciones adicionales aquí si lo necesitas
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = backgroundColor, // Color de fondo de la barra
+            navigationIconContentColor = Color.White, // Color del ícono de navegación
+            titleContentColor = Color.White, // Color del título
+            actionIconContentColor = Color.White // Color de las acciones
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .requiredHeightIn(min = 56.dp) // Define una altura mínima
+    )
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BarraToolbarColorOrdenesEstado(navController: NavController, titulo: String, backgroundColor: Color) {
+
+    var isNavigating by remember { mutableStateOf(false) }
+
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                text = titulo,
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                color = Color.White,
+                fontWeight = FontWeight.Medium,
+            )
+        },
+
+        navigationIcon = {
+            IconButton(
+                onClick = {
+                    if (!isNavigating) {
+                        isNavigating = true
+
+                        navController.navigate(Routes.VistaPrincipal.createRoute("ordenes")
+                        ) {
+                            popUpTo(Routes.VistaEstadoOrden.route) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    }
+                },
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = stringResource(id = R.string.atras),
+                    tint = Color.White // Color del ícono de navegación
+                )
+            }
+        },
+        actions = {
+            // Puedes agregar acciones adicionales aquí si lo necesitas
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = backgroundColor, // Color de fondo de la barra
+            navigationIconContentColor = Color.White, // Color del ícono de navegación
+            titleContentColor = Color.White, // Color del título
+            actionIconContentColor = Color.White // Color de las acciones
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .requiredHeightIn(min = 56.dp) // Define una altura mínima
+    )
+}
+

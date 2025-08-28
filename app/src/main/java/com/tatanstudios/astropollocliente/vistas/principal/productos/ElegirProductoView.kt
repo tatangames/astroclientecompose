@@ -124,11 +124,17 @@ fun ElegirProductoScreen(
     var modalMensajeString by remember { mutableStateOf("") }
     var modalTituloString by remember { mutableStateOf("") }
 
+    // MOSTRAR MODAL SI NOTA ES REQUERIDA Y NO HE ESCRITO NADA
+    var showModalNotaRequerida by remember { mutableStateOf(false) }
+    var notaStringQueEsRequerido by remember { mutableStateOf("") }
+
 
     // estado UI
     var producto by remember { mutableStateOf<ModeloInformacionProductoArray?>(null) }
     var cantidad by remember { mutableStateOf(1) }
-    var nota by remember { mutableStateOf("") }
+
+    // SI REQUIERE NOTA, ESTO DIRA EL MOTIVO
+    var notaInput by remember { mutableStateOf("") }
     var errorNotaObligatoria by remember { mutableStateOf(false) }
     var idusuario by remember { mutableStateOf("") }
 
@@ -171,6 +177,7 @@ fun ElegirProductoScreen(
                 // parsear precio unitario
                 val precioUnit = prod.precio?.toDoubleOrNull() ?: 0.0
                 val total = precioUnit * cantidad
+                notaStringQueEsRequerido = prod.nota ?: ""
 
                 LazyColumn(
                     modifier = Modifier
@@ -282,10 +289,10 @@ fun ElegirProductoScreen(
                                 style = MaterialTheme.typography.labelLarge
                             )
                             TextField(
-                                value = nota,
+                                value = notaInput,
                                 onValueChange = {
                                     errorNotaObligatoria = false
-                                    nota = if (it.length <= 300) it else it.take(300)
+                                    notaInput = if (it.length <= 300) it else it.take(300)
                                 },
                                 placeholder = { Text(stringResource(R.string.nota_para_este_producto)) },
                                 modifier = Modifier.fillMaxWidth(),
@@ -321,29 +328,26 @@ fun ElegirProductoScreen(
                         )
                     }
 
-
                     item { Spacer(Modifier.height(15.dp)) }
-
 
                     // BOTÓN AGREGAR
                     item {
                         Button(
                             onClick = {
                                 // validar nota obligatoria si utiliza_nota == 1
-                                if (prod.utilizaNota == 1 && nota.isBlank()) {
+                                if (prod.utilizaNota == 1 && notaInput.isBlank()) {
                                     errorNotaObligatoria = true
-                                    CustomToasty(
-                                        ctx,
-                                        ctx.getString(R.string.nota_es_requerida),
-                                        ToastType.WARNING
-                                    )
+
+                                    showModalNotaRequerida = true
+
                                     return@Button
                                 }
 
                                 val cantidadElegida = cantidad
-                                val notaElegida = nota.trim()
+                                val notaElegida = notaInput.trim()
 
-                                viewModelEnviar.enviarProductoCarritoRetrofit(idusuario, idProducto, cantidadElegida, notaElegida)
+                                viewModelEnviar.enviarProductoCarritoRetrofit(idusuario, idProducto,
+                                    cantidadElegida, notaElegida)
 
                             },
                             modifier = Modifier
@@ -375,9 +379,12 @@ fun ElegirProductoScreen(
                 CustomModal1BotonTitulo(showModal1Boton, modalTituloString, modalMensajeString, onDismiss = {showModal1Boton = false})
             }
 
+            if(showModalNotaRequerida){
+                CustomModal1BotonTitulo(showModalNotaRequerida, "Nota Requerida", notaStringQueEsRequerido, onDismiss = {showModalNotaRequerida = false})
+            }
+
         }
     }
-
 
     resultadoEnviar?.getContentIfNotHandled()?.let { result ->
 

@@ -10,10 +10,13 @@ import com.tatanstudios.astropollocliente.model.modelos.ModeloInformacionOrdenPa
 import com.tatanstudios.astropollocliente.model.modelos.ModeloInformacionProducto
 import com.tatanstudios.astropollocliente.model.modelos.ModeloInformacionProductoEditar
 import com.tatanstudios.astropollocliente.model.modelos.ModeloMenuPrincipal
+import com.tatanstudios.astropollocliente.model.modelos.ModeloOrdenes
+import com.tatanstudios.astropollocliente.model.modelos.ModeloOrdenesIndividual
 import com.tatanstudios.astropollocliente.model.modelos.ModeloPoligonos
 import com.tatanstudios.astropollocliente.model.modelos.ModeloPremios
 import com.tatanstudios.astropollocliente.model.modelos.ModeloProductoHistorialOrdenes
 import com.tatanstudios.astropollocliente.model.modelos.ModeloProductos
+import com.tatanstudios.astropollocliente.model.modelos.ModeloProductosDeOrden
 import io.reactivex.rxjava3.core.Single
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -295,9 +298,33 @@ interface ApiService {
     ): Single<ModeloDatosBasicos>
 
 
+    // ENVIAR NOTIFICACION A RESTAURANTE POR ENVIAR ORDEN
+    @POST("cliente/proceso/orden/notificacion")
+    @FormUrlEncoded
+    fun enviarNotificacionRestaurante(@Field("id") id: Int,
+    ): Single<ModeloDatosBasicos>
+
+
+    /// LISTADO DE ORDENES
+    @POST("cliente/ordenes/listado/activas")
+    @FormUrlEncoded
+    fun listadoOrdenes(@Field("clienteid") clienteid: String,
+    ): Single<ModeloOrdenes>
+
+
+    // INFORMACION DE UNA ORDEN PARA VER LOS ESTADOS
+    @POST("cliente/orden/informacion/estado")
+    @FormUrlEncoded
+    fun informacionOrdenIndividual(@Field("ordenid") ordenid: Int,
+    ): Single<ModeloOrdenesIndividual>
 
 
 
+    // INFORMACION LISTADO DE UN PRODUCTO DE UNA ORDEN
+    @POST("cliente/listado/productos/ordenes")
+    @FormUrlEncoded
+    fun listadoProductosOrden(@Field("ordenid") ordenid: Int,
+    ): Single<ModeloProductosDeOrden>
 
 
 

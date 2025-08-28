@@ -12,7 +12,12 @@ sealed class Routes(val route: String) {
 
 
 
-    object VistaPrincipal: Routes("principal")
+  // object VistaPrincipal: Routes("principal")
+
+    object VistaPrincipal : Routes("principal/{selectedScreenVar}") {
+        fun createRoute(selectedScreenVar: String = "menu") =
+            "principal/$selectedScreenVar"
+    }
 
 
     object VistaCarrito: Routes("carrito")
@@ -104,6 +109,21 @@ sealed class Routes(val route: String) {
     // VISTA PARA ENVIAR LA ORDEN
     object VistaEnviarOrden: Routes("vistaEnviarOrden")
 
+
+    // VISTA PARA VER LOS ESTADOS DE UNA ORDEN
+    object VistaEstadoOrden : Routes("vistaEstadoOrden/{idorden}") {
+        fun createRoute(
+            idorden: Int
+        ) = "vistaEstadoOrden/$idorden"
+    }
+
+
+    // VISTA PARA VER LISTADO PRODUCTOS DE UNA ORDEN
+    object VistaListaProductosDeOrden : Routes("vistaListadoProductoOrden/{idorden}") {
+        fun createRoute(
+            idorden: Int
+        ) = "vistaListadoProductoOrden/$idorden"
+    }
 
 
 }

@@ -8,6 +8,7 @@ import android.provider.Settings
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -126,8 +127,6 @@ fun MenuPrincipalScreen(
     var imageUrls by remember { mutableStateOf(listOf<String>()) }
     var modeloListaCategoriasArray by remember { mutableStateOf(listOf<ModeloMenuPrincipalCategoriasArray>()) }
     var modeloListaPopularesArray by remember { mutableStateOf(listOf<ModeloMenuPrincipalPopularesArray>()) }
-
-
 
     var showModal1Boton by remember { mutableStateOf(false) }
     var modalMensajeString by remember { mutableStateOf("") }
@@ -355,79 +354,112 @@ fun MenuPrincipalScreen(
                         contentPadding = PaddingValues(start = 16.dp, end = 16.dp) // 🔹 separa el 1er y último card
                     ) {
                         items(modeloListaPopularesArray) { prod ->
-                            val imagenUrl = "${RetrofitBuilder.urlImagenes}${prod.imagen}"
 
-                            Card(
-                                modifier = Modifier
-                                    .width(160.dp)
-                                    .wrapContentHeight(), // 🔹 evita espacio vacío
-                                shape = RoundedCornerShape(16.dp),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-                                colors = CardDefaults.cardColors(containerColor = Color.White)
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(12.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(6.dp) // 🔹 control fino de separaciones
+                            if(prod.utilizaImagen == 1)
+                            {
+                                val imagenUrl = "${RetrofitBuilder.urlImagenes}${prod.imagen}"
+                                Card(
+                                    modifier = Modifier
+                                        .width(160.dp)
+                                        .wrapContentHeight() // 🔹 evita espacio vacío
+                                    .clickable {
+
+                                        navController.navigate(
+                                            Routes.VistaInformacionProducto.createRoute(prod.id)
+                                        ) {
+                                            popUpTo(Routes.VistaInformacionProducto.route) {
+                                                inclusive = true
+                                            }
+                                            launchSingleTop = true
+                                        }
+
+                                     },
+                                    shape = RoundedCornerShape(16.dp),
+                                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                                    colors = CardDefaults.cardColors(containerColor = Color.White)
                                 ) {
-                                    // Imagen
-                                    AsyncImage(
-                                        model = ImageRequest.Builder(ctx)
-                                            .data(imagenUrl)
-                                            .crossfade(true)
-                                            .placeholder(R.drawable.spinloading)
-                                            .error(R.drawable.camaradefecto)
-                                            .build(),
-                                        contentDescription = prod.nombre,
-                                        contentScale = ContentScale.Fit,
-                                        modifier = Modifier
-                                            .height(84.dp)           // 🔹 un poco más compacta
-                                            .fillMaxWidth()
-                                    )
-
-                                    // Nombre
-                                    Text(
-                                        text = prod.nombre ?: "",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Medium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-
-                                    // Precio centrado + botón en misma fila
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(top = 2.dp),
-                                        verticalAlignment = Alignment.CenterVertically
+                                    Column(
+                                        modifier = Modifier.padding(12.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.spacedBy(6.dp) // 🔹 control fino de separaciones
                                     ) {
-                                        Text(
-                                            text = prod.precio?.let { "$it" } ?: "$0.00",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = Color(0xFF444444),
-                                            textAlign = TextAlign.Center,
-                                            modifier = Modifier.weight(1f) // centra el precio
+                                        // Imagen
+                                        AsyncImage(
+                                            model = ImageRequest.Builder(ctx)
+                                                .data(imagenUrl)
+                                                .crossfade(true)
+                                                .placeholder(R.drawable.spinloading)
+                                                .error(R.drawable.camaradefecto)
+                                                .build(),
+                                            contentDescription = prod.nombre,
+                                            contentScale = ContentScale.Fit,
+                                            modifier = Modifier
+                                                .height(84.dp)           // 🔹 un poco más compacta
+                                                .fillMaxWidth()
                                         )
 
-                                        Box(
+                                        // Nombre
+                                        Text(
+                                            text = prod.nombre ?: "",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Medium,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+
+                                        // Precio centrado + botón en misma fila
+                                        Row(
                                             modifier = Modifier
-                                                .size(26.dp) // 🔹 un poco más compacto
-                                                .clip(CircleShape)
-                                                .background(Color(0xFFE74C3C))
-                                                .clickable { /* onAdd(prod) */ },
-                                            contentAlignment = Alignment.Center
+                                                .fillMaxWidth()
+                                                .padding(top = 2.dp),
+                                            verticalAlignment = Alignment.CenterVertically
                                         ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Add,
-                                                contentDescription = "Agregar",
-                                                tint = Color.White,
-                                                modifier = Modifier.size(16.dp)
+                                            Text(
+                                                text = prod.precio?.let { "$it" } ?: "$0.00",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = Color(0xFF444444),
+                                                textAlign = TextAlign.Center,
+                                                modifier = Modifier.weight(1f) // centra el precio
                                             )
+
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(26.dp) // 🔹 un poco más compacto
+                                                    .clip(CircleShape)
+                                                    .background(Color(0xFFE74C3C))
+                                                    .clickable { /* onAdd(prod) */ },
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Add,
+                                                    contentDescription = "Agregar",
+                                                    tint = Color.White,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                            }
                                         }
                                     }
                                 }
+
+                            }else{
+                                Image(
+                                    painter = painterResource(id = R.drawable.camaradefecto),
+                                    contentDescription = prod.nombre,
+                                    modifier = Modifier
+                                        .size(72.dp)                 // 👈 define tamaño cuadrado
+                                        .clip(CircleShape)           // 👈 recorta en forma de círculo
+                                        .border(2.dp, Color.LightGray, CircleShape), // 👈 borde opcional
+                                    contentScale = ContentScale.Crop
+                                )
                             }
+
+
+
+
+
+
+
                         }
                     }
                 }

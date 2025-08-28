@@ -17,10 +17,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.tatanstudios.astropollocliente.extras.TokenManager
@@ -49,36 +47,28 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.tatanstudios.astropollocliente.componentes.BarraToolbarColorMenuPrincipal
-import com.tatanstudios.astropollocliente.componentes.CustomModal1Boton
 import com.tatanstudios.astropollocliente.componentes.CustomModal1BotonTitulo
-import com.tatanstudios.astropollocliente.model.modelos.ModeloInformacionProductoArray
 import com.tatanstudios.astropollocliente.model.modelos.ModeloInformacionProductoEditarArray
 import com.tatanstudios.astropollocliente.network.RetrofitBuilder
 import com.tatanstudios.astropollocliente.viewmodel.ActualizarProductoEditadoViewModel
 
 import com.tatanstudios.astropollocliente.viewmodel.InformacionProductoEditadoViewModel
 import java.util.Locale
-import kotlin.collections.first
 
 @Composable
 fun EditarProductoScreen(
     navController: NavHostController,
     idFilaCarrito: Int,
     viewModel: InformacionProductoEditadoViewModel = viewModel(),
-    viewModelGuardar: ActualizarProductoEditadoViewModel = viewModel(),   // ← VM para guardar cambios
+    viewModelGuardar: ActualizarProductoEditadoViewModel = viewModel(),
 ) {
     val ctx = LocalContext.current
     val tokenManager = remember { TokenManager(ctx) }
@@ -101,12 +91,17 @@ fun EditarProductoScreen(
     var errorNotaObligatoria by remember { mutableStateOf(false) }
     var datosInicializados by remember { mutableStateOf(false) }
 
+
+    // MOSTRAR MODAL SI NOTA ES REQUERIDA Y NO HE ESCRITO NADA
+    var showModalNotaRequerida by remember { mutableStateOf(false) }
+    var notaStringQueEsRequerido by remember { mutableStateOf("") }
+
+
     // cargar datos
     LaunchedEffect(idFilaCarrito) {
         idusuario = tokenManager.idUsuario.first()
         viewModel.informacionProductoEditarRetrofit(idusuario, idFilaCarrito)
     }
-
 
 
     Scaffold(
@@ -288,11 +283,11 @@ fun EditarProductoScreen(
                                 // validar nota obligatoria si utiliza_nota == 1
                                 if (prod.utilizaNota == 1 && nota.isBlank()) {
                                     errorNotaObligatoria = true
-                                    CustomToasty(
-                                        ctx,
-                                        ctx.getString(R.string.nota_es_requerida),
-                                        ToastType.WARNING
-                                    )
+
+                                    showModalNotaRequerida = true
+
+
+
                                     return@Button
                                 }
 
@@ -328,7 +323,9 @@ fun EditarProductoScreen(
             if (isLoading) LoadingModal(isLoading = true)
             if (isLoadingGuardar) LoadingModal(isLoading = true)
 
-
+            if(showModalNotaRequerida){
+                CustomModal1BotonTitulo(showModalNotaRequerida, "Nota Requerida", notaStringQueEsRequerido, onDismiss = {showModalNotaRequerida = false})
+            }
         }
     }
 
@@ -340,10 +337,10 @@ fun EditarProductoScreen(
             // Setear estados iniciales sólo una vez
             res.producto?.let { p ->
                 if (!datosInicializados) {
-                    cantidad = (p.cantidad).coerceAtLeast(1)                   // viene del JSON
-                    // toma 'nota' si tu backend la manda; si no, usa nota_producto
-                    nota = (p.nota ?: p.notaProducto ?: "").trim()
+                    cantidad = (p.cantidad).coerceAtLeast(1)
+                    nota = p.notaProducto ?: ""
                     datosInicializados = true
+                    notaStringQueEsRequerido = p.nota ?: ""
                 }
             }
         } else {

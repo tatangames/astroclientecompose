@@ -106,6 +106,7 @@ import com.tatanstudios.astropollocliente.componentes.CustomModal2Botones
 import com.tatanstudios.astropollocliente.model.modelos.ModeloInformacionProductoArray
 import com.tatanstudios.astropollocliente.model.modelos.ModeloProductosTerceraArray
 import com.tatanstudios.astropollocliente.network.RetrofitBuilder
+import com.tatanstudios.astropollocliente.viewmodel.EnviarNotificacionRestauranteViewModel
 import com.tatanstudios.astropollocliente.viewmodel.EnviarOrdenFinalViewModel
 import com.tatanstudios.astropollocliente.viewmodel.EnviarProductoAlCarritoViewModel
 import com.tatanstudios.astropollocliente.viewmodel.InformacionOrdenParaEnviarViewModel
@@ -122,6 +123,7 @@ fun EnviarOrdenScreen(
     viewModel: InformacionOrdenParaEnviarViewModel = viewModel(),
     viewModelVerificarCupon: VerificarCuponViewModel = viewModel(),
     viewModelEnviarOrden: EnviarOrdenFinalViewModel = viewModel(),
+    viewModelEnviarNotiRestaurante: EnviarNotificacionRestauranteViewModel = viewModel(),
 ) {
     val ctx = LocalContext.current
 
@@ -134,6 +136,9 @@ fun EnviarOrdenScreen(
 
     val isLoadingEnviarOrden by viewModelEnviarOrden.isLoading.observeAsState(true)
     val resultadoEnviarOrden by viewModelEnviarOrden.resultado.observeAsState()
+
+    val isLoadingNoti by viewModelEnviarNotiRestaurante.isLoading.observeAsState(true)
+    val resultadoNoti by viewModelEnviarNotiRestaurante.resultado.observeAsState()
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -177,6 +182,23 @@ fun EnviarOrdenScreen(
 
     // PARA MOSTRAR MODAL PARA ENVIAR ORDEN SI OR NO
     var showModal2BotonParaEnviarOrden by remember { mutableStateOf(false) }
+
+    // MOSTRAR RESPUESTA DE ERROR PARA CUANDO ENVIAMOS LA ORDEN
+    var showModal1Boton by remember { mutableStateOf(false) }
+    var modalTituloString by remember { mutableStateOf("") }
+    var modalMensajeString by remember { mutableStateOf("") }
+
+    // PARA CUANDO SE ENVIO ORDEN FINAL Y REDIRECCIONA A ORDENES
+    var showModal1BotonFinal by remember { mutableStateOf(false) }
+    var modalTituloStringFinal by remember { mutableStateOf("") }
+    var modalMensajeStringFinal by remember { mutableStateOf("") }
+
+    // NOTA FINAL PARA REDIRECCIONARME A ORDENES
+    // PARA CUANDO SE ENVIO ORDEN FINAL Y REDIRECCIONA A ORDENES
+    var showModal1BotonRedireccionar by remember { mutableStateOf(false) }
+    var modalTituloStringRedireccionar by remember { mutableStateOf("") }
+    var modalMensajeStringRedireccionar by remember { mutableStateOf("") }
+
 
     // cargar datos
     LaunchedEffect(Unit) {
@@ -609,9 +631,21 @@ fun EnviarOrdenScreen(
 
             } // -end if-datoscargados
 
+
+            if(showModal1Boton){
+                CustomModal1BotonTitulo(showModal1Boton, modalTituloString, modalMensajeString, onDismiss = {showModal1Boton = false})
+            }
+
+            if(showModal1BotonFinal){
+                CustomModal1BotonTitulo(showModal1BotonFinal, modalTituloStringFinal, modalMensajeStringFinal, onDismiss = {
+                    showModal1BotonFinal = false
+                })
+            }
+
             if(isLoading) LoadingModal(isLoading = isLoading)
             if(isLoadingVerificarCupon) LoadingModal(isLoading = isLoadingVerificarCupon)
             if(isLoadingEnviarOrden) LoadingModal(isLoading = isLoadingEnviarOrden)
+
 
             if(showModal2BotonParaEnviarOrden){
                 CustomModal2Botones(
@@ -628,6 +662,23 @@ fun EnviarOrdenScreen(
                     stringResource(R.string.si),
                     stringResource(R.string.no),
                 )
+            }
+
+
+            if(showModal1BotonRedireccionar){
+                CustomModal1BotonTitulo(showModal1BotonRedireccionar, modalTituloStringRedireccionar,
+                    modalMensajeStringRedireccionar, onDismiss = {
+                    showModal1BotonRedireccionar = false
+
+                        navController.navigate(Routes.VistaPrincipal.createRoute("ordenes")
+                        ) {
+                            popUpTo(Routes.VistaSplash.route) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+
+                })
             }
 
         }
@@ -681,7 +732,6 @@ fun EnviarOrdenScreen(
             }
         }
     }
-
 
     resultadoVerificarCupon?.getContentIfNotHandled()?.let { result ->
         when (result.success) {
@@ -750,13 +800,23 @@ fun EnviarOrdenScreen(
             // REGLAS
             1 -> {
                // titulo y mensaje
+                val titulo = result.titulo ?: ""
+                val mensaje = result.mensaje ?: ""
+                modalTituloString = titulo
+                modalMensajeString = mensaje
+                showModal1Boton = true
             }
-            2 -> {
+            10 -> {
                 // ORDEN ENVIADA
                 // ENVIAR NOTIFICACION A RESTAURANTE
-                //peticionNotiRestaurante(apiRespuesta.getIdorden());
+                val id = result.idorden
+                viewModelEnviarNotiRestaurante.enviarNotificacionRestauranteRetrofit(id)
 
-                //ordenEnviada(apiRespuesta.getTitulo(), apiRespuesta.getMensaje());
+                val titulo = result.titulo ?: ""
+                val mensaje = result.mensaje ?: ""
+                modalTituloStringFinal = titulo
+                modalMensajeStringFinal = mensaje
+                showModal1BotonFinal = true
             }
             else -> {
                 CustomToasty(
@@ -764,7 +824,6 @@ fun EnviarOrdenScreen(
                     stringResource(id = R.string.error_reintentar_de_nuevo),
                     ToastType.ERROR
                 )
-                navController.popBackStack()
             }
         }
     }

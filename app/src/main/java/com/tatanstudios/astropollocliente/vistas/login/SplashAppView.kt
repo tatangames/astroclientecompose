@@ -65,8 +65,10 @@ import com.tatanstudios.astropollocliente.vistas.principal.opciones.horarios.Hor
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.password.ActualizarPasswordScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.premios.PremiosScreen
 import com.tatanstudios.astropollocliente.vistas.principal.opciones.usuario.MiUsuarioScreen
+import com.tatanstudios.astropollocliente.vistas.principal.ordenes.EstadoOrdenScreen
 import com.tatanstudios.astropollocliente.vistas.principal.productos.ElegirProductoScreen
 import com.tatanstudios.astropollocliente.vistas.principal.productos.EnviarOrdenScreen
+import com.tatanstudios.astropollocliente.vistas.principal.productos.ListadoProductosDeUnaOrdenScreen
 import com.tatanstudios.astropollocliente.vistas.principal.productos.ListadoProductosScreen
 
 
@@ -113,7 +115,15 @@ fun AppNavigation() {
         }
 
 
-        composable(Routes.VistaPrincipal.route) { PrincipalScreen(navController) }
+       //composable(Routes.VistaPrincipal.route) { PrincipalScreen(navController) }
+        composable(Routes.VistaPrincipal.route) { backStackEntry ->
+            val selected = backStackEntry.arguments?.getString("selectedScreenVar") ?: ""
+
+            PrincipalScreen(navController = navController, selected)
+        }
+
+
+
         composable(Routes.VistaCarrito.route) { CarritoComprasScreen(navController) }
         composable(Routes.VistaPerfil.route) { PerfilScreen(navController) }
         composable(Routes.VistaHistorialFecha.route) { HistorialFechaScreen(navController) }
@@ -248,8 +258,27 @@ fun AppNavigation() {
         // VISTA ENVIAR ORDEN
         composable(Routes.VistaEnviarOrden.route) { EnviarOrdenScreen(navController) }
 
+        // VISTA ESTADO ORDENES
+        composable(Routes.VistaEstadoOrden.route) { backStackEntry ->
 
+            val idorden = backStackEntry.arguments?.getString("idorden")?.toIntOrNull() ?: 0
 
+            EstadoOrdenScreen(
+                navController = navController,
+                idorden = idorden,
+            )
+        }
+
+        // VISTA LISTADO PRODUCTOS DE UNA ORDEN
+        composable(Routes.VistaListaProductosDeOrden.route) { backStackEntry ->
+
+            val idorden = backStackEntry.arguments?.getString("idorden")?.toIntOrNull() ?: 0
+
+            ListadoProductosDeUnaOrdenScreen(
+                navController = navController,
+                idorden = idorden,
+            )
+        }
 
 
     }
@@ -279,8 +308,12 @@ fun SplashScreen(navController: NavHostController) {
         delay(3000)
 
         if (idusuario.isNotEmpty()) {
-            navController.navigate(Routes.VistaPrincipal.route) {
-                popUpTo(Routes.VistaSplash.route) { inclusive = true }
+            navController.navigate(Routes.VistaPrincipal.createRoute()
+            ) {
+                popUpTo(Routes.VistaSplash.route) {
+                    inclusive = true
+                }
+                launchSingleTop = true
             }
         } else {
             navController.navigate(Routes.VistaLogin.route) {

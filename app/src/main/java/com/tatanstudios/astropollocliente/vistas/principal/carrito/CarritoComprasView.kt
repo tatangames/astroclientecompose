@@ -1,6 +1,5 @@
 package com.tatanstudios.astropollocliente.vistas.principal.carrito
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -8,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -56,7 +54,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -114,7 +112,7 @@ fun CarritoComprasScreen(
     }
 
     // MODAL PREGUNTA BOTON
-    var showModal2Boton by remember { mutableStateOf(false) }
+    var showModal2BotonParaBorrarCarrito by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         idusuario = TokenManager(ctx).idUsuario.first()
@@ -134,7 +132,7 @@ fun CarritoComprasScreen(
                     // 👇 aquí escuchas el click
                     if(datosCargados){
                         if(estadoProductoGlobal){
-                            showModal2Boton = true
+                            showModal2BotonParaBorrarCarrito = true
                         }else{
                             CustomToasty(
                                 ctx,
@@ -209,13 +207,13 @@ fun CarritoComprasScreen(
             if(isLoadingFilaBorrar) LoadingModal(true)
 
             // MENSAJES
-            if(showModal2Boton){
+            if(showModal2BotonParaBorrarCarrito){
                 CustomModal2Botones(
                     showDialog = true,
                     message = stringResource(R.string.borrar_carrito),
-                    onDismiss = { showModal2Boton = false },
+                    onDismiss = { showModal2BotonParaBorrarCarrito = false },
                     onAccept = {
-                        showModal2Boton = false
+                        showModal2BotonParaBorrarCarrito = false
 
                         // BORRAR CARRITO DE COMPRAS
                         scope.launch {
@@ -341,7 +339,6 @@ fun CarritoComprasScreen(
             }
         }
     }
-
 
 }
 
@@ -527,23 +524,19 @@ private fun BarraSubtotal(subtotal: String, onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(R.string.subtotal) + ": $subtotal",
+                text = stringResource(R.string.subtotal) + ": $$subtotal",
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White,
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center
             )
             Icon(
-                imageVector = Icons.Default.ArrowForward,
+                imageVector = Icons.AutoMirrored.Default.ArrowForward,
                 contentDescription = null,
                 tint = Color.White
             )
         }
     }
 }
-
-
-
-/* ---------- Util ---------- */
 
 

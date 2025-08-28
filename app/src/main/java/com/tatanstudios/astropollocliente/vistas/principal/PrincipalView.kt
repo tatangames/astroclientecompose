@@ -23,22 +23,23 @@ import androidx.compose.material.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.tatanstudios.astropollocliente.model.rutas.Routes
 import com.tatanstudios.astropollocliente.vistas.opciones.menu.MenuPrincipalScreen
+import com.tatanstudios.astropollocliente.vistas.principal.ordenes.ListadoOrdenesScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun PrincipalScreen(navController: NavHostController) {
-    var selectedScreen by remember { mutableStateOf("menu") }
+fun PrincipalScreen(navController: NavHostController,
+                    selectedScreenVar: String = "menu") {
+
+    var selectedScreen by remember { mutableStateOf(selectedScreenVar) }
     val scope = rememberCoroutineScope()
     var canClickCart by remember { mutableStateOf(true) }
 
@@ -95,11 +96,8 @@ fun PrincipalScreen(navController: NavHostController) {
                     bottom = innerPadding.calculateBottomPadding() + 72.dp
                 )
             )
-            "ordenes" -> PantallaOrdenes(
-                contentPadding = PaddingValues(
-                    top = innerPadding.calculateTopPadding(),
-                    bottom = innerPadding.calculateBottomPadding()
-                )
+            "ordenes" -> ListadoOrdenesScreen(
+                navController
             )
         }
     }
@@ -174,16 +172,3 @@ fun BottomAppBarWithCart(
 
 
 
-@Composable
-fun PantallaOrdenes(
-    contentPadding: PaddingValues = PaddingValues(0.dp)
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(contentPadding),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Pantalla de Órdenes")
-    }
-}

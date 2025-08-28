@@ -16,10 +16,13 @@ import com.tatanstudios.astropollocliente.model.modelos.ModeloInformacionOrdenPa
 import com.tatanstudios.astropollocliente.model.modelos.ModeloInformacionProducto
 import com.tatanstudios.astropollocliente.model.modelos.ModeloInformacionProductoEditar
 import com.tatanstudios.astropollocliente.model.modelos.ModeloMenuPrincipal
+import com.tatanstudios.astropollocliente.model.modelos.ModeloOrdenes
+import com.tatanstudios.astropollocliente.model.modelos.ModeloOrdenesIndividual
 import com.tatanstudios.astropollocliente.model.modelos.ModeloPoligonos
 import com.tatanstudios.astropollocliente.model.modelos.ModeloPremios
 import com.tatanstudios.astropollocliente.model.modelos.ModeloProductoHistorialOrdenes
 import com.tatanstudios.astropollocliente.model.modelos.ModeloProductos
+import com.tatanstudios.astropollocliente.model.modelos.ModeloProductosDeOrden
 import com.tatanstudios.astropollocliente.network.RetrofitBuilder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.Disposable
@@ -1494,6 +1497,179 @@ class EnviarOrdenFinalViewModel() : ViewModel() {
         _isLoading.value = true
         disposable = RetrofitBuilder.getApiService().enviarOrdenFinal(idcliente, nota, cupon,
             aplicacupon, version, idfirebase)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .retry()
+            .subscribe(
+                { response ->
+                    _isLoading.value = false
+                    _resultado.value = Event(response)
+                    isRequestInProgress = false
+                },
+                { error ->
+                    _isLoading.value = false
+                    isRequestInProgress = false
+                }
+            )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposable?.dispose() // Limpiar la suscripción
+    }
+}
+
+
+
+
+
+class EnviarNotificacionRestauranteViewModel() : ViewModel() {
+
+    private val _resultado = MutableLiveData<Event<ModeloDatosBasicos>>()
+    val resultado: LiveData<Event<ModeloDatosBasicos>> get() = _resultado
+
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    private var disposable: Disposable? = null
+    private var isRequestInProgress = false
+
+    fun enviarNotificacionRestauranteRetrofit(id: Int) {
+        if (isRequestInProgress) return
+
+        isRequestInProgress = true
+
+        _isLoading.value = true
+        disposable = RetrofitBuilder.getApiService().enviarNotificacionRestaurante(id)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .retry()
+            .subscribe(
+                { response ->
+                    _isLoading.value = false
+                    _resultado.value = Event(response)
+                    isRequestInProgress = false
+                },
+                { error ->
+                    _isLoading.value = false
+                    isRequestInProgress = false
+                }
+            )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposable?.dispose() // Limpiar la suscripción
+    }
+}
+
+
+
+
+
+class ListadoOrdenesViewModel() : ViewModel() {
+
+    private val _resultado = MutableLiveData<Event<ModeloOrdenes>>()
+    val resultado: LiveData<Event<ModeloOrdenes>> get() = _resultado
+
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    private var disposable: Disposable? = null
+    private var isRequestInProgress = false
+
+    fun listadoOrdenesRetrofit(idcliente: String) {
+        if (isRequestInProgress) return
+
+        isRequestInProgress = true
+
+        _isLoading.value = true
+        disposable = RetrofitBuilder.getApiService().listadoOrdenes(idcliente)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .retry()
+            .subscribe(
+                { response ->
+                    _isLoading.value = false
+                    _resultado.value = Event(response)
+                    isRequestInProgress = false
+                },
+                { error ->
+                    _isLoading.value = false
+                    isRequestInProgress = false
+                }
+            )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposable?.dispose() // Limpiar la suscripción
+    }
+}
+
+
+
+
+class InformacionDeUnaOrden() : ViewModel() {
+
+    private val _resultado = MutableLiveData<Event<ModeloOrdenesIndividual>>()
+    val resultado: LiveData<Event<ModeloOrdenesIndividual>> get() = _resultado
+
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    private var disposable: Disposable? = null
+    private var isRequestInProgress = false
+
+    fun informacionOrdenIndividualRetrofit(ordenid: Int) {
+        if (isRequestInProgress) return
+
+        isRequestInProgress = true
+
+        _isLoading.value = true
+        disposable = RetrofitBuilder.getApiService().informacionOrdenIndividual(ordenid)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .retry()
+            .subscribe(
+                { response ->
+                    _isLoading.value = false
+                    _resultado.value = Event(response)
+                    isRequestInProgress = false
+                },
+                { error ->
+                    _isLoading.value = false
+                    isRequestInProgress = false
+                }
+            )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposable?.dispose() // Limpiar la suscripción
+    }
+}
+
+
+
+class ListadoProductosDeUnaOrdenViewModel() : ViewModel() {
+
+    private val _resultado = MutableLiveData<Event<ModeloProductosDeOrden>>()
+    val resultado: LiveData<Event<ModeloProductosDeOrden>> get() = _resultado
+
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    private var disposable: Disposable? = null
+    private var isRequestInProgress = false
+
+    fun listadoProductosDeUnaOrdenRetrofit(idorden: Int) {
+        if (isRequestInProgress) return
+
+        isRequestInProgress = true
+
+        _isLoading.value = true
+        disposable = RetrofitBuilder.getApiService().listadoProductosOrden(idorden)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .retry()

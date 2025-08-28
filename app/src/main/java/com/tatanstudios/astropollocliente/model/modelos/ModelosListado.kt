@@ -9,7 +9,8 @@ data class ModeloDatosBasicos(
     @SerializedName("mensaje") val mensaje: String?,
     @SerializedName("usuario") val usuario: String?,
     @SerializedName("correo") val correo: String?,
-    @SerializedName("resta") val resta: String?
+    @SerializedName("resta") val resta: String?,
+    @SerializedName("idorden") val idorden: Int,
 )
 
 
@@ -323,4 +324,102 @@ data class ModeloInformacionOrdenParaEnviar(
 
 
 
+data class ModeloOrdenes(
+    @SerializedName("success") val success: Int,
+    @SerializedName("ordenes") val ordenes: List<ModeloOrdenesArray>
+)
 
+data class ModeloOrdenesArray(
+    @SerializedName("id") val id: Int,
+    @SerializedName("id_cliente") val idCliente: Int,
+    @SerializedName("id_servicio") val idServicio: Int,
+    @SerializedName("id_zona") val idZona: Int,
+    @SerializedName("nota_orden") val notaOrden: String?,
+    @SerializedName("total_orden") val totalOrden: String?,
+    @SerializedName("fecha_orden") val fechaOrden: String?,
+    @SerializedName("fecha_estimada") val fechaEstimada: String?,
+    @SerializedName("estado_iniciada") val estadoIniciada: Int,
+    @SerializedName("fecha_iniciada") val fechaIniciada: String?,
+    @SerializedName("estado_preparada") val estadoPreparada: Int,
+    @SerializedName("fecha_preparada") val fechaPreparada: String?,
+    @SerializedName("estado_camino") val estadoCamino: Int,
+    @SerializedName("fecha_camino") val fechaCamino: String?,
+    @SerializedName("estado_entregada") val estadoEntregada: Int,
+    @SerializedName("fecha_entregada") val fechaEntregada: String?,
+    @SerializedName("estado_cancelada") val estadoCancelada: Int,
+    @SerializedName("fecha_cancelada") val fechaCancelada: String?,
+    @SerializedName("nota_cancelada") val notaCancelada: String?,
+    @SerializedName("id_cupones") val idCupones: Int?,
+    @SerializedName("total_cupon") val totalCupon: String?,
+    @SerializedName("mensaje_cupon") val mensajeCupon: String?,
+    @SerializedName("visible") val visible: Int,
+    @SerializedName("id_cupones_copia") val idCuponesCopia: Int?,
+    @SerializedName("cancelado_por") val canceladoPor: Int,
+    @SerializedName("direccion") val direccion: String?,
+    @SerializedName("totalformat") val totalFormat: String?,
+    @SerializedName("haycupon") val hayCupon: Int,
+    @SerializedName("estado") val estado: String?,
+    @SerializedName("haypremio") val hayPremio: Int,
+    @SerializedName("textopremio") val textoPremio: String?
+)
+
+
+
+
+data class ModeloOrdenesIndividual(
+    @SerializedName("success") val success: Int,
+    @SerializedName("ordenes") val ordenes: List<ModeloOrdenesIndividualArray>
+)
+
+data class ModeloOrdenesIndividualArray(
+    @SerializedName("id") val id: Int,
+    @SerializedName("id_cliente") val idCliente: Int,
+    @SerializedName("id_servicio") val idServicio: Int,
+    @SerializedName("id_zona") val idZona: Int,
+    @SerializedName("nota_orden") val notaOrden: String?,
+    @SerializedName("total_orden") val totalOrden: String?,
+    @SerializedName("fecha_orden") val fechaOrden: String?,
+    @SerializedName("fecha_estimada") val fechaEstimada: String?,
+    @SerializedName("estado_iniciada") val estadoIniciada: Int,
+    @SerializedName("fecha_iniciada") val fechaIniciada: String?,
+    @SerializedName("estado_preparada") val estadoPreparada: Int,
+    @SerializedName("fecha_preparada") val fechaPreparada: String?,
+    @SerializedName("estado_camino") val estadoCamino: Int,
+    @SerializedName("fecha_camino") val fechaCamino: String?,
+    @SerializedName("estado_entregada") val estadoEntregada: Int,
+    @SerializedName("fecha_entregada") val fechaEntregada: String?,
+    @SerializedName("estado_cancelada") val estadoCancelada: Int,
+    @SerializedName("fecha_cancelada") val fechaCancelada: String?,
+    @SerializedName("nota_cancelada") val notaCancelada: String?,
+    @SerializedName("id_cupones") val idCupones: Int?,
+    @SerializedName("total_cupon") val totalCupon: String?,
+    @SerializedName("mensaje_cupon") val mensajeCupon: String?,
+    @SerializedName("visible") val visible: Int,
+    @SerializedName("id_cupones_copia") val idCuponesCopia: Int?,
+    @SerializedName("cancelado_por") val canceladoPor: Int,
+    @SerializedName("textoiniciada") val textoIniciada: String?,
+    @SerializedName("fechaestimada") val fechaEstimadaTxt: String?,
+    @SerializedName("textocamino") val textoCamino: String?,
+    @SerializedName("fechacamino") val fechaCaminoTxt: String?,
+    @SerializedName("textoentregada") val textoEntregada: String?,
+    @SerializedName("fechaentregada") val fechaEntregadaTxt: String?
+)
+
+
+
+data class ModeloProductosDeOrden(
+    @SerializedName("success") val success: Int,
+    @SerializedName("productos") val productos: List<ModeloProductosDeOrdenArray>
+)
+
+data class ModeloProductosDeOrdenArray(
+    @SerializedName("id") val id: Int,
+    @SerializedName("cantidad") val cantidad: Int,
+    @SerializedName("nota") val nota: String?,
+    @SerializedName("precio") val precio: String?,
+    @SerializedName("nombreproducto") val nombreproducto: String?,
+    @SerializedName("idordendescrip") val idordendescrip: Int,
+    @SerializedName("utiliza_imagen") val utiliza_imagen: Int,
+    @SerializedName("imagen") val imagen: String?,
+    @SerializedName("multiplicado") val multiplicado: String?,
+)
