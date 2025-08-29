@@ -80,10 +80,8 @@ fun MiUsuarioScreen(navController: NavHostController,
 
     val tokenManager = remember { TokenManager(ctx) }
 
-
     var _usuario by remember { mutableStateOf("") }
     var _correo by remember { mutableStateOf("") }
-
 
     // Definir el color del fondo al presionar
     val loginButtonColor = if (isPressed) {

@@ -140,7 +140,7 @@
     <string name="direccion_borrada">Dirección Borrada</string>
     <string name="no_se_puede_eliminar_direccion_ultima">No se puede eliminar, se requiere mínimo 1 dirección</string>
     <string name="direccion_seleccionada">Dirección Seleccionada</string>
-    <string name="otro_usuario_ya_tiene">Otro usuario ya tiene el mismo usuario registrado</string>
+    <string name="otro_usuario_ya_tiene">Otro usuario ya tiene el mismo nombre de usuario registrado</string>
     <string name="otro_correo_ya_tiene">Otro usuario ya tiene el mismo correo registrado</string>
     <string name="elegir_cantidad">ELEGIR CANTIDAD</string>
     <string name="agregar">AGREGAR</string>

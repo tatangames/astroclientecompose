@@ -115,16 +115,12 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
                 .verticalScroll(rememberScrollState())
                 .fillMaxHeight()
         ) {
-
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp)
                     .background(Color.White)
             ) {
-                // Logo centrado en el fondo blanco
-
                 Image(
                     painter = painterResource(id = R.drawable.logonegrocirculo),
                     contentDescription = stringResource(id = R.string.logotipo),
@@ -135,7 +131,6 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
                 )
             }
 
-
             // Imagen tipo onda (wave) justo debajo del fondo blanco
             Image(
                 painter = painterResource(id = R.drawable.wave_onda),
@@ -143,7 +138,6 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(90.dp),
-                  //  .offset(y = (-18).dp),
                 contentScale = ContentScale.Crop // Esto estira la imagen horizontalmente
             )
 
@@ -158,7 +152,6 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
                     .fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
-
 
             // Card de inicio de sesión
             Card(
@@ -289,7 +282,6 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
                             showModal1Boton = true
                         }
                         2 -> {
-
                             // INICIO SESION CORRECTO
 
                             val _id = (result.id).toString()
@@ -297,11 +289,12 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
                             scope.launch {
                                 tokenManager.saveID(_id)
 
-                                navController.navigate(Routes.VistaPrincipal.route) {
-                                    popUpTo(0) { // Esto elimina todas las vistas de la pila de navegación
-                                        inclusive = true // Asegura que ninguna pantalla anterior quede en la pila
+                                navController.navigate(Routes.VistaPrincipal.createRoute("menu")
+                                ) {
+                                    popUpTo(Routes.VistaSplash.route) {
+                                        inclusive = true
                                     }
-                                    launchSingleTop = true // Evita múltiples instancias de la misma vista
+                                    launchSingleTop = true
                                 }
                             }
                         }
@@ -333,7 +326,6 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
                 }
             } // end-card
 
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -350,21 +342,10 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
 
         }
     }
-
-
 }
-
 
 // ID DE ONE SIGNAL
 fun getOneSignalUserId(): String {
     val deviceState = OneSignal.User.pushSubscription.id
     return deviceState
 }
-
-
-/*@Preview(showBackground = true)
-@Composable
-fun PreviewLoginScreen() {
-    val navController = rememberNavController()
-    LoginScreen(navController = navController)
-}*/

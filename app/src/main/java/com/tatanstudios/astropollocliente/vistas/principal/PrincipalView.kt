@@ -23,10 +23,12 @@ import androidx.compose.material.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import com.tatanstudios.astropollocliente.model.rutas.Routes
@@ -36,10 +38,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun PrincipalScreen(navController: NavHostController,
-                    selectedScreenVar: String = "menu") {
+fun PrincipalScreen(navController: NavHostController, selectedScreenVar: String) {
+    // ✅ Cambio principal: usar selectedScreenVar directamente como valor inicial
+    // sin usar selectedScreenVar como key en rememberSaveable
+    var selectedScreen by rememberSaveable { mutableStateOf(selectedScreenVar) }
 
-    var selectedScreen by remember { mutableStateOf(selectedScreenVar) }
+    // ✅ Agregar LaunchedEffect para sincronizar cuando cambie selectedScreenVar
+    LaunchedEffect(selectedScreenVar) {
+        selectedScreen = selectedScreenVar
+    }
+
     val scope = rememberCoroutineScope()
     var canClickCart by remember { mutableStateOf(true) }
 
@@ -50,13 +58,11 @@ fun PrincipalScreen(navController: NavHostController,
                 launchSingleTop = true
             }
             scope.launch {
-                delay(500) // evitar doble click
+                delay(500)
                 canClickCart = true
             }
         }
     }
-
-
 
     Scaffold(
         bottomBar = {
@@ -84,25 +90,18 @@ fun PrincipalScreen(navController: NavHostController,
         floatingActionButtonPosition = FabPosition.Center,
         isFloatingActionButtonDocked = true
     ) { innerPadding ->
-
-        // No aplicar innerPadding a un Box contenedor.
-        // En su lugar, pásalo a la pantalla hija como contentPadding.
         when (selectedScreen) {
             "menu" -> MenuPrincipalScreen(
                 navController = navController,
                 contentPadding = PaddingValues(
                     top = innerPadding.calculateTopPadding(),
-                    // Sumar margen extra para el diámetro del FAB (opcional)
                     bottom = innerPadding.calculateBottomPadding() + 72.dp
                 )
             )
-            "ordenes" -> ListadoOrdenesScreen(
-                navController
-            )
+            "ordenes" -> ListadoOrdenesScreen(navController)
         }
     }
 }
-
 
 @Composable
 fun BottomAppBarWithCart(

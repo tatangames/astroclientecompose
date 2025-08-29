@@ -37,7 +37,6 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -68,7 +67,6 @@ fun CambiarPasswordEmailScreen(navController: NavHostController,
                                viewModel: CambiarPasswordEmailViewModel = viewModel()) {
 
     val ctx = LocalContext.current
-
     val password by viewModel.passowrd.observeAsState("")
 
     val resultado by viewModel.resultado.observeAsState()
@@ -78,7 +76,6 @@ fun CambiarPasswordEmailScreen(navController: NavHostController,
     val isPressed by interactionSource.collectIsPressedAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
     var isPasswordVisible by remember { mutableStateOf(false) } // Control de visibilidad de la contraseña
-
 
     // Definir el color del fondo al presionar
     val loginButtonColor = if (isPressed) {
@@ -95,8 +92,6 @@ fun CambiarPasswordEmailScreen(navController: NavHostController,
     var modalMensajeString by remember { mutableStateOf("") }
 
     val texto4CaracteresMinimo = stringResource(R.string.minimo_4_caracteres)
-
-
 
     // Animación y diseño
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.jsonpassword))
@@ -126,7 +121,6 @@ fun CambiarPasswordEmailScreen(navController: NavHostController,
                     .padding(top = 24.dp) // Espaciado superior si quieres
             )
 
-
             // Título
             Text(
                 text = stringResource(id = R.string.cambiar_contrasena),
@@ -138,7 +132,6 @@ fun CambiarPasswordEmailScreen(navController: NavHostController,
                     .fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
-
 
             // Card de inicio de sesión
             Card(
@@ -153,7 +146,6 @@ fun CambiarPasswordEmailScreen(navController: NavHostController,
                         .background(Color.White)
                         .padding(10.dp)
                 ) {
-
                     Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
@@ -177,7 +169,6 @@ fun CambiarPasswordEmailScreen(navController: NavHostController,
                         maxLength = 16
                     )
 
-
                     Spacer(modifier = Modifier.height(6.dp))
 
                     Button(
@@ -187,12 +178,10 @@ fun CambiarPasswordEmailScreen(navController: NavHostController,
                             keyboardController?.hide()
 
                             when {
-
                                 password.isBlank() -> {
                                     modalMensajeString = ctx.getString(R.string.password_es_requerido)
                                     showModal1Boton = true
                                 }
-
                                 password.length < 4 -> {
                                     modalMensajeString = texto4CaracteresMinimo
                                     showModal1Boton = true
@@ -228,7 +217,6 @@ fun CambiarPasswordEmailScreen(navController: NavHostController,
 
                     Spacer(modifier = Modifier.height(10.dp))
                 }
-
 
                 if(showModal1Boton){
                     CustomModal1Boton(showModal1Boton, modalMensajeString, onDismiss = {showModal1Boton = false})
@@ -272,4 +260,3 @@ fun CambiarPasswordEmailScreen(navController: NavHostController,
         }
     }
 }
-

@@ -141,8 +141,6 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
                 .verticalScroll(rememberScrollState())
                 .fillMaxHeight()
         ) {
-
-
             LottieAnimation(
                 composition = composition,
                 progress = { progress },
@@ -151,7 +149,6 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
                     .align(Alignment.CenterHorizontally) // Centrado horizontalmente
                     .padding(top = 24.dp) // Espaciado superior si quieres
             )
-
 
             // Título
             Text(
@@ -164,7 +161,6 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
                     .fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
-
 
             // Card de inicio de sesión
             Card(
@@ -295,7 +291,6 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
                             showDialogApi = true
                         }
                         2 -> {
-
                             // CORREO YA REGISTRADO
                             textoTituloApi = result.titulo?: ""
                             textoMensajeApi = result.mensaje?: ""
@@ -367,7 +362,6 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
                     stringResource(R.string.no),
                 )
             }
-
         }
     }
 }
@@ -375,8 +369,6 @@ fun RegistroScreen(navController: NavHostController, viewModel: RegistroViewMode
 fun esCorreoValido(correo: String): Boolean {
     return Patterns.EMAIL_ADDRESS.matcher(correo).matches()
 }
-
-
 
 fun getVersionName(context: Context): String {
     return try {

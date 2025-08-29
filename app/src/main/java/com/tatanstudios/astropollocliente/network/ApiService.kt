@@ -33,8 +33,6 @@ interface ApiService {
                           @Field("idfirebase") idfirebase: String?
                           ): Single<ModeloDatosBasicos>
 
-
-
     // REGISTRARSE
     @POST("cliente/registro")
     @FormUrlEncoded
@@ -46,13 +44,11 @@ interface ApiService {
     ): Single<ModeloDatosBasicos>
 
 
-
     // ENVIAR CORREO PARA QUE LARAVEL ENVIE CORREO CODIGO
     @POST("cliente/enviar/codigo-correo")
     @FormUrlEncoded
     fun enviarCorreoApi(@Field("correo") correo: String,
     ): Single<ModeloDatosBasicos>
-
 
 
     // ACTUALIZAR PASSWORD EMAIL
@@ -74,6 +70,7 @@ interface ApiService {
 
 
     //*****************************************************************************
+    // LISTA MENU PRINCIPAL
     @POST("cliente/lista/servicios-bloque")
     @FormUrlEncoded
     fun listadoMenuPrincipal(@Field("id") id: String,
@@ -111,7 +108,6 @@ interface ApiService {
     ): Single<ModeloDatosBasicos>
 
 
-
     // LISTADO DE HORARIOS
     @POST("cliente/informacion/restaurante/horario")
     @FormUrlEncoded
@@ -134,12 +130,12 @@ interface ApiService {
     ): Single<ModeloDatosBasicos>
 
 
-
     // QUITAR SELECCION PREMIO
     @POST("cliente/premios/deseleccionar")
     @FormUrlEncoded
     fun quitarSeleccionarPremios(@Field("clienteid") clienteid: String,
     ): Single<ModeloDatosBasicos>
+
 
     // LISTADO DE DIRECCIONES
     @POST("cliente/listado/direcciones")
@@ -148,10 +144,10 @@ interface ApiService {
     ): Single<ModeloDirecciones>
 
 
+    // LISTADO ZONA POLIGONOS
     @GET("cliente/listado/zonas/poligonos")
     fun listadoPoligonos(
     ): Single<ModeloPoligonos>
-
 
 
     // REGISTRAR NUEVA DIRECCION
@@ -171,7 +167,6 @@ interface ApiService {
     ): Single<ModeloDatosBasicos>
 
 
-
     // SELECCIONAR DIRECCION
     @POST("cliente/direcciones/elegir/direccion")
     @FormUrlEncoded
@@ -186,7 +181,6 @@ interface ApiService {
     fun borrarDireccion(@Field("id") id: String,
                              @Field("dirid") dirid: Int,
     ): Single<ModeloDatosBasicos>
-
 
 
     // INFORMACION DEL USUARIO
@@ -235,6 +229,7 @@ interface ApiService {
     fun listadoCarritoCompras(@Field("clienteid") idcliente: String,
     ): Single<ModeloCarrito>
 
+
     // PETICION PARA BORRAR CARRITO DE COMPRAS
     @POST("cliente/carrito/borrar/orden")
     @FormUrlEncoded
@@ -242,13 +237,12 @@ interface ApiService {
     ): Single<ModeloDatosBasicos>
 
 
+    // ELIMINAR PRODUCTO INDIVIDUAL DEL CARRITO COMPRAS
     @POST("cliente/carrito/eliminar/producto")
     @FormUrlEncoded
     fun eliminarFilaCarrito(@Field("clienteid") idcliente: String,
                             @Field("carritoid") idcarrito: Int,
     ): Single<ModeloDatosBasicos>
-
-
 
 
     // INFORMACION DE PRODUCTO PARA EDITARLO
@@ -269,7 +263,6 @@ interface ApiService {
     ): Single<ModeloDatosBasicos>
 
 
-
     // INFORMACION DE ORDEN PARA ENVIAR
     @POST("cliente/carrito/ver/proceso-orden")
     @FormUrlEncoded
@@ -283,7 +276,6 @@ interface ApiService {
     fun verificarCupon(@Field("clienteid") idcliente: String,
                        @Field("cupon") cupon: String
     ): Single<ModeloDatosBasicos>
-
 
 
     // ENVIAR ORDEN FINAL
@@ -319,13 +311,11 @@ interface ApiService {
     ): Single<ModeloOrdenesIndividual>
 
 
-
     // INFORMACION LISTADO DE UN PRODUCTO DE UNA ORDEN
     @POST("cliente/listado/productos/ordenes")
     @FormUrlEncoded
     fun listadoProductosOrden(@Field("ordenid") ordenid: Int,
     ): Single<ModeloProductosDeOrden>
-
 
 
     // CANCELAR ORDEN ANTES DE INICIARSE
@@ -340,10 +330,6 @@ interface ApiService {
     @FormUrlEncoded
     fun ocultarOrden(@Field("ordenid") idorden: Int,
     ): Single<ModeloDatosBasicos>
-
-
-
-
 
 
 }

@@ -80,7 +80,7 @@ dependencies {
 
     // Material and Foundation
     implementation("androidx.compose.material3:material3:1.2.1")
-    implementation("androidx.compose.foundation:foundation:1.6.3")
+    implementation("androidx.compose.foundation:foundation:1.6.7")
 
     // Navigation and UI Controllers
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")

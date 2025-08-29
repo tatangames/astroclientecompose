@@ -82,7 +82,6 @@ fun RecuperarPasswordScreen(navController: NavHostController,
     val isPressed by interactionSource.collectIsPressedAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
 
-
     // Definir el color del fondo al presionar
     val loginButtonColor = if (isPressed) {
         colorResource(id = R.color.colorRojo).copy(alpha = 0.8f) // más oscuro al presionar
@@ -103,13 +102,6 @@ fun RecuperarPasswordScreen(navController: NavHostController,
 
     var boolOTP by remember { mutableStateOf(false) }
     var txtFieldCodigo by remember { mutableStateOf("") }
-    var idonesignal by remember { mutableStateOf("") }
-
-    LaunchedEffect(Unit) {
-        scope.launch {
-            idonesignal = getOneSignalUserId()
-        }
-    }
 
     // Animación y diseño
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.jsonemail))
@@ -149,7 +141,6 @@ fun RecuperarPasswordScreen(navController: NavHostController,
                     .fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
-
 
             if(boolOTP){
                 // Card ingreso de codigo
@@ -420,4 +411,3 @@ fun RecuperarPasswordScreen(navController: NavHostController,
         }
     }
 }
-

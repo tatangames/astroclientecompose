@@ -1,10 +1,10 @@
 package com.tatanstudios.astropollocliente.vistas.opciones.menu
 
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,19 +17,16 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.pager.HorizontalPager
@@ -39,20 +36,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -78,11 +70,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.navOptions
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.tatanstudios.astropollocliente.R
-import com.tatanstudios.astropollocliente.componentes.BarraToolbarColor
 import com.tatanstudios.astropollocliente.componentes.BarraToolbarColorMenuPrincipal
 import com.tatanstudios.astropollocliente.componentes.CustomModal1Boton
 import com.tatanstudios.astropollocliente.componentes.CustomToasty
@@ -90,7 +80,6 @@ import com.tatanstudios.astropollocliente.componentes.LoadingModal
 import com.tatanstudios.astropollocliente.componentes.SolicitarPermisosUbicacion
 import com.tatanstudios.astropollocliente.componentes.ToastType
 import com.tatanstudios.astropollocliente.extras.TokenManager
-import com.tatanstudios.astropollocliente.model.modelos.ModeloDireccionesArray
 import com.tatanstudios.astropollocliente.model.modelos.ModeloMenuPrincipalCategoriasArray
 import com.tatanstudios.astropollocliente.model.modelos.ModeloMenuPrincipalPopularesArray
 import com.tatanstudios.astropollocliente.model.rutas.Routes
@@ -107,15 +96,13 @@ import kotlinx.coroutines.launch
 fun MenuPrincipalScreen(
     navController: NavHostController,
     viewModel: ListadoMenuPrincipal = viewModel(),
-    // 👉 padding que viene del Scaffold padre (bottom bar + FAB)
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     val layoutDirection = LocalLayoutDirection.current
 
-    // listado de productos
-    val isLoading by viewModel.isLoading.observeAsState(initial = false)
+    val isLoading by viewModel.isLoading.observeAsState(true)
     val resultado by viewModel.resultado.observeAsState()
 
     val tokenManager = remember { TokenManager(ctx) }
@@ -133,10 +120,8 @@ fun MenuPrincipalScreen(
     var showModal1BotonUsuarioBloqueado by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        scope.launch {
-            idusuario = tokenManager.idUsuario.first()
-            viewModel.listadoMenuPrincipalRetrofit(idusuario)
-        }
+        idusuario = tokenManager.idUsuario.first()
+        viewModel.listadoMenuPrincipalRetrofit(idusuario)
     }
 
     if (boolDatosCargados) {
@@ -453,38 +438,30 @@ fun MenuPrincipalScreen(
                                     contentScale = ContentScale.Crop
                                 )
                             }
-
-
-
-
-
-
-
                         }
                     }
                 }
-
             }
-
-
         }
 
         // ======= tus diálogos/modales abajo tal cual =======
         if (isLoading) LoadingModal(true)
 
-        resultado?.getContentIfNotHandled()?.let { result ->
-            when (result.success) {
-                1 -> showModal1BotonUsuarioBloqueado = true
-                2 -> scope.launch { navigateToDirecciones(navController, btnBloqueoAtras = 1) }
-                3 -> {
-                    imageUrls = result.arraySlider.map { "${RetrofitBuilder.urlImagenes}${it.imagen}" }
-                    modeloListaCategoriasArray = result.arrayCategorias
-                    modeloListaPopularesArray = result.arrayPopulares
-                    boolDatosCargados = true
+        LaunchedEffect(resultado) {
+            resultado?.getContentIfNotHandled()?.let { result ->
+                when (result.success) {
+                    1 -> showModal1BotonUsuarioBloqueado = true
+                    2 -> navigateToDirecciones(navController, btnBloqueoAtras = 1)
+                    3 -> {
+                        imageUrls = result.arraySlider.map { "${RetrofitBuilder.urlImagenes}${it.imagen}" }
+                        modeloListaCategoriasArray = result.arrayCategorias
+                        modeloListaPopularesArray = result.arrayPopulares
+                        boolDatosCargados = true
+                    }
+                    4 -> { modalMensajeString = result.mensaje ?: ""; showModal1Boton = true }
+                    5 -> navigateToDirecciones(navController, btnBloqueoAtras = 1)
+                    else -> CustomToasty(ctx, ctx.getString(R.string.error_reintentar_de_nuevo), ToastType.ERROR)
                 }
-                4 -> { modalMensajeString = result.mensaje ?: ""; showModal1Boton = true }
-                5 -> scope.launch { navigateToDirecciones(navController, btnBloqueoAtras = 1) }
-                else -> CustomToasty(ctx, ctx.getString(R.string.error_reintentar_de_nuevo), ToastType.ERROR)
             }
         }
 

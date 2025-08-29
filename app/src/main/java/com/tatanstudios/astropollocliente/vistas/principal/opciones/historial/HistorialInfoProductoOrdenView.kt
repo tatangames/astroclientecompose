@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -48,18 +49,15 @@ import com.tatanstudios.astropollocliente.network.RetrofitBuilder
 import com.tatanstudios.astropollocliente.viewmodel.InfoProductoViewModel
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun InfoProductoHistorialScreen(navController: NavHostController, _idproducto: Int,
                        viewModel: InfoProductoViewModel = viewModel(),
 ) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
-    var imagenProducto by remember { mutableStateOf("") }
     var boolDatosCargados by remember { mutableStateOf(false) }
     val isLoading by viewModel.isLoading.observeAsState(initial = false)
     val resultado by viewModel.resultado.observeAsState()
-
 
     var _titulo by remember { mutableStateOf("") }
     var _descripcion by remember { mutableStateOf("") }
@@ -67,15 +65,14 @@ fun InfoProductoHistorialScreen(navController: NavHostController, _idproducto: I
     var _unidades by remember { mutableStateOf("") }
     var _total by remember { mutableStateOf("") }
     var _notas by remember { mutableStateOf("") }
+    var _imagen by remember { mutableStateOf("") }
     var boolUsaImagen by remember { mutableStateOf(false) }
-
 
     LaunchedEffect(Unit) {
         scope.launch {
             viewModel.infoProductoRetrofit(idproducto = _idproducto)
         }
     }
-
 
     Scaffold(
         topBar = {
@@ -110,22 +107,24 @@ fun InfoProductoHistorialScreen(navController: NavHostController, _idproducto: I
                         ) {
 
                             if(boolUsaImagen){
+
+                                val imagenUrl = "${RetrofitBuilder.urlImagenes}${_imagen}"
+
                                 AsyncImage(
-                                    model = ImageRequest.Builder(LocalContext.current)
-                                        .data("${RetrofitBuilder.urlImagenes}${imagenProducto}")
+                                    model = ImageRequest.Builder(ctx)
+                                        .data(imagenUrl)
                                         .crossfade(true)
-                                        .placeholder(R.drawable.camaradefecto)
-                                        .error(R.drawable.camaradefecto)
                                         .build(),
-                                    contentDescription = stringResource(R.string.imagen_por_defecto),
-                                    contentScale = ContentScale.Crop,
+                                    contentDescription ="Imagen",
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(150.dp)
-                                        .clip(RoundedCornerShape(8.dp))
+                                        .height(180.dp),
+                                    contentScale = ContentScale.Fit,
+                                    placeholder = painterResource(R.drawable.spinloading),
+                                    error = painterResource(R.drawable.camaradefecto)
                                 )
-                            }
 
+                            }
 
                             Spacer(modifier = Modifier.height(15.dp))
 
@@ -214,11 +213,8 @@ fun InfoProductoHistorialScreen(navController: NavHostController, _idproducto: I
                         }
                     }
                 }
-
-
             }
         }
-
 
 
         resultado?.getContentIfNotHandled()?.let { result ->
@@ -232,12 +228,12 @@ fun InfoProductoHistorialScreen(navController: NavHostController, _idproducto: I
                         _unidades = item.cantidad.toString()
                         _total = item.multiplicado?: ""
                         _notas = item.nota?: ""
+                        _imagen = item.imagen ?: ""
 
                         if(item.utilizaImagen == 1){
                             boolUsaImagen = true
                         }
                     }
-
 
                     boolDatosCargados = true
 
@@ -253,16 +249,9 @@ fun InfoProductoHistorialScreen(navController: NavHostController, _idproducto: I
             }
         }
 
-
         if (isLoading) {
             LoadingModal(isLoading = true)
         }
 
     } // end-scalfold
-
-
-
-
-
-
 }

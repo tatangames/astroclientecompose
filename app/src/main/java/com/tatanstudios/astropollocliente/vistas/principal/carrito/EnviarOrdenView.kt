@@ -112,6 +112,7 @@ import com.tatanstudios.astropollocliente.viewmodel.EnviarProductoAlCarritoViewM
 import com.tatanstudios.astropollocliente.viewmodel.InformacionOrdenParaEnviarViewModel
 import com.tatanstudios.astropollocliente.viewmodel.InformacionProductoViewModel
 import com.tatanstudios.astropollocliente.viewmodel.VerificarCuponViewModel
+import com.tatanstudios.astropollocliente.vistas.login.getOneSignalUserId
 import com.tatanstudios.astropollocliente.vistas.login.getVersionName
 import retrofit2.http.Field
 import java.util.Locale
@@ -199,10 +200,17 @@ fun EnviarOrdenScreen(
     var modalTituloStringRedireccionar by remember { mutableStateOf("") }
     var modalMensajeStringRedireccionar by remember { mutableStateOf("") }
 
+    var idonesignal by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope() // Crea el alcance de coroutine
 
     // cargar datos
     LaunchedEffect(Unit) {
         idusuario = tokenManager.idUsuario.first()
+
+        scope.launch {
+            idonesignal = getOneSignalUserId()
+        }
+
         viewModel.informacionOrdenParaEnviarRetrofit(idusuario)
     }
 
@@ -656,8 +664,7 @@ fun EnviarOrdenScreen(
                         showModal2BotonParaEnviarOrden = false
 
                         viewModelEnviarOrden.enviarOrdenRetrofit(idusuario, nota, textoCuponEscrito, tengoCupon, versionLocal,
-                           null)
-
+                            idonesignal)
                     },
                     stringResource(R.string.si),
                     stringResource(R.string.no),

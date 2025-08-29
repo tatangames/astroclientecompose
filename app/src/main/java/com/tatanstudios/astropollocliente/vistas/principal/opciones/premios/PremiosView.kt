@@ -47,8 +47,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 
 @Composable
 fun PremiosScreen(navController: NavHostController,
@@ -136,12 +139,12 @@ fun PremiosScreen(navController: NavHostController,
                             verticalArrangement = Arrangement.Top,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.noremios),
-                                contentDescription = "Sin premios disponibles",
-                                modifier = Modifier
-                                    .fillMaxWidth(0.6f)
-                                    .padding(16.dp)
+                            Text(
+                                text = "No hay Premios Disponibles",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }

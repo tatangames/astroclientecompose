@@ -1,9 +1,7 @@
 package com.tatanstudios.astropollocliente.vistas.login
 
 import android.content.pm.ActivityInfo
-import android.os.Build
 import android.os.Bundle
-import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -34,11 +32,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.unit.sp
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
@@ -71,14 +67,12 @@ import com.tatanstudios.astropollocliente.vistas.principal.productos.EnviarOrden
 import com.tatanstudios.astropollocliente.vistas.principal.productos.ListadoProductosDeUnaOrdenScreen
 import com.tatanstudios.astropollocliente.vistas.principal.productos.ListadoProductosScreen
 
-
 class SplashApp : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // MODO VERTICAL
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-
 
         // Asegurar que se cree el decorView antes de manipular el controller
         window.decorView.post {
@@ -93,8 +87,6 @@ class SplashApp : ComponentActivity() {
         }
     }
 }
-
-
 
 // *** RUTAS DE NAVEGACION ***
 @Composable
@@ -115,12 +107,20 @@ fun AppNavigation() {
         }
 
 
-       //composable(Routes.VistaPrincipal.route) { PrincipalScreen(navController) }
-        composable(Routes.VistaPrincipal.route) { backStackEntry ->
-            val selected = backStackEntry.arguments?.getString("selectedScreenVar") ?: ""
 
-            PrincipalScreen(navController = navController, selected)
+        composable(
+            route = Routes.VistaPrincipal.route, // "principal/{selectedScreenVar}"
+            arguments = listOf(
+                navArgument("selectedScreenVar") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val selected = backStackEntry.arguments?.getString("selectedScreenVar") ?: "menu"
+            PrincipalScreen(
+                navController = navController,
+                selectedScreenVar = selected      // 👈 pásalo POR NOMBRE
+            )
         }
+
 
 
 
@@ -154,10 +154,13 @@ fun AppNavigation() {
 
         // VISTA ACTUALIZAR CONTRASENA
         composable(Routes.VistaActualizarContrasena.route) { ActualizarPasswordScreen(navController) }
+
         // VISTA HORARIOS
         composable(Routes.VistaHorarios.route) { HorariosScreen(navController) }
+
         // VISTA PREMIOS
         composable(Routes.VistaPremios.route) { PremiosScreen(navController) }
+
         // VISTA MIS DIRECCIONES
         composable(
             route = Routes.VistaMisDirecciones.route,
@@ -172,7 +175,6 @@ fun AppNavigation() {
                 estadoBotonAtras = estadoBoton
             )
         }
-
 
         // VISTA MAPA
         composable(Routes.VistaMapa.route) { MapaScreen(navController) }
@@ -218,11 +220,8 @@ fun AppNavigation() {
             )
         }
 
-
         // VISTA MI USUARIO
         composable(Routes.VistaMiUsuario.route) { MiUsuarioScreen(navController) }
-
-
 
         // VISTA LISTADO DE PRODUCTOS
         composable(
@@ -280,7 +279,6 @@ fun AppNavigation() {
             )
         }
 
-
     }
 }
 
@@ -308,7 +306,7 @@ fun SplashScreen(navController: NavHostController) {
         delay(3000)
 
         if (idusuario.isNotEmpty()) {
-            navController.navigate(Routes.VistaPrincipal.createRoute()
+            navController.navigate(Routes.VistaPrincipal.createRoute("menu")
             ) {
                 popUpTo(Routes.VistaSplash.route) {
                     inclusive = true

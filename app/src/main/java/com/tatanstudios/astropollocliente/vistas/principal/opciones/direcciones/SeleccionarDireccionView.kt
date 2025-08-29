@@ -23,6 +23,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -153,13 +154,26 @@ fun SeleccionarDireccionScreen(navController: NavHostController,
                             Icon(Icons.Default.Person, contentDescription = null)
                             Spacer(modifier = Modifier.width(8.dp))
                             Column {
-                                Text("Nombre:", fontWeight = FontWeight.Bold)
-                                Text(_nombre ?: "")
+                                Text(
+                                    text = "Nombre: ",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontSize = 16.sp,
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.Medium
+                                )
+
+                                Text(
+                                    text = _nombre,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.Black,
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
                             }
                         }
 
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(14.dp))
 
                         Row(
                             verticalAlignment = Alignment.Top,
@@ -168,12 +182,28 @@ fun SeleccionarDireccionScreen(navController: NavHostController,
                             Icon(Icons.Default.Phone, contentDescription = null)
                             Spacer(modifier = Modifier.width(8.dp))
                             Column {
-                                Text("Teléfono:", fontWeight = FontWeight.Bold)
-                                Text(_telefono ?: "")
+
+                                Text(
+                                    text = "Teléfono: ",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontSize = 16.sp,
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.Medium
+                                )
+
+                                _telefono.nullSiLiteral()?.let { limpio ->
+                                    Text(
+                                        text = limpio,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color.Black,
+                                        fontSize = 15.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(14.dp))
 
                         Row(
                             verticalAlignment = Alignment.Top,
@@ -182,14 +212,27 @@ fun SeleccionarDireccionScreen(navController: NavHostController,
                             Icon(Icons.Default.Map, contentDescription = null)
                             Spacer(modifier = Modifier.width(8.dp))
                             Column {
-                                Text("Dirección:", fontWeight = FontWeight.Bold)
-                                Text(_direccion ?: "")
+                                Text(
+                                    text = "Dirección: ",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontSize = 16.sp,
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.Medium
+                                )
+
+                                _direccion.nullSiLiteral()?.let { limpio ->
+                                    Text(
+                                        text = limpio,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color.Black,
+                                        fontSize = 15.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
                             }
                         }
 
-
                         Spacer(modifier = Modifier.height(8.dp))
-
 
                         Row(
                             verticalAlignment = Alignment.Top,
@@ -198,8 +241,24 @@ fun SeleccionarDireccionScreen(navController: NavHostController,
                             Icon(Icons.Default.House, contentDescription = null)
                             Spacer(modifier = Modifier.width(8.dp))
                             Column {
-                                Text("Referencia:", fontWeight = FontWeight.Bold)
-                                Text(_puntoReferencia ?: "")
+
+                                Text(
+                                    text = "Referencia: ",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontSize = 16.sp,
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.Medium
+                                )
+
+                                _puntoReferencia.nullSiLiteral()?.let { limpio ->
+                                    Text(
+                                        text = limpio,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color.Black,
+                                        fontSize = 15.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
                             }
                         }
 
@@ -333,3 +392,6 @@ fun SeleccionarDireccionScreen(navController: NavHostController,
         }
     }
 }
+
+fun String?.nullSiLiteral(): String? =
+    this?.trim()?.let { if (it.isEmpty() || it.equals("null", true)) null else it }

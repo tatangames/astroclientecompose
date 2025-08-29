@@ -12,13 +12,9 @@ sealed class Routes(val route: String) {
 
 
 
-  // object VistaPrincipal: Routes("principal")
-
     object VistaPrincipal : Routes("principal/{selectedScreenVar}") {
-        fun createRoute(selectedScreenVar: String = "menu") =
-            "principal/$selectedScreenVar"
+        fun createRoute(selectedScreenVar: String) = "principal/$selectedScreenVar"
     }
-
 
     object VistaCarrito: Routes("carrito")
     object VistaPerfil: Routes("perfil")
