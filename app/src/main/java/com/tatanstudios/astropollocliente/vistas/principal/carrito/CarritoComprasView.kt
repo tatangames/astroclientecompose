@@ -447,7 +447,7 @@ private fun ItemCarritoCard(
                     painter = painterResource(id = R.drawable.camaradefecto),
                     contentDescription = p.nombre,
                     modifier = Modifier
-                        .size(72.dp)
+                        .size(32.dp)
                         .clip(CircleShape)
                         .border(2.dp, Color.LightGray, CircleShape),
                     contentScale = ContentScale.Crop

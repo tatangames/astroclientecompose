@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -69,11 +71,14 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -137,12 +142,6 @@ fun EnviarOrdenScreen(
 
     val isLoadingEnviarOrden by viewModelEnviarOrden.isLoading.observeAsState(true)
     val resultadoEnviarOrden by viewModelEnviarOrden.resultado.observeAsState()
-
-    val isLoadingNoti by viewModelEnviarNotiRestaurante.isLoading.observeAsState(true)
-    val resultadoNoti by viewModelEnviarNotiRestaurante.resultado.observeAsState()
-
-    val keyboardController = LocalSoftwareKeyboardController.current
-
 
     var idusuario by remember { mutableStateOf("") }
 
@@ -222,12 +221,42 @@ fun EnviarOrdenScreen(
                 stringResource(id = R.string.enviar_orden),
                 colorResource(id = R.color.colorRojo)
             )
-        }
+        },
+        // ⬇️ Botón fijo en bottomBar (maneja IME y barras de navegación)
+        bottomBar = {
+            if (datosCargados) {
+                Button(
+                    onClick = {
+                        if (minimoInt0NoPuede == 0) {
+                            CustomToasty(ctx, "Mínimo de Compra es Requerido", ToastType.INFO)
+                        } else {
+                            showModal2BotonParaEnviarOrden = true
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 12.dp)
+                        .navigationBarsPadding()
+                        .imePadding()   // <- se queda aquí
+                        .height(56.dp),
+                    shape = RoundedCornerShape(28.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(id = R.color.colorRojo),
+                        contentColor = Color.White
+                    ),
+                    contentPadding = PaddingValues(vertical = 0.dp)
+                ) {
+                    Text(stringResource(R.string.confirmar_orden).uppercase())
+                }
+            }
+        },
+        contentWindowInsets = WindowInsets.safeDrawing
     ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .consumeWindowInsets(innerPadding) // ✅ no se acumulan
         ) {
 
             if (datosCargados) {
@@ -236,7 +265,7 @@ fun EnviarOrdenScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .imePadding()
+                        .verticalScroll(rememberScrollState())
                         .padding(horizontal = 12.dp, vertical = 8.dp)
                 ) {
                     // Faja Total
@@ -271,14 +300,6 @@ fun EnviarOrdenScreen(
 
                     Spacer(Modifier.height(10.dp))
 
-
-
-
-
-
-
-
-
                     // ===== Botón "Agregar cupón" a la derecha (solo si usaCupon == 1) =====
                     if (usaCuponPermitoServerInt == 1) {
 
@@ -290,18 +311,14 @@ fun EnviarOrdenScreen(
                             Spacer(Modifier.weight(1f))
                             Button(
                                 onClick = {
-                                    // tu lógica:
-                                    // si no tiene cupón, abre el diálogo
                                     if (tengoCupon == 0) {
                                         textoCuponEscrito = ""
                                         mostrarDialogCupon = true
                                     } else {
-                                        // si ya tiene cupón, por ejemplo lo “quita”
                                         tengoCupon = 0
                                         tengoCuponDineroOrPorcentaje = false
                                         textoCuponEscrito = ""
                                         txtSubTotalLetra = "Total"
-
                                         viewModel.informacionOrdenParaEnviarRetrofit(idusuario)
                                     }
                                 },
@@ -322,12 +339,9 @@ fun EnviarOrdenScreen(
                         Spacer(Modifier.height(6.dp))
                     }
 
-
-
-
                     Divider(color = Color.LightGray, thickness = 1.5.dp)
 
-                    if(minimoInt0NoPuede == 0) {
+                    if (minimoInt0NoPuede == 0) {
                         // === CARD PARA MOSTRAR MINIMO DE CONSUMO ===
                         Spacer(Modifier.height(15.dp))
 
@@ -335,7 +349,7 @@ fun EnviarOrdenScreen(
                             shape = RoundedCornerShape(16.dp),
                             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                             modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFFE9E6EB)) // opcional
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFFE9E6EB))
                         ) {
                             Column(modifier = Modifier.padding(14.dp)) {
                                 Text(
@@ -357,17 +371,15 @@ fun EnviarOrdenScreen(
                         }
                     }
 
-
-
-                    if(tengoCupon == 1) {
-                        // === CARD PARA MOSTRAR DE QUE ES EL CUPON APLICADO ===
+                    if (tengoCupon == 1) {
+                        // === CARD CUPÓN APLICADO ===
                         Spacer(Modifier.height(15.dp))
 
                         Card(
                             shape = RoundedCornerShape(16.dp),
                             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                             modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFFE9E6EB)) // opcional
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFFE9E6EB))
                         ) {
                             Column(modifier = Modifier.padding(14.dp)) {
                                 Text(
@@ -387,10 +399,8 @@ fun EnviarOrdenScreen(
                                 )
                             }
 
-
-                            if(tengoCuponDineroOrPorcentaje){
+                            if (tengoCuponDineroOrPorcentaje) {
                                 Column(modifier = Modifier.padding(14.dp)) {
-
                                     Text(
                                         text = stringResource(id = R.string.total_a_pagar),
                                         style = MaterialTheme.typography.labelMedium,
@@ -404,21 +414,18 @@ fun EnviarOrdenScreen(
                                     )
                                 }
                             }
-
                         }
                     }
 
-
-
-                    if(usaPremioInt == 1) {
-                        // === CARD PARA MOSTRAR SI VAMOS A CANJEAR UN PREMIO ===
+                    if (usaPremioInt == 1) {
+                        // === CARD PREMIO ===
                         Spacer(Modifier.height(15.dp))
 
                         Card(
                             shape = RoundedCornerShape(16.dp),
                             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                             modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFFE9E6EB)) // opcional
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFFE9E6EB))
                         ) {
                             Column(modifier = Modifier.padding(14.dp)) {
                                 Text(
@@ -430,17 +437,14 @@ fun EnviarOrdenScreen(
                                     color = Color.Black
                                 )
                                 Spacer(Modifier.height(12.dp))
-
                                 Text(
                                     text = textoPremioString,
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontSize = 16.sp
                                 )
                             }
-
                         }
                     }
-
 
                     Spacer(Modifier.height(15.dp))
 
@@ -449,7 +453,7 @@ fun EnviarOrdenScreen(
                         shape = RoundedCornerShape(16.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFE9E6EB)) // opcional
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFE9E6EB))
                     ) {
                         Column(modifier = Modifier.padding(14.dp)) {
                             Text(
@@ -508,8 +512,7 @@ fun EnviarOrdenScreen(
                         value = nota,
                         onValueChange = { nota = if (it.length <= 300) it else it.take(300) },
                         placeholder = { Text(stringResource(R.string.nota)) },
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         singleLine = false,
                         maxLines = 3,
                         colors = TextFieldDefaults.colors(
@@ -522,43 +525,9 @@ fun EnviarOrdenScreen(
                         )
                     )
 
-                    // ⚠️ No agregues aquí el botón: queda abajo del Box
-                    Spacer(Modifier.height(96.dp)) // espacio para que el contenido no quede tapado por el botón fijo
+                    // ⛔️ Ya no hay Spacer(96.dp). El espacio lo maneja el bottomBar.
+                    Spacer(Modifier.height(24.dp))
                 }
-
-
-                // ===== Botón fijo, anclado al fondo =====
-                Button(
-                    onClick = {
-                        // Ejemplo de validación:
-                        if(minimoInt0NoPuede == 0){
-                            CustomToasty(
-                                ctx,
-                                "Mínimo de Compra es Requerido",
-                                ToastType.INFO
-                            )
-                        }else{
-                            showModal2BotonParaEnviarOrden = true
-                        }
-                    },
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 12.dp) // margen visual
-                        .navigationBarsPadding() // respeta la barra de gestos
-                        .imePadding()            // evita teclado
-                        .height(56.dp),
-                    shape = RoundedCornerShape(28.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(id = R.color.colorRojo),
-                        contentColor = Color.White
-                    ),
-                    contentPadding = PaddingValues(vertical = 0.dp)
-                ) {
-                    Text(stringResource(R.string.confirmar_orden).uppercase())
-                }
-
-
 
                 // ===== Modal de cupón =====
                 if (mostrarDialogCupon) {
@@ -578,11 +547,9 @@ fun EnviarOrdenScreen(
                                     singleLine = true,
                                     placeholder = { Text("Escribe tu cupón") },
                                     modifier = Modifier.fillMaxWidth(),
-
-                                    // ✅ Compatibilidad: usar TextFieldDefaults.colors()
                                     colors = TextFieldDefaults.colors(
-                                        focusedIndicatorColor = Color.Black,   // borde/linea en foco
-                                        unfocusedIndicatorColor = Color.Black, // borde/linea sin foco
+                                        focusedIndicatorColor = Color.Black,
+                                        unfocusedIndicatorColor = Color.Black,
                                         errorIndicatorColor = MaterialTheme.colorScheme.error,
                                         cursorColor = Color.Black,
                                         focusedContainerColor = Color.Transparent,
@@ -595,7 +562,6 @@ fun EnviarOrdenScreen(
                                     Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-
                                     Text(
                                         "${textoCuponEscrito.length}/100",
                                         style = MaterialTheme.typography.labelSmall
@@ -603,14 +569,11 @@ fun EnviarOrdenScreen(
                                 }
                             }
                         },
-                        // Verificar: verde con texto blanco (deshabilitado si vacío)
                         confirmButton = {
                             Button(
                                 onClick = {
                                     val cup = textoCuponEscrito.trim()
-                                    if (cup.isEmpty()) {
-
-                                    } else {
+                                    if (cup.isNotEmpty()) {
                                         mostrarDialogCupon = false
                                         viewModelVerificarCupon.verificarCuponRetrofit(idusuario, textoCuponEscrito)
                                     }
@@ -623,7 +586,6 @@ fun EnviarOrdenScreen(
                                 )
                             ) { Text("Verificar") }
                         },
-                        // Cancelar: negro con texto blanco
                         dismissButton = {
                             Button(
                                 onClick = { mostrarDialogCupon = false },
@@ -636,26 +598,41 @@ fun EnviarOrdenScreen(
                         }
                     )
                 }
+            } // -end if-datosCargados
 
-            } // -end if-datoscargados
-
-
-            if(showModal1Boton){
-                CustomModal1BotonTitulo(showModal1Boton, modalTituloString, modalMensajeString, onDismiss = {showModal1Boton = false})
+            // === Modales y Loadings globales ===
+            if (showModal1Boton) {
+                CustomModal1BotonTitulo(
+                    showModal1Boton,
+                    modalTituloString,
+                    modalMensajeString,
+                    onDismiss = { showModal1Boton = false }
+                )
             }
 
-            if(showModal1BotonFinal){
-                CustomModal1BotonTitulo(showModal1BotonFinal, modalTituloStringFinal, modalMensajeStringFinal, onDismiss = {
-                    showModal1BotonFinal = false
-                })
+            if (showModal1BotonFinal) {
+                CustomModal1BotonTitulo(
+                    showModal1BotonFinal,
+                    modalTituloStringFinal,
+                    modalMensajeStringFinal,
+                    onDismiss = { showModal1BotonFinal = false
+
+                        navController.navigate(Routes.VistaPrincipal.createRoute("ordenes")
+                        ) {
+                            popUpTo(Routes.VistaEnviarOrden.route) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    }
+                )
             }
 
-            if(isLoading) LoadingModal(isLoading = isLoading)
-            if(isLoadingVerificarCupon) LoadingModal(isLoading = isLoadingVerificarCupon)
-            if(isLoadingEnviarOrden) LoadingModal(isLoading = isLoadingEnviarOrden)
+            if (isLoading) LoadingModal(isLoading = isLoading)
+            if (isLoadingVerificarCupon) LoadingModal(isLoading = isLoadingVerificarCupon)
+            if (isLoadingEnviarOrden) LoadingModal(isLoading = isLoadingEnviarOrden)
 
-
-            if(showModal2BotonParaEnviarOrden){
+            if (showModal2BotonParaEnviarOrden) {
                 CustomModal2Botones(
                     showDialog = true,
                     message = stringResource(R.string.enviar_orden),
@@ -671,26 +648,24 @@ fun EnviarOrdenScreen(
                 )
             }
 
-
-            if(showModal1BotonRedireccionar){
-                CustomModal1BotonTitulo(showModal1BotonRedireccionar, modalTituloStringRedireccionar,
-                    modalMensajeStringRedireccionar, onDismiss = {
-                    showModal1BotonRedireccionar = false
-
-                        navController.navigate(Routes.VistaPrincipal.createRoute("ordenes")
+            if (showModal1BotonRedireccionar) {
+                CustomModal1BotonTitulo(
+                    showModal1BotonRedireccionar,
+                    modalTituloStringRedireccionar,
+                    modalMensajeStringRedireccionar,
+                    onDismiss = {
+                        showModal1BotonRedireccionar = false
+                        navController.navigate(
+                            Routes.VistaPrincipal.createRoute("ordenes")
                         ) {
-                            popUpTo(Routes.VistaSplash.route) {
-                                inclusive = true
-                            }
+                            popUpTo(Routes.VistaSplash.route) { inclusive = true }
                             launchSingleTop = true
                         }
-
-                })
+                    }
+                )
             }
-
         }
     }
-
 
 
 

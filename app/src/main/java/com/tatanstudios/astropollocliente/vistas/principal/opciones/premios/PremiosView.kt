@@ -43,13 +43,9 @@ import com.tatanstudios.astropollocliente.viewmodel.DeseleccionarPremioViewModel
 import com.tatanstudios.astropollocliente.viewmodel.ListadoPremiosViewModel
 import com.tatanstudios.astropollocliente.viewmodel.SeleccionarPremioViewModel
 import kotlinx.coroutines.flow.first
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 
@@ -77,7 +73,6 @@ fun PremiosScreen(navController: NavHostController,
     var textoDescripcion by remember { mutableStateOf("") }
     var modeloPremiosArray by remember { mutableStateOf(listOf<ModeloPremiosArray>()) }
     var boolDatosCargados by remember { mutableStateOf(false) }
-    var conteoPremiosDisponibles by remember { mutableStateOf(0) }
 
     var textoMisPuntos by remember { mutableStateOf("") }
 
@@ -167,7 +162,6 @@ fun PremiosScreen(navController: NavHostController,
                     }
                 }
 
-
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
@@ -251,7 +245,7 @@ fun PremiosScreen(navController: NavHostController,
                     textoDescripcion = result.nota?: ""
                     modeloPremiosArray = result.lista
                     boolDatosCargados = true
-                    conteoPremiosDisponibles = result.conteo
+
                 }
                 else -> {
                     // Error, recargar de nuevo

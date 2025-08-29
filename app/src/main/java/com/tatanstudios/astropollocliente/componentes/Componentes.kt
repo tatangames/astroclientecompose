@@ -20,6 +20,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -224,7 +225,7 @@ fun BloqueTextFieldPassword(
 
         // Ícono al inicio con color gris claro
         Icon(
-            imageVector = Icons.Filled.Visibility,  // Puedes cambiarlo por otro ícono si lo prefieres
+            imageVector = Icons.Filled.Lock,  // Puedes cambiarlo por otro ícono si lo prefieres
             contentDescription = null,
             modifier = Modifier
                 .padding(end = 8.dp) // Espacio entre el ícono y el TextField

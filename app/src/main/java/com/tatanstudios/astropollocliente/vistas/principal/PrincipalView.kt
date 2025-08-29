@@ -155,7 +155,7 @@ fun BottomAppBarWithCart(
             ) {
                 val isSelected = selectedScreen == "ordenes"
                 Icon(
-                    painter = painterResource(id = R.drawable.icono_comida),
+                    painter = painterResource(id = R.drawable.icon_editar),
                     contentDescription = stringResource(R.string.ordenes),
                     tint = if (isSelected) Color.Red else Color.Gray
                 )

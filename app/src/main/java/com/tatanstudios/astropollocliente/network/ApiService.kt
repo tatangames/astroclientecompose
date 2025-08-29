@@ -332,6 +332,16 @@ interface ApiService {
     ): Single<ModeloDatosBasicos>
 
 
+    // CALIFICAR ORDEN
+    @POST("cliente/orden/completar/calificacion")
+    @FormUrlEncoded
+    fun calificarOrden(@Field("ordenid") idorden: Int,
+                       @Field("valor") valor: Int,
+    ): Single<ModeloDatosBasicos>
+
+
+
+
 }
 
 

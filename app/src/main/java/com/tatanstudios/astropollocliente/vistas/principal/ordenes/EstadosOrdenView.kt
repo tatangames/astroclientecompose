@@ -1,85 +1,53 @@
 package com.tatanstudios.astropollocliente.vistas.principal.ordenes
 
-
-import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.tatanstudios.astropollocliente.extras.TokenManager
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.navOptions
 import com.tatanstudios.astropollocliente.R
-import com.tatanstudios.astropollocliente.componentes.BarraToolbarColor
-import com.tatanstudios.astropollocliente.componentes.CardHistorialOrden
 import com.tatanstudios.astropollocliente.componentes.CustomToasty
 import com.tatanstudios.astropollocliente.componentes.LoadingModal
 import com.tatanstudios.astropollocliente.componentes.ToastType
-import com.tatanstudios.astropollocliente.model.modelos.ModeloDireccionesArray
-import com.tatanstudios.astropollocliente.model.modelos.ModeloHistorialOrdenesArray
-import com.tatanstudios.astropollocliente.model.modelos.ModeloProductos
-import com.tatanstudios.astropollocliente.model.modelos.ModeloProductosArray
 import com.tatanstudios.astropollocliente.model.rutas.Routes
-import com.tatanstudios.astropollocliente.viewmodel.HistorialFechasBuscarViewModel
-import com.tatanstudios.astropollocliente.viewmodel.ListadoProductosViewModel
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
 import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -88,43 +56,19 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.tatanstudios.astropollocliente.componentes.BarraToolbarColorMenuPrincipal
 import com.tatanstudios.astropollocliente.componentes.BarraToolbarColorOrdenesEstado
-import com.tatanstudios.astropollocliente.componentes.CustomModal1Boton
 import com.tatanstudios.astropollocliente.componentes.CustomModal1BotonTitulo
 import com.tatanstudios.astropollocliente.componentes.CustomModal2Botones
-import com.tatanstudios.astropollocliente.model.modelos.ModeloCarritoTemporal
-import com.tatanstudios.astropollocliente.model.modelos.ModeloInformacionProductoArray
-import com.tatanstudios.astropollocliente.model.modelos.ModeloOrdenesArray
 import com.tatanstudios.astropollocliente.model.modelos.ModeloOrdenesIndividualArray
-import com.tatanstudios.astropollocliente.model.modelos.ModeloProductosTerceraArray
-import com.tatanstudios.astropollocliente.network.RetrofitBuilder
+import com.tatanstudios.astropollocliente.viewmodel.CalificarOrdenViewModel
 import com.tatanstudios.astropollocliente.viewmodel.CancelarOrdenViewModel
-import com.tatanstudios.astropollocliente.viewmodel.EnviarProductoAlCarritoViewModel
 import com.tatanstudios.astropollocliente.viewmodel.InformacionDeUnaOrdenViewModel
-import com.tatanstudios.astropollocliente.viewmodel.InformacionProductoViewModel
-import com.tatanstudios.astropollocliente.vistas.login.getVersionName
-import java.util.Locale
-import kotlin.collections.first
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -133,6 +77,7 @@ fun EstadoOrdenScreen(
     idorden: Int,
     viewModel: InformacionDeUnaOrdenViewModel = viewModel(),
     viewModelCancelar: CancelarOrdenViewModel = viewModel(),
+    viewModelCalificar: CalificarOrdenViewModel = viewModel(),
 ) {
     val ctx = LocalContext.current
     val tokenManager = remember { TokenManager(ctx) }
@@ -140,15 +85,16 @@ fun EstadoOrdenScreen(
     val isLoading by viewModel.isLoading.observeAsState(true)
     val resultado by viewModel.resultado.observeAsState()
 
-    val isLoadingCancelar by viewModelCancelar.isLoading.observeAsState(true)
+    val isLoadingCancelar by viewModelCancelar.isLoading.observeAsState(false)
     val resultadoCancelar by viewModelCancelar.resultado.observeAsState()
 
-    var idusuario by remember { mutableStateOf("") }
+    val isLoadingCalificar by viewModelCalificar.isLoading.observeAsState(false)
+    val resultadoCalificar by viewModelCalificar.resultado.observeAsState()
+
     var modeloOrdenesArray by remember { mutableStateOf(listOf<ModeloOrdenesIndividualArray>()) }
 
     // cargar datos cuando cambia el id
     LaunchedEffect(idorden) {
-        idusuario = tokenManager.idUsuario.first()
         viewModel.informacionOrdenIndividualRetrofit(idorden)
     }
 
@@ -157,10 +103,14 @@ fun EstadoOrdenScreen(
 
     var showModalCancelarOrden by rememberSaveable { mutableStateOf(false) }
 
-
     var showModalOrdenYaFueIniciada by rememberSaveable { mutableStateOf(false) }
     var tituloOrdenYaIniciada by rememberSaveable { mutableStateOf("") }
     var mensajeOrdenYaIniciada by rememberSaveable { mutableStateOf("") }
+
+
+    var showModalCalificar by rememberSaveable { mutableStateOf(false) }
+    var tituloOrdenCalificada by rememberSaveable { mutableStateOf("") }
+    var mensajeOrdenCalificada by rememberSaveable { mutableStateOf("") }
 
 
     // estado de refresco
@@ -170,7 +120,6 @@ fun EstadoOrdenScreen(
         refreshing = true
         viewModel.informacionOrdenIndividualRetrofit(idorden)
     }
-
 
     val pullRefreshState = rememberPullRefreshState(refreshing, { recargar() })
 
@@ -346,6 +295,10 @@ fun EstadoOrdenScreen(
                 LoadingModal(isLoading = true)
             }
 
+            if(isLoadingCalificar){
+                LoadingModal(isLoading = true)
+            }
+
             if(showModalCancelarOrden){
                 CustomModal2Botones(
                     showDialog = true,
@@ -372,8 +325,7 @@ fun EstadoOrdenScreen(
                     onConfirm = {
                         showRatingDialog = false
                         // TODO: Llama a tu ViewModel para enviar la calificación
-                        // viewModel.finalizarOrden(idorden, rating)
-                        CustomToasty(ctx, "¡Gracias! Calificación: $rating ⭐", ToastType.SUCCESS)
+                        viewModelCalificar.calificarOrdenRetrofit(idorden,rating)
                     },
                     onCancel = { showRatingDialog = false }
                 )
@@ -385,10 +337,23 @@ fun EstadoOrdenScreen(
                     viewModel.informacionOrdenIndividualRetrofit(idorden)
                 })
             }
+
+            if(showModalCalificar){
+                CustomModal1BotonTitulo(showModalCalificar, tituloOrdenCalificada, mensajeOrdenCalificada, onDismiss = {
+                    showModalCalificar = false
+
+                    // SALIR
+                    navController.navigate(Routes.VistaPrincipal.createRoute("ordenes")
+                    ) {
+                        popUpTo(Routes.VistaEstadoOrden.route) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                })
+            }
         }
     }
-
-
 
 
     // manejar resultado retrofit
@@ -405,8 +370,6 @@ fun EstadoOrdenScreen(
             )
         }
     }
-
-
 
 
     // manejar resultado retrofit
@@ -447,14 +410,25 @@ fun EstadoOrdenScreen(
     }
 
 
+    resultadoCalificar?.getContentIfNotHandled()?.let { result ->
+        refreshing = false
+        if (result.success == 1) {
+            val titulo = result.titulo ?: ""
+            val mensaje = result.mensaje ?: ""
 
+            tituloOrdenYaIniciada = titulo
+            mensajeOrdenCalificada = mensaje
+            showModalCalificar = true
+
+        } else {
+            CustomToasty(
+                ctx,
+                stringResource(id = R.string.error_reintentar_de_nuevo),
+                ToastType.ERROR
+            )
+        }
+    }
 }
-
-/**
- * Fila visual para un estado, con un punto de color, título y una fecha opcional.
- * - activo=true: colorActivo, texto fuerte
- * - activo=false: gris, texto normal
- */
 
 
 @Composable
