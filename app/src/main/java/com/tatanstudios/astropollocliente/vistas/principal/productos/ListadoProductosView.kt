@@ -150,8 +150,6 @@ fun ListadoProductosScreen(navController: NavHostController,
                                         }
                                         launchSingleTop = true
                                     }
-
-
                                 }
                             )
                         }

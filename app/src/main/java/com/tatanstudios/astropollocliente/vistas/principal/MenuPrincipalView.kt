@@ -298,7 +298,6 @@ fun MenuPrincipalScreen(
                         }
                     }
                 }
-
             }
 
             if (!modeloListaPopularesArray.isNullOrEmpty()) {
